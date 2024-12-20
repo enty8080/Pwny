@@ -11,15 +11,15 @@ TLV_STATUS_ENOENT = 7
 
 
 def tlv_custom_tag(pool, base, call):
-    return (pool + base * 1000) + call
+    return (pool | base << 2) | call << 8
 
 
 def tlv_custom_pipe(pool, base, type):
-    return (pool + base * 1000) + type
+    return (pool | base << 2) | type << 8
 
 
 def tlv_custom_type(parent, base, child):
-    return (parent * 1000 + base * 100) + child
+    return (parent | base << 4) | child << 10
 
 
 TLV_TYPE_CHAR = 1
