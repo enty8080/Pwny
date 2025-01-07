@@ -36,9 +36,9 @@
 #define API_CALL 1
 #define API_TYPE 1
 
-#define API_CALL_INTERNAL 10000
-#define API_CALL_STATIC   20000
-#define API_CALL_DYNAMIC  40000
+#define API_CALL_INTERNAL 1
+#define API_CALL_STATIC   2
+#define API_CALL_DYNAMIC  3
 
 typedef tlv_pkt_t *(*api_t)(c2_t *);
 

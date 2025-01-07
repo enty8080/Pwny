@@ -71,7 +71,7 @@ typedef struct
     enum NET_STATUS status;
 
     void *link_data;
-    int sent;
+    int dual;
 
     link_t read_link;
     link_t write_link;
@@ -90,6 +90,8 @@ void net_setup(net_t *net, struct ev_loop *loop);
 void net_start(net_t *net);
 
 int net_nonblock_sock(int sock);
+void net_make_dual(net_t *net);
+
 void net_set_delay(net_t *net, float delay);
 void net_timer(struct ev_loop *loop, struct ev_timer *w, int revents);
 void net_set_links(net_t *net,

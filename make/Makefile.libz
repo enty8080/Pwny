@@ -22,29 +22,27 @@
 # SOFTWARE.
 #
 
-include make/Makefile.common
+LIBZ_VERSION = 1.2.8.2015.12.26
 
-ifneq (,$(findstring iphone,$(TARGET)))
-all: setup libz mbedtls curl injector libev libeio sigar
-else
-all: setup libz mbedtls curl injector libev libeio sigar libpawn
-endif
+$(BUILD)/libz/configure:
+	$(QUIET) $(LOG) "[Unpacking libz]"
+	$(CHDIR) $(BUILD); \
+	    $(TAR) zxf $(DEPS)/libz-$(LIBZ_VERSION).tar.gz; \
+	    $(MOVE) libz-$(LIBZ_VERSION) libz
+	$(QUIET) $(LOG) "[Done unpacking libz]"
 
-setup:
-	$(QUIET) $(LOG) "[Creating workspace]"
-	$(MKDIR) $(BUILD) $(BUILD_LIB) $(BUILD_INCLUDE)
-	$(QUIET) $(LOG) "[Done creating workspace]"
+$(BUILD)/libz/Makefile: $(BUILD)/libz/configure
+	$(QUIET) $(LOG) "[Configuring libz]"
+	$(CHDIR) $(BUILD)/libz; \
+	    $(CONFIG); \
+	    $(ENV) ./$(CONFIGURE)
+	$(QUIET) $(LOG) "[Done configuring libz]"
 
-clean:
-	$(QUIET) $(LOG) "[Cleaning old build]"
-	$(RM) $(BUILD)
-	$(QUIET) $(LOG) "[Done cleaning old build]"
+$(BUILD_LIB)/libz.a: $(BUILD)/libz/Makefile
+	$(QUIET) $(LOG) "[Building libz]"
+	$(CHDIR) $(BUILD)/libz; \
+	    $(ENV) $(MAKE); \
+	    $(MAKE_INSTALL)
+	$(QUIET) $(LOG) "[Done building libz]"
 
-include make/Makefile.libz
-include make/Makefile.curl
-include make/Makefile.mbedtls
-include make/Makefile.libev
-include make/Makefile.libeio
-include make/Makefile.sigar
-include make/Makefile.libpawn
-include make/Makefile.injector
+libz: $(BUILD_LIB)/libz.a

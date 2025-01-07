@@ -37,7 +37,7 @@
 
 static void ipc_tunnel_write(tunnel_t *tunnel, queue_t *egress)
 {
-    size_t size;
+    ssize_t size;
     net_t *net;
     void *buffer;
 
@@ -54,8 +54,6 @@ static void ipc_tunnel_write(tunnel_t *tunnel, queue_t *egress)
         write(net->io->pipe[1], buffer, size);
         free(buffer);
     }
-
-    free(buffer);
 }
 
 static void ipc_tunnel_read(void *data)

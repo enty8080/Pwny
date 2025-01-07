@@ -9,19 +9,19 @@ from pwny.session import PwnySession
 
 
 def main():
-    print('Waiting for connection ...', end=' ')
+    print('Waiting for connection (egress) ...')
 
     s = socket.socket()
     s.bind((sys.argv[1], int(sys.argv[2])))
     s.listen()
-    c, a = s.accept()
 
-    print(f'Connection from {a[0]}:{str(a[1])}\n')
+    c1, a = s.accept()
+    c2, a = s.accept()
 
     p = PwnySession()
     p.info['Platform'] = sys.argv[3]
     p.info['Arch'] = sys.argv[4]
-    p.open(c)
+    p.open((c1, c2))
     p.interact()
 
 

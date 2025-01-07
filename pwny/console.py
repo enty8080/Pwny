@@ -72,8 +72,8 @@ class Console(Cmd, FS):
 
         self.scheme = prompt
         self.prompt = prompt
-        self.banner = True
-        self.tip = True
+        self.banner = False
+        self.tip = False
 
         self.motd = f"""%end
 Pwny interactive shell %greenv{self.version}%end
@@ -139,11 +139,16 @@ Running as %blue$user%end on %line$dir%end
         :return None: None
         """
 
+        self.check_session()
+
         if value is None:
             self.env.pop(name.upper(), value)
             return
 
         self.env[name.upper()] = str(value)
+
+        if name.lower() == 'verbose':
+            self.session.channel.verbose = True
 
     def set_banner(self, display: bool) -> None:
         """ Display or hide Pwny banner.

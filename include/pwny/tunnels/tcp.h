@@ -38,7 +38,7 @@
 static void tcp_tunnel_write(tunnel_t *tunnel, queue_t *egress)
 {
     net_t *net;
-    size_t size;
+    ssize_t size;
     ssize_t stat;
     ssize_t offset;
     void *buffer;
@@ -55,6 +55,10 @@ static void tcp_tunnel_write(tunnel_t *tunnel, queue_t *egress)
 
     while ((size = queue_remove_all(egress, &buffer)) > 0)
     {
+        if (size == -1)
+        {
+            log_debug("* Sas!\n");
+        }
         log_debug("* Writing bytes to TCP (%d) - (%d)\n", net->io->pipe[1], size);
 
         do
@@ -70,8 +74,6 @@ static void tcp_tunnel_write(tunnel_t *tunnel, queue_t *egress)
 
         free(buffer);
     }
-
-    free(buffer);
 }
 
 static void tcp_tunnel_event(int event, void *data)
@@ -134,7 +136,19 @@ int tcp_tunnel_start(tunnel_t *tunnel)
     net = tunnel->data;
 
     net_set_delay(net, tunnel->delay);
-    log_debug("* Delay: %f\n", tunnel->delay);
+    net_start(net);
+
+    return 0;
+}
+
+int dtcp_tunnel_start(tunnel_t *tunnel)
+{
+    net_t *net;
+
+    net = tunnel->data;
+
+    net_set_delay(net, tunnel->delay);
+    net_make_dual(net);
     net_start(net);
 
     return 0;
@@ -232,6 +246,7 @@ void sock_tunnel_exit(tunnel_t *tunnel)
 void register_tcp_tunnels(tunnels_t **tunnels)
 {
     tunnel_callbacks_t tcp_callbacks;
+    tunnel_callbacks_t dtcp_callbacks;
     tunnel_callbacks_t sock_callbacks;
 
     tcp_callbacks.init_cb = tcp_tunnel_init;
@@ -239,12 +254,18 @@ void register_tcp_tunnels(tunnels_t **tunnels)
     tcp_callbacks.write_cb = tcp_tunnel_write;
     tcp_callbacks.exit_cb = tcp_tunnel_exit;
 
+    dtcp_callbacks.init_cb = tcp_tunnel_init;
+    dtcp_callbacks.start_cb = dtcp_tunnel_start;
+    dtcp_callbacks.write_cb = tcp_tunnel_write;
+    dtcp_callbacks.exit_cb = tcp_tunnel_exit;
+
     sock_callbacks.init_cb = sock_tunnel_init;
     sock_callbacks.start_cb = tcp_tunnel_start;
     sock_callbacks.write_cb = tcp_tunnel_write;
     sock_callbacks.exit_cb = sock_tunnel_exit;
 
     register_tunnel(tunnels, "tcp", tcp_callbacks);
+    register_tunnel(tunnels, "dtcp", dtcp_callbacks);
     register_tunnel(tunnels, "sock", sock_callbacks);
 }
 

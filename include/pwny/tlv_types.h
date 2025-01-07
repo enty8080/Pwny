@@ -25,13 +25,13 @@
 #ifndef _TLV_TYPES_H_
 #define _TLV_TYPES_H_
 
-#define TLV_FILE_CHUNK 1024
+#define TLV_FILE_CHUNK 8192
 
-#define TLV_TAG_CUSTOM(pool, base, call) (pool | base << 2) | call << 8
+#define TLV_TAG_CUSTOM(pool, base, call) (pool | base << 2) | (call) << 8
 
-#define TLV_PIPE_CUSTOM(pool, base, type) (pool | base << 2) | type << 8
+#define TLV_PIPE_CUSTOM(pool, base, type) (pool | base << 2) | (type) << 8
 
-#define TLV_TYPE_CUSTOM(parent, base, child) (parent | base << 4) | child << 10
+#define TLV_TYPE_CUSTOM(parent, base, child) (parent | base << 4) | (child) << 10
 
 #define TLV_TYPE_CHAR   1
 #define TLV_TYPE_SHORT  2

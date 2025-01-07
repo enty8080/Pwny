@@ -31,8 +31,6 @@
 #include <pwny/misc.h>
 #include <pwny/log.h>
 
-#include <mbedtls/platform.h>
-
 static void parse_argv(int argc, char *argv[], core_t *core)
 {
     int step;

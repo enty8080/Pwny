@@ -28,11 +28,13 @@
 #include <pwny/tunnel.h>
 
 #include <pwny/tunnels/tcp.h>
+#include <pwny/tunnels/http.h>
 #include <pwny/tunnels/ipc.h>
 
 void register_core_tunnels(tunnels_t **tunnels)
 {
     register_tcp_tunnels(tunnels);
+    register_http_tunnels(tunnels);
 }
 
 void register_tab_tunnels(tunnels_t **tunnels)

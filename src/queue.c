@@ -229,6 +229,11 @@ ssize_t queue_remove_all(queue_t *queue, void **data)
     void *buffer;
     size_t bytes;
 
+    if (queue->bytes <= 0)
+    {
+        return -1;
+    }
+
     buffer = malloc(queue->bytes);
 
     if (buffer == NULL)

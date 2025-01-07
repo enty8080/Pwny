@@ -408,7 +408,7 @@ ssize_t crypt_chacha20_decrypt(crypt_t *crypt, unsigned char *data,
 
     if (*result == NULL)
     {
-        log_debug("* Failed to allocate space for result\n");
+        log_debug("* Failed to allocate space for result (chacha20)\n");
         return -1;
     }
 

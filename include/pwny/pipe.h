@@ -78,12 +78,12 @@
 #define TLV_TYPE_PIPE_HEARTBEAT TLV_TYPE_CUSTOM(TLV_TYPE_INT, PIPE_BASE, API_TYPE + 5)
 #define TLV_TYPE_PIPE_FLAGS     TLV_TYPE_CUSTOM(TLV_TYPE_INT, PIPE_BASE, API_TYPE + 6)
 
-#define PIPE_INTERACTIVE 1 << 0
+#define PIPE_INTERACTIVE 1
 
 #define PIPE_TYPE     1
-#define PIPE_INTERNAL 10000
-#define PIPE_STATIC   20000
-#define PIPE_DYNAMIC  40000
+#define PIPE_INTERNAL 1
+#define PIPE_STATIC   2
+#define PIPE_DYNAMIC  3
 
 typedef struct pipes_table pipes_t;
 typedef struct pipe_callbacks pipe_callbacks_t;

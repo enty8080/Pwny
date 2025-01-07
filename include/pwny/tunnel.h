@@ -46,6 +46,7 @@ struct tunnel_callbacks
 struct tunnel
 {
     char *uri;
+
     void *data;
     void *link_data;
     struct ev_loop *loop;

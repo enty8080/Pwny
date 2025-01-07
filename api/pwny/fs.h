@@ -959,7 +959,6 @@ static tlv_pkt_t *fs_getwd(c2_t *c2)
 
     result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
     tlv_pkt_add_string(result, TLV_TYPE_PATH, path);
-    log_debug("%s\n", path);
 
     return result;
 }
