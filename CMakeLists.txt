@@ -82,7 +82,7 @@ if(MAIN)
     add_executable(main ${MAIN_SOURCES})
 
     target_link_directories(main PRIVATE deps/build/${CMAKE_SYSTEM_TARGET}/lib)
-    target_link_libraries(main PRIVATE pwny mbedtls mbedx509 mbedcrypto ev eio sigar)
+    target_link_libraries(main PRIVATE pwny mbedtls mbedx509 mbedcrypto ev eio sigar curl z)
 
     if(NOT CMAKE_SYSTEM_NAME STREQUAL iOS)
         target_link_libraries(main PRIVATE pawn injector)
@@ -90,7 +90,12 @@ if(MAIN)
 
     if(CMAKE_SYSTEM_NAME STREQUAL Windows)
         target_link_libraries(main PRIVATE injector pawn)
-        target_link_libraries(main PRIVATE ws2_32 imagehlp)
+        target_link_libraries(main PRIVATE ws2_32 netapi32 version)
+        if(SHARED)
+            target_link_options(main PRIVATE -shared)
+        else()
+            target_link_options(main PRIVATE --static)
+        endif()
 
     elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
         target_compile_options(main PRIVATE -fobjc-arc)

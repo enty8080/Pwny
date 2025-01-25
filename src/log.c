@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <log.h>
+#include <pwny/log.h>
 
 #ifdef DEBUG
 void log_debug(const char *fmt __attribute__((unused)), ...)

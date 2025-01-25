@@ -251,6 +251,33 @@ class Pipes(object):
 
         return tlv.get_raw(PIPE_TYPE_BUFFER)
 
+    def readall_pipe(self, pipe_type: int, pipe_id: int,
+                  plugin: Optional[int] = None) -> bytes:
+        """ Read all data from pipe.
+
+        :param int pipe_type: type of pipe
+        :param int pipe_id: pipe ID
+        :param Optional[int] plugin: plugin ID if refer to plugin
+        :return bytes: bytes
+        :raises RuntimeError: with trailing error message
+        """
+
+        self.check_pipe(pipe_type, pipe_id, plugin)
+
+        tlv = self.session.send_command(
+            tag=PIPE_READALL,
+            args={
+                PIPE_TYPE_TYPE: pipe_type,
+                PIPE_TYPE_ID: pipe_id,
+            },
+            plugin=plugin
+        )
+
+        if tlv.get_int(TLV_TYPE_STATUS) == TLV_STATUS_FAIL:
+            raise RuntimeError(f"Failed to read from pipe {str(pipe_id)}!")
+
+        return tlv.get_raw(PIPE_TYPE_BUFFER)
+
     def create_pipe(self, pipe_type: int, args: dict = {},
                     flags: Optional[int] = 0,
                     plugin: Optional[int] = None) -> int:

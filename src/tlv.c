@@ -33,10 +33,10 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 
-#include <tlv.h>
-#include <c2.h>
-#include <log.h>
-#include <queue.h>
+#include <pwny/tlv.h>
+#include <pwny/c2.h>
+#include <pwny/log.h>
+#include <pwny/queue.h>
 
 tlv_pkt_t *tlv_pkt_create(void)
 {

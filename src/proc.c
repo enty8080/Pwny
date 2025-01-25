@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#include <c2.h>
-#include <proc.h>
-#include <log.h>
+#include <pwny/c2.h>
+#include <pwny/proc.h>
+#include <pwny/log.h>
 
 #include <stdlib.h>
 #include <string.h>

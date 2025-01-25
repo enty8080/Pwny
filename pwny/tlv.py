@@ -36,7 +36,11 @@ from typing import (
 from badges import Badges
 
 from pex.string import String
-from pex.proto.tlv import TLVPacket, TLVClient
+from pex.proto.tlv import (
+    TLVPacket,
+    TLVClient,
+    TLVServerHTTP
+)
 
 from pwny.api import *
 from pwny.types import *
@@ -83,40 +87,132 @@ class SignalPipe(object):
         return os.read(self.read, 4)
 
 
-class TLV(Badges, String):
+class CipherProcessor(object):
     """ Subclass of pwny module.
 
     This subclass of pwny module is intended for providing
-    TLV negotiation methods.
+    implementation of TLV encrypt/decrypt operations.
     """
 
-    def __init__(self, client: TLVClient, args: list = []) -> None:
-        """ Initialize TLV.
+    def __init__(self) -> None:
+        """ Initialize TLV cipher processor.
 
-        :param TLVClient client: TLV client
-        :param list args: arguments
         :return None: None
         """
 
-        self.client = client
         self.key = None
         self.secure = False
         self.algo = None
 
+    def set_key(self, key: bytes, algo: int = ALGO_AES256_CBC) -> None:
+        """ Set key for encryption.
+
+        :param str key: key in plain bytes
+        :param int algo: cipher algorithm
+        :return None: None
+        """
+
+        if not key:
+            self.secure = False
+            return
+
+        self.key = key
+        self.algo = algo
+        self.secure = True
+
+    def encrypt(self, packet: TLVPacket) -> bytes:
+        """ Encrypt TLV packet with cipher.
+
+        :param TLVPacket packet: TLV packet to encrypt
+        :return bytes: encrypted TLV packet data
+        """
+
+        if not self.key:
+            raise RuntimeError("No key set, unable to encrypt!")
+
+        data = packet.buffer
+
+        if self.algo == ALGO_AES256_CBC:
+            iv = os.urandom(16)
+
+            cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend)
+            encryptor = cipher.encryptor()
+
+            padded_data = data + (16 - len(data) % 16) * bytes([16 - len(data) % 16])
+            return iv + encryptor.update(padded_data) + encryptor.finalize()
+
+        if self.algo == ALGO_CHACHA20:
+            iv = os.urandom(12)
+
+            cipher = ChaCha20.new(key=self.key, nonce=iv)
+            return iv + cipher.encrypt(data)
+
+        return data
+
+    def decrypt(self, data: bytes) -> TLVPacket:
+        """ Decrypt TLV packet with AES CBC 256-bit.
+
+        :param bytes data: data to decrypt
+        :return TLVPacket: decrypted TLV packet
+        """
+
+        if not self.key:
+            raise RuntimeError("No key set, unable to decrypt!")
+
+        if self.algo == ALGO_AES256_CBC:
+            iv = data[:16]
+            data = data[16:]
+
+            cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend)
+            decryptor = cipher.decryptor()
+
+            padded_data = decryptor.update(data) + decryptor.finalize()
+            return TLVPacket(padded_data)
+
+        if self.algo == ALGO_CHACHA20:
+            iv = data[:12]
+            data = data[12:]
+
+            cipher = ChaCha20.new(key=self.key, nonce=iv)
+            return TLVPacket(cipher.decrypt(data))
+
+        return TLVPacket(data)
+
+
+class QueueProcessor(Badges):
+    """ Subclass of pwny module.
+
+    This subclass of pwny module is intended for providing
+    implementation of TLV queue processor.
+    """
+
+    def __init__(self) -> None:
+        """ Initialize TLV queue processor.
+
+        :return None: None
+        """
+
         self.queue = []
         self.events = {}
-        self.job = None
 
-        self.running = False
-        self.signal = SignalPipe()
-        self.args = args
+        self.verbose = False
 
-    def create_event(self, target: Callable[..., Any], query: dict,
+    def verbose_print(self, *args, **kwargs) -> None:
+        """ Print something if verbose printing is enabled.
+
+        :return None: None
+        """
+
+        if self.verbose:
+            self.print_information(*args, **kwargs)
+
+    def create_event(self, target: Union[Callable[..., Any], TLVPacket], query: dict,
                      event: Optional[int] = None, args: list = [],
                      noapi: bool = True, ttl: Optional[int] = None) -> int:
         """ Create event on a pipe (wait for event).
 
-        :param Callable[..., Any] target: function to execute on event
+        :param Union[Callable[..., Any], TLVPacket] target: function to execute on event or packet
+        template
         :param dict query: event query
         :param Optional[int] event: type of data you expect to receive
         :param list args: function args
@@ -139,72 +235,13 @@ class TLV(Badges, String):
             'TTL': ttl,
         }
 
+        self.verbose_print(f"Event created with ID ({str(event_id)})")
+        self.verbose_print(f"Re-running queue events for event {str(event_id)}")
+
         for packet in self.queue:
             self.queue_run_events(packet)
 
         return event_id
-
-    def queue_interrupt(self) -> None:
-        """ Interrupt queue thread.
-
-        :return None: None
-        """
-
-        if not self.running:
-            return
-
-        self.signal.sendmsg(MSG_QUEUE_QUIT)
-        self.job.join()
-
-    def queue_resume(self) -> None:
-        """ Resume queue thread.
-
-        :return None: None
-        """
-
-        if self.running:
-            return
-
-        self.job = Job(
-            target=self.queue_job, args=self.args)
-        self.job.start()
-
-    def queue_job(self, error: bool = True, verbose: bool = False) -> None:
-        """ Read TLVPacket's in queue in thread.
-
-        :param bool error: raise errors if status is wrong
-        :param bool verbose: verbose dump packet for inspection
-        :return None: None
-        """
-
-        self.running = True
-        selector = selectors.SelectSelector()
-
-        selector.register(self.client.client, selectors.EVENT_READ)
-        selector.register(self.signal.read, selectors.EVENT_READ)
-
-        while self.running:
-            for key, events in selector.select():
-                if key.fileobj is self.signal.read:
-                    if self.signal.recvmsg() == MSG_QUEUE_QUIT:
-                        self.running = False
-                        return
-
-                elif key.fileobj is self.client.client:
-                    try:
-                        packet = self.read(
-                            error=error,
-                            verbose=verbose
-                        )
-                    except Exception:
-                        self.running = False
-                        continue
-
-                    if not packet:
-                        continue
-
-                    if not self.queue_run_events(packet):
-                        self.queue.append(packet)
 
     def queue_run_events(self, packet: TLVPacket) -> bool:
         """ Execute events and check if packet can be
@@ -230,6 +267,8 @@ class TLV(Badges, String):
 
                 if not event['TTL']:
                     self.events.pop(event_id)
+
+            self.verbose_print(f"Event with ID {str(event_id)} fired ({str(len(packet.buffer))} bytes)")
 
             if isinstance(event['Target'], TLVPacket):
                 event['Target'].__init__(packet.buffer)
@@ -291,99 +330,151 @@ class TLV(Badges, String):
         """
 
         for packet in self.queue:
-            if self.tlv_query(packet, args):
-                if delete:
-                    self.queue.remove(packet)
+            if not self.tlv_query(packet, args):
+                continue
 
-                return packet
+            if delete:
+                self.queue.remove(packet)
 
-    def encrypt(self, packet: TLVPacket) -> bytes:
-        """ Encrypt TLV packet with AES CBC 256-bit.
+            return packet
 
-        :param TLVPacket packet: TLV packet to encrypt
-        :return bytes: encrypted TLV packet data
+
+class TLV(QueueProcessor):
+    """ Subclass of pwny module.
+
+    This subclass of pwny module is intended for providing
+    TLV negotiation methods.
+    """
+
+    def __init__(self, client: Union[TLVClient, tuple], die: bool = True,
+                 verbose: bool = False) -> None:
+        """ Initialize TLV.
+
+        :param Union[TLVClient, tuple] client: TLV client
+        :param bool die: raise errors if status is wrong
+        :param bool verbose: verbose dump packet for inspection
+        :return None: None
         """
 
-        if not self.key:
-            raise RuntimeError("No key set, unable to encrypt!")
+        super().__init__()
 
-        data = packet.buffer
+        if isinstance(client, TLVClient):
+            self.ingress = client
+            self.egress = client
 
-        if self.algo == ALGO_AES256_CBC:
-            iv = os.urandom(16)
+        else:
+            self.ingress = client[1]
+            self.egress = client[0]
 
-            cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend)
-            encryptor = cipher.encryptor()
+        self.job = None
 
-            padded_data = data + (16 - len(data) % 16) * bytes([16 - len(data) % 16])
-            return iv + encryptor.update(padded_data) + encryptor.finalize()
+        self.running = False
+        self.error = None
 
-        if self.algo == ALGO_CHACHA20:
-            iv = os.urandom(12)
+        self.die = die
+        self.verbose = verbose
 
-            cipher = ChaCha20.new(key=self.key, nonce=iv)
-            return iv + cipher.encrypt(data)
+        self.signal = SignalPipe()
+        self.cipher = CipherProcessor()
 
-        return data
+    def queue_interrupt(self) -> None:
+        """ Interrupt queue thread.
 
-    def decrypt(self, data: bytes) -> TLVPacket:
-        """ Decrypt TLV packet with AES CBC 256-bit.
-
-        :param bytes data: data to decrypt
-        :return TLVPacket: decrypted TLV packet
+        :return None: None
         """
 
-        if not self.key:
-            raise RuntimeError("No key set, unable to decrypt!")
+        if not self.running:
+            return
 
-        if self.algo == ALGO_AES256_CBC:
-            iv = data[:16]
-            data = data[16:]
+        self.verbose_print("Interrupting TLV queue thread")
+        self.signal.sendmsg(MSG_QUEUE_QUIT)
+        self.job.join()
 
-            cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend)
-            decryptor = cipher.decryptor()
+    def queue_resume(self) -> None:
+        """ Resume queue thread.
 
-            padded_data = decryptor.update(data) + decryptor.finalize()
-            return TLVPacket(padded_data)
+        :return None: None
+        """
 
-        if self.algo == ALGO_CHACHA20:
-            iv = data[:12]
-            data = data[12:]
+        if self.running:
+            return
 
-            cipher = ChaCha20.new(key=self.key, nonce=iv)
-            return TLVPacket(cipher.decrypt(data))
+        self.verbose_print("Resumed TLV queue thread")
+        self.job = Job(target=self.queue_job)
+        self.job.start()
 
-        return TLVPacket(data)
-
-    def read(self, error: bool = False, verbose: bool = False,
-             block: bool = True) -> Union[TLVPacket, None]:
-        """ Read TLV packet.
+    def queue_job(self) -> None:
+        """ Read TLVPacket's in queue in thread.
 
         :param bool error: raise errors if status is wrong
         :param bool verbose: verbose dump packet for inspection
+        :return None: None
+        """
+
+        self.running = True
+        selector = selectors.SelectSelector()
+
+        selector.register(self.ingress.client, selectors.EVENT_READ)
+        selector.register(self.signal.read, selectors.EVENT_READ)
+
+        while self.running:
+            for key, events in selector.select():
+                if key.fileobj is self.signal.read:
+                    if self.signal.recvmsg() == MSG_QUEUE_QUIT:
+                        self.verbose_print("TLV queue thread received quit signal")
+                        self.running = False
+
+                        return
+
+                elif key.fileobj is self.ingress.client:
+                    try:
+                        packet = self.read()
+
+                    except Exception as e:
+                        self.running = False
+                        self.error = str(e)
+
+                        continue
+
+                    if not packet:
+                        continue
+
+                    if not self.queue_run_events(packet):
+                        self.queue.append(packet)
+
+    def read(self, block: bool = True) -> Union[TLVPacket, None]:
+        """ Read TLV packet.
+
         :param bool block: True to block socket else False
         :return Union[TLVPacket, None]: TLV packet or None if None received
         """
 
-        tlv = self.client.read(block=block)
+        tlv = self.ingress.read(block=block)
 
         if not tlv:
             return
 
+        self.verbose_print(f"Decapsulating received TLV packet ({str(len(tlv.buffer))} bytes)")
         group = tlv.get_raw(TLV_TYPE_GROUP)
 
-        if self.secure:
-            group = self.decrypt(group)
+        if self.cipher.secure:
+            self.verbose_print(f"Decrypting decapsulated TLV packet ({str(len(group))} bytes)")
+            group = self.cipher.decrypt(group)
         else:
             group = TLVPacket(group)
 
-        if verbose:
+        if self.verbose:
             self.print_information(f"Read TLV packet ({str(len(group.buffer))} bytes, "
                                    f"{str(len(group))} objects)")
-            for line in self.hexdump(group.buffer):
-                self.print_information(line)
+            length = 0
 
-        if error:
+            for line in String().hexdump(group.buffer):
+                self.print_information(line)
+                length = len(line)
+
+            self.print_empty('-' * (length + 4))
+
+        if self.die:
             status = group.get_int(TLV_TYPE_STATUS, delete=False)
 
             if status == TLV_STATUS_NOT_IMPLEMENTED:
@@ -391,25 +482,160 @@ class TLV(Badges, String):
 
         return group
 
-    def send(self, packet: TLVPacket, verbose: bool = False) -> None:
+    def send(self, packet: TLVPacket) -> None:
         """ Send TLV packet.
 
         :param TLVPacket packet: TLV packet
-        :param bool verbose: verbose dump packet for inspection
         :return None: None
         """
 
         tlv = TLVPacket()
 
-        if self.secure:
-            tlv.add_raw(TLV_TYPE_GROUP, self.encrypt(packet))
+        if self.cipher.secure:
+            self.verbose_print(f"Encrypting and encapsulating TLV packet ({str(len(packet.buffer))} bytes)")
+            tlv.add_raw(TLV_TYPE_GROUP, self.cipher.encrypt(packet))
         else:
+            self.verbose_print(f"Encapsulating TLV packet ({str(len(packet.buffer))} bytes)")
             tlv.add_tlv(TLV_TYPE_GROUP, packet)
 
-        if verbose:
+        if self.verbose:
             self.print_information(f"Sent TLV packet ({str(len(packet.buffer))} bytes, "
                                    f"{str(len(packet))} objects)")
-            for line in self.hexdump(packet.buffer):
-                self.print_information(line)
+            length = 0
 
-        self.client.send(tlv)
+            for line in String().hexdump(packet.buffer):
+                self.print_information(line)
+                length = len(line)
+
+            self.print_empty('-' * (length + 4))
+        self.egress.send(tlv)
+
+    def close(self) -> None:
+        """ Close TLV channel.
+
+        :return None: None
+        """
+
+        self.ingress.close()
+        self.egress.close()
+
+
+class HTTPTLV(QueueProcessor):
+    """ Subclass of pwny module.
+
+    This subclass of pwny module is intended for providing
+    TLV negotiation methods (for HTTP).
+    """
+
+    def __init__(self, server: TLVServerHTTP, die: bool = True,
+                 verbose: bool = False) -> None:
+        """ Initialize TLV for HTTP.
+
+        :param TLVServerHTTP client: TLV HTTP server
+        :param bool die: raise errors if status is wrong
+        :param bool verbose: verbose dump packet for inspection
+        :return None: None
+        """
+
+        super().__init__()
+
+        self.server = server
+        self.job = None
+
+        self.running = True
+        self.error = None
+        self.die = die
+        self.verbose = verbose
+
+        self.cipher = CipherProcessor()
+
+    def queue_stop(self) -> None:
+        """ Stop queue thread.
+
+        :return None: None
+        """
+
+        self.server.close()
+        self.job.shutdown()
+
+    def queue_start(self) -> None:
+        """ Start queue thread.
+
+        :return None: None
+        """
+
+        self.server.callback = self.queue_callback
+        self.job = Job(target=self.server.loop)
+        self.job.start()
+
+    def queue_callback(self, packet: TLVPacket) -> None:
+        """ Queue callback that is triggered when server
+        receives TLV packet.
+
+        :param TLVPacket packet: received TLV packet
+        :return None: None
+        """
+
+        if not packet:
+            return
+
+        group = packet.get_raw(TLV_TYPE_GROUP)
+
+        while group:
+            self.verbose_print(f"Decapsulating received TLV packet ({str(len(packet.buffer))} bytes)")
+
+            if self.cipher.secure:
+                self.verbose_print(f"Decrypting decapsulated TLV packet ({str(len(group))} bytes)")
+                group = self.cipher.decrypt(group)
+            else:
+                group = TLVPacket(group)
+
+            if self.verbose:
+                self.print_information(f"Read TLV packet ({str(len(group.buffer))} bytes, "
+                                       f"{str(len(group))} objects)")
+                length = 0
+                for line in String().hexdump(group.buffer):
+                    self.print_information(line)
+                    length = len(line)
+
+                self.print_empty('-' * (length + 4))
+
+            if self.die:
+                status = group.get_int(TLV_TYPE_STATUS, delete=False)
+
+                if status == TLV_STATUS_NOT_IMPLEMENTED:
+                    self.print_error("Feature is not implemented yet!")
+
+            if not self.queue_run_events(group):
+                self.queue.append(group)
+
+            group = packet.get_raw(TLV_TYPE_GROUP)
+
+    def send(self, packet: TLVPacket) -> None:
+        """ Send TLV packet.
+
+        :param TLVPacket packet: TLV packet
+        :return None: None
+        """
+
+        tlv = TLVPacket()
+
+        if self.cipher.secure:
+            self.verbose_print(f"Encrypting and encapsulating TLV packet ({str(len(packet.buffer))} bytes)")
+            tlv.add_raw(TLV_TYPE_GROUP, self.cipher.encrypt(packet))
+
+        else:
+            self.verbose_print(f"Encapsulating TLV packet ({str(len(packet.buffer))} bytes)")
+            tlv.add_tlv(TLV_TYPE_GROUP, packet)
+
+        if self.verbose:
+            self.print_information(f"Sent TLV packet ({str(len(packet.buffer))} bytes, "
+                                   f"{str(len(packet))} objects)")
+            length = 0
+
+            for line in String().hexdump(packet.buffer):
+                self.print_information(line)
+                length = len(line)
+
+            self.print_empty('-' * (length + 4))
+        self.server.send(tlv)

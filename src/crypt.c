@@ -33,8 +33,8 @@
 #include <mbedtls/entropy.h>
 #include <mbedtls/pk.h>
 
-#include <log.h>
-#include <crypt.h>
+#include <pwny/log.h>
+#include <pwny/crypt.h>
 
 static ssize_t crypt_apply_padding(unsigned char *data, size_t length,
                                    unsigned char **result)
@@ -408,7 +408,7 @@ ssize_t crypt_chacha20_decrypt(crypt_t *crypt, unsigned char *data,
 
     if (*result == NULL)
     {
-        log_debug("* Failed to allocate space for result\n");
+        log_debug("* Failed to allocate space for result (chacha20)\n");
         return -1;
     }
 
@@ -468,7 +468,7 @@ ssize_t crypt_aes_decrypt(crypt_t *crypt, unsigned char *data,
 }
 
 ssize_t crypt_process(crypt_t *crypt, unsigned char *data, size_t length,
-                      unsigned char **result, enum CRYPT_MODE mode)
+                      unsigned char **result, enum CRYPT_MODES mode)
 {
     ssize_t result_length;
 
@@ -488,10 +488,10 @@ ssize_t crypt_process(crypt_t *crypt, unsigned char *data, size_t length,
                       ALGO_CHACHA20);
             switch (mode)
             {
-                case CRYPT_DECRYPT:
+                case CRYPT_DECRYPTS:
                     result_length = crypt_chacha20_decrypt(crypt, data, length, result);
                     break;
-                case CRYPT_ENCRYPT:
+                case CRYPT_ENCRYPTS:
                     result_length = crypt_chacha20_encrypt(crypt, data, length, result);
                     break;
                 default:
@@ -503,10 +503,10 @@ ssize_t crypt_process(crypt_t *crypt, unsigned char *data, size_t length,
                       ALGO_AES256_CBC);
             switch (mode)
             {
-                case CRYPT_DECRYPT:
+                case CRYPT_DECRYPTS:
                     result_length = crypt_aes_decrypt(crypt, data, length, result);
                     break;
-                case CRYPT_ENCRYPT:
+                case CRYPT_ENCRYPTS:
                     result_length = crypt_aes_encrypt(crypt, data, length, result);
                     break;
                 default:

@@ -32,25 +32,31 @@ from alive_progress import alive_bar
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
-from typing import Optional
+from typing import Optional, Union
 
 from pwny.types import *
 from pwny.api import *
 
-from pwny.tlv import TLV
+from pwny.tlv import TLV, HTTPTLV
 from pwny.pipes import Pipes
 from pwny.spawn import Spawn
 from pwny.console import Console
 
 from pex.fs import FS
 from pex.ssl import OpenSSL
-from pex.proto.tlv import TLVClient, TLVPacket
+
+from pex.proto.tlv import (
+    TLVClient,
+    TLVPacket,
+    TLVServerHTTP
+)
+from pex.proto.http import HTTPListener
 
 from hatsploit.lib.core.session import Session
 from hatsploit.lib.loot import Loot
 
 
-class PwnySession(Session, FS, OpenSSL):
+class PwnySessionTemplate(Session, FS, OpenSSL):
     """ Subclass of pwny module.
 
     This subclass of pwny module represents an implementation
@@ -82,36 +88,6 @@ class PwnySession(Session, FS, OpenSSL):
         self.console = None
 
         self.loot = Loot(self.pwny_loot)
-
-    def open(self, client: socket.socket) -> None:
-        """ Open the Pwny session.
-
-        :param socket.socket client: client to open session with
-        :return None: None
-        :raises RuntimeError: with trailing error message
-        """
-
-        self.channel = TLV(
-            TLVClient(client),
-            args=[
-                True,
-            ]
-        )
-        self.resume()
-
-        tlv = self.send_command(BUILTIN_UUID)
-        self.uuid = tlv.get_string(TLV_TYPE_UUID)
-
-        if not self.uuid:
-            raise RuntimeError("No UUID received or UUID broken!")
-
-        self.loot.create_loot()
-
-        if not self.info['Platform'] and not self.info['Arch']:
-            self.identify()
-
-        self.console = Console(self)
-        self.console.start_pwny()
 
     def identify(self) -> None:
         """ Enforce platform and architecture identification
@@ -145,7 +121,7 @@ class PwnySession(Session, FS, OpenSSL):
         :return bool: True if success else False
         """
 
-        if self.channel.secure:
+        if self.channel.cipher.secure:
             self.print_process("Initializing re-exchange of keys...")
 
         self.print_process("Generating RSA keys (1/2)")
@@ -185,10 +161,7 @@ class PwnySession(Session, FS, OpenSSL):
         )
 
         self.print_success(f"Session secured with {ALGO[algo]}!")
-
-        self.channel.secure = True
-        self.channel.key = sym_key_plain
-        self.channel.algo = algo
+        self.channel.cipher.set_key(sym_key_plain, algo)
 
         return True
 
@@ -201,21 +174,8 @@ class PwnySession(Session, FS, OpenSSL):
         self.print_process("Disabling session encryption...")
         self.send_command(tag=BUILTIN_UNSECURE)
 
-        self.channel.secure = False
-        self.channel.key = None
-
+        self.channel.cipher.set_key(None)
         self.print_success("Session encryption disabled!")
-
-    def close(self) -> None:
-        """ Close the Pwny session.
-
-        :return None: None
-        """
-
-        self.interrupt()
-        self.channel.client.close()
-        self.reason = TERM_CLOSED
-        self.terminated = True
 
     def heartbeat(self) -> bool:
         """ Check the Pwny session heartbeat.
@@ -223,81 +183,24 @@ class PwnySession(Session, FS, OpenSSL):
         :return bool: True if the Pwny session is alive
         """
 
+        if not self.channel.running and self.channel.error:
+            self.reason = TERM_DEAD
+            self.terminated = True
+
         return not self.terminated
 
-    def send_command(self, tag: int, args: dict = {}, plugin: Optional[int] = None) -> TLVPacket:
-        """ Send command to the Pwny session.
+    def execute(self, command: str, output: bool = False) -> Union[None, str]:
+        """ Send command to this session.
 
-        :param int tag: tag
-        :param dict args: command arguments with their types
-        :param Optional[int] plugin: plugin ID if tag is presented within the plugin
-        :return TLVPacket: packets
+        :param str command: command to send
+        :param bool output: True to wait for output else False
+        :return Union[None, str]: None if output is False else output
         """
 
-        if self.console:
-            verbose = self.console.get_env('VERBOSE')
-        else:
-            verbose = False
+        result = self.console.pwny_exec(command)
 
-        tlv = TLVPacket()
-
-        if plugin is not None:
-            tlv.add_int(TLV_TYPE_TAB_ID, plugin)
-
-        tlv.add_int(TLV_TYPE_TAG, tag)
-        tlv.add_from_dict(args)
-
-        try:
-            self.channel.send(tlv, verbose=verbose)
-
-        except Exception as e:
-            self.terminated = True
-            self.reason = str(e)
-
-            raise RuntimeWarning(f"Connection terminated ({self.reason}).")
-
-        query = {
-            TLV_TYPE_TAG: tag
-        }
-
-        if PIPE_TYPE_ID in args and PIPE_TYPE_TYPE in args:
-            query.update({
-                PIPE_TYPE_TYPE: args[PIPE_TYPE_TYPE],
-                PIPE_TYPE_ID: args[PIPE_TYPE_ID],
-            })
-
-        if plugin is not None:
-            query.update({
-                TLV_TYPE_TAB_ID: plugin
-            })
-
-        if self.channel.running:
-            response = TLVPacket()
-
-            self.channel.create_event(
-                target=response,
-                query=query,
-                noapi=False,
-                ttl=1,
-            )
-
-            while not response:
-                pass
-
-            return response
-
-        while True:
-            response = self.channel.read(
-                error=True,
-                verbose=verbose
-            )
-
-            if self.channel.tlv_query(response, query):
-                break
-
-            self.channel.queue.append(response)
-
-        return response
+        if output:
+            return result
 
     def download(self, remote_file: str, local_path: str) -> bool:
         """ Download file from the Pwny session.
@@ -414,6 +317,212 @@ class PwnySession(Session, FS, OpenSSL):
         :return None: None
         """
 
+        return
+
+    def resume(self) -> None:
+        """ Resume all session events.
+
+        :return None: None
+        """
+
+        return
+
+    def interact(self, banner: bool = False,
+                 tip: bool = True,
+                 prompt: Optional[str] = None,
+                 motd: Optional[str] = None) -> None:
+        """ Interact with the Pwny session.
+
+        :param bool banner: True to display banner else False
+        :param bool tip: True to display tip else False
+        :param Optional[str] prompt: custom prompt message
+        :param Optional[str] motd: custom message of the day
+        :return None: None
+        :raises RuntimeError: with trailing error message
+        """
+
+        if not self.console:
+            raise RuntimeError("Not yet ready for interaction!")
+
+        self.console.set_banner(banner)
+        self.console.set_tip(tip)
+
+        if prompt:
+            self.console.set_prompt(prompt)
+        if motd:
+            self.console.set_motd(motd)
+
+        self.resume()
+        self.console.pwny_console()
+        self.interrupt()
+
+
+class PwnyHTTPSession(PwnySessionTemplate):
+    """ Subclass of pwny module.
+
+    This subclass of pwny module represents an implementation
+    of the Pwny HTTP session for HatSploit Framework.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def open(self, server: HTTPListener) -> None:
+        """ Open the Pwny session.
+
+        :param HTTPListener server: server to open session with
+        :return None: None
+        :raises RuntimeError: with trailing error message
+        """
+
+        self.channel = HTTPTLV(TLVServerHTTP(server))
+        self.channel.queue_start()
+
+        tlv = self.send_command(BUILTIN_UUID)
+        self.uuid = tlv.get_string(TLV_TYPE_UUID)
+
+        if not self.uuid:
+            raise RuntimeError("No UUID received or UUID broken!")
+
+        self.loot.create_loot()
+
+        if not self.info['Platform'] and not self.info['Arch']:
+            self.identify()
+
+        self.console = Console(self)
+        self.console.start_pwny()
+
+    def close(self) -> None:
+        """ Close the Pwny session.
+
+        :return None: None
+        """
+
+        self.channel.queue_stop()
+        self.reason = TERM_CLOSED
+        self.terminated = True
+
+    def send_command(self, tag: int, args: dict = {}, plugin: Optional[int] = None) -> TLVPacket:
+        """ Send command to the Pwny session.
+
+        :param int tag: tag
+        :param dict args: command arguments with their types
+        :param Optional[int] plugin: plugin ID if tag is presented within the plugin
+        :return TLVPacket: packets
+        """
+
+        tlv = TLVPacket()
+
+        if plugin is not None:
+            tlv.add_int(TLV_TYPE_TAB_ID, plugin)
+
+        tlv.add_int(TLV_TYPE_TAG, tag)
+        tlv.add_from_dict(args)
+
+        try:
+            self.channel.send(tlv)
+
+        except Exception as e:
+            self.terminated = True
+            self.reason = str(e)
+
+            raise RuntimeWarning(f"Connection terminated ({self.reason}).")
+
+        query = {
+            TLV_TYPE_TAG: tag
+        }
+
+        if PIPE_TYPE_ID in args and PIPE_TYPE_TYPE in args:
+            query.update({
+                PIPE_TYPE_TYPE: args[PIPE_TYPE_TYPE],
+                PIPE_TYPE_ID: args[PIPE_TYPE_ID],
+            })
+
+        if plugin is not None:
+            query.update({
+                TLV_TYPE_TAB_ID: plugin
+            })
+
+        response = TLVPacket()
+
+        self.channel.create_event(
+            target=response,
+            query=query,
+            noapi=False,
+            ttl=1,
+        )
+
+        while not response:
+            pass
+
+        return response
+
+
+class PwnySession(PwnySessionTemplate):
+    """ Subclass of pwny module.
+
+    This subclass of pwny module represents an implementation
+    of the Pwny TCP session for HatSploit Framework.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def open(self, client: Union[socket.socket, list]) -> None:
+        """ Open the Pwny session.
+
+        :param Union[socket.socket, list] client: client to open session with or
+        double client (read/write)
+        :return None: None
+        :raises RuntimeError: with trailing error message
+        """
+
+        if isinstance(client, socket.socket):
+            self.channel = TLV(TLVClient(client))
+
+        else:
+            self.print_process("Using dual TCP negotiation...")
+            self.channel = TLV(
+                (
+                    TLVClient(client[0]),
+                    TLVClient(client[1])
+                )
+            )
+
+        self.resume()
+
+        tlv = self.send_command(BUILTIN_UUID)
+        self.uuid = tlv.get_string(TLV_TYPE_UUID)
+
+        if not self.uuid:
+            raise RuntimeError("No UUID received or UUID broken!")
+
+        self.loot.create_loot()
+
+        if not self.info['Platform'] and not self.info['Arch']:
+            self.identify()
+
+        self.console = Console(self)
+        self.console.start_pwny()
+
+    def close(self) -> None:
+        """ Close the Pwny session.
+
+        :return None: None
+        """
+
+        self.interrupt()
+        self.channel.close()
+
+        self.reason = TERM_CLOSED
+        self.terminated = True
+
+    def interrupt(self) -> None:
+        """ Interrupt all session events.
+
+        :return None: None
+        """
+
         self.channel.queue_interrupt()
 
     def resume(self) -> None:
@@ -424,16 +533,68 @@ class PwnySession(Session, FS, OpenSSL):
 
         self.channel.queue_resume()
 
-    def interact(self) -> None:
-        """ Interact with the Pwny session.
+    def send_command(self, tag: int, args: dict = {}, plugin: Optional[int] = None) -> TLVPacket:
+        """ Send command to the Pwny session.
 
-        :return None: None
-        :raises RuntimeError: with trailing error message
+        :param int tag: tag
+        :param dict args: command arguments with their types
+        :param Optional[int] plugin: plugin ID if tag is presented within the plugin
+        :return TLVPacket: packets
         """
 
-        if not self.console:
-            raise RuntimeError("Not yet ready for interaction!")
+        tlv = TLVPacket()
 
-        self.resume()
-        self.console.pwny_console()
-        self.interrupt()
+        if plugin is not None:
+            tlv.add_int(TLV_TYPE_TAB_ID, plugin)
+
+        tlv.add_int(TLV_TYPE_TAG, tag)
+        tlv.add_from_dict(args)
+
+        try:
+            self.channel.send(tlv)
+
+        except Exception as e:
+            self.terminated = True
+            self.reason = str(e)
+
+            raise RuntimeWarning(f"Connection terminated ({self.reason}).")
+
+        query = {
+            TLV_TYPE_TAG: tag
+        }
+
+        if PIPE_TYPE_ID in args and PIPE_TYPE_TYPE in args:
+            query.update({
+                PIPE_TYPE_TYPE: args[PIPE_TYPE_TYPE],
+                PIPE_TYPE_ID: args[PIPE_TYPE_ID],
+            })
+
+        if plugin is not None:
+            query.update({
+                TLV_TYPE_TAB_ID: plugin
+            })
+
+        if self.channel.running:
+            response = TLVPacket()
+
+            self.channel.create_event(
+                target=response,
+                query=query,
+                noapi=False,
+                ttl=1,
+            )
+
+            while not response:
+                pass
+
+            return response
+
+        while True:
+            response = self.channel.read()
+
+            if self.channel.tlv_query(response, query):
+                break
+
+            self.channel.queue.append(response)
+
+        return response

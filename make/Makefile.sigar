@@ -40,11 +40,11 @@ $(BUILD)/sigar/Makefile: $(BUILD)/sigar/configure
 	    $(ENV) ./$(CONFIGURE)
 	$(QUIET) $(LOG) "[Done configuring sigar]"
 
-$(BUILD_LIB)/sigar.a: $(BUILD)/sigar/Makefile
+$(BUILD_LIB)/libsigar.a: $(BUILD)/sigar/Makefile
 	$(QUIET) $(LOG) "[Building sigar]"
 	$(CHDIR) $(BUILD)/sigar; \
 	    $(ENV) $(MAKE); \
 	    $(MAKE_INSTALL)
 	$(QUIET) $(LOG) "[Done building sigar]"
 
-sigar: $(BUILD_LIB)/sigar.a
+sigar: $(BUILD_LIB)/libsigar.a

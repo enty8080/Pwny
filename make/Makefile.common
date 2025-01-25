@@ -59,6 +59,7 @@ ifeq (,$(findstring mingw,$(TARGET)))
     endif
 endif
 
+CPPFLAGS := $(CPPFLAGS) -I$(BUILD_INCLUDE) -DCURL_STATICLIB
 CONFIG = cp $(DEPS)/config.guess $(DEPS)/config.sub .
 CONFIGURE = configure --prefix=$(BUILD) --disable-shared
 

@@ -26,9 +26,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <queue.h>
+#include <pwny/queue.h>
 #include <errno.h>
-#include <log.h>
+#include <pwny/log.h>
 
 #include <uthash/utlist.h>
 
@@ -228,6 +228,11 @@ ssize_t queue_remove_all(queue_t *queue, void **data)
 {
     void *buffer;
     size_t bytes;
+
+    if (queue->bytes <= 0)
+    {
+        return -1;
+    }
 
     buffer = malloc(queue->bytes);
 

@@ -13,12 +13,13 @@
 #endif
 
 #ifndef HAVE_INET_PTON
-int inet_pton(int af, const char * src, void * dst);
+__declspec(dllimport) int inet_pton(int af, const char * src, void * dst);
 #endif
 
+/*
 #ifndef HAVE_INET_NTOP
 const char * inet_ntop(int af, const void * restrict src, char * restrict dst,
     socklen_t size);
-#endif
+#endif*/
 
 #endif

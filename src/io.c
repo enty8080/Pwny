@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
+#include <pwny/io.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <log.h>
-#include <net_client.h>
+#include <pwny/log.h>
 #include <ev.h>
 
-#include <io.h>
-#include <link.h>
-#include <queue.h>
+#include <pwny/link.h>
+#include <pwny/queue.h>
 
 io_t *io_create(void)
 {

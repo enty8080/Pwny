@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#include <tlv.h>
-#include <c2.h>
-#include <tlv_types.h>
-#include <log.h>
-#include <api.h>
-#include <pipe.h>
+#include <pwny/tlv.h>
+#include <pwny/c2.h>
+#include <pwny/tlv_types.h>
+#include <pwny/log.h>
+#include <pwny/api.h>
+#include <pwny/pipe.h>
 
 #include <uthash/uthash.h>
 
@@ -405,9 +405,67 @@ finalize:
     return result;
 }
 
+static tlv_pkt_t *pipe_readall(c2_t *c2)
+{
+    int id;
+    int type;
+    void *buffer;
+
+    ssize_t bytes;
+    tlv_pkt_t *result;
+    pipes_t *pipes;
+    pipe_t *pipe;
+
+    tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_ID, &id);
+    tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_TYPE, &type);
+
+    HASH_FIND_INT(c2->pipes, &type, pipes);
+
+    if (pipes == NULL)
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+        goto finalize;
+    }
+
+    HASH_FIND_INT(pipes->pipes, &id, pipe);
+
+    if (pipe == NULL)
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+        goto finalize;
+    }
+
+    log_debug("* Reading from C2 pipe (id: %d)\n", pipe->id);
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+    bytes = pipes->callbacks.readall_cb(pipe, &buffer);
+
+    /* We expect callback to allocate memory for buffer so
+     * it can be then freed after successful execution
+     */
+
+    if (bytes >= 0)
+    {
+        tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER, (unsigned char *)buffer, bytes);
+    }
+    else
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+        goto finalize;
+    }
+
+    free(buffer);
+
+finalize:
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, id);
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_TYPE, type);
+
+    return result;
+}
+
 void register_pipe_api_calls(api_calls_t **api_calls)
 {
     api_call_register(api_calls, PIPE_READ, pipe_read);
+    api_call_register(api_calls, PIPE_READALL, pipe_readall);
     api_call_register(api_calls, PIPE_WRITE, pipe_write);
     api_call_register(api_calls, PIPE_SEEK, pipe_seek);
     api_call_register(api_calls, PIPE_TELL, pipe_tell);

@@ -36,9 +36,9 @@
 #include <ev.h>
 #include <eio.h>
 
-#include <log.h>
-#include <net_client.h>
-#include <io.h>
+#include <pwny/log.h>
+#include <pwny/net_client.h>
+#include <pwny/io.h>
 
 net_t *net_create(void)
 {
@@ -54,6 +54,7 @@ net_t *net_create(void)
     net->io = io_create();
     net->status = NET_STATUS_CLOSED;
     net->delay = 1.0;
+    net->dual = 0;
 
     if (net->io == NULL)
     {
@@ -62,6 +63,11 @@ net_t *net_create(void)
     }
 
     return net;
+}
+
+void net_make_dual(net_t *net)
+{
+    net->dual = 1;
 }
 
 int net_nonblock_sock(int sock)
@@ -182,7 +188,6 @@ static void net_on_connect(struct ev_loop *loop, struct ev_io *w, int events)
     net_t *net;
 
     net = w->data;
-
     ev_io_stop(net->loop, &net->event_io);
 
     len = sizeof(status);
@@ -198,7 +203,27 @@ static void net_on_connect(struct ev_loop *loop, struct ev_io *w, int events)
             net->event_link(NET_STATUS_CLOSED, net->link_data);
         }
 
+        io_stop(net->io);
         return;
+    }
+
+    if (net->dual)
+    {
+        getsockopt(net->io->pipe[1], SOL_SOCKET, SO_ERROR, &status, &len);
+
+        if (status != 0)
+        {
+            log_debug("* Not connected (%s)\n", net->uri);
+            net->status = NET_STATUS_CLOSED;
+
+            if (net->event_link)
+            {
+                net->event_link(NET_STATUS_CLOSED, net->link_data);
+            }
+
+            io_stop(net->io);
+            return;
+        }
     }
 
     log_debug("* Connected to (%s)\n", net->uri);
@@ -215,11 +240,15 @@ static void net_on_connect(struct ev_loop *loop, struct ev_io *w, int events)
 static int net_on_resolve(struct eio_req *request)
 {
     net_t *net;
+
     int sock;
+    int dual_sock;
     int status;
+
     struct sockaddr *udp;
     struct sockaddr_in hint;
     struct addrinfo *addrinfo;
+
     socklen_t udp_length;
 
     net = request->data;
@@ -235,15 +264,32 @@ static int net_on_resolve(struct eio_req *request)
     log_addrinfo("* Connecting to an endpoint", addrinfo);
 
     net->status = NET_STATUS_CONNECTING;
+
     sock = socket(addrinfo->ai_family, addrinfo->ai_socktype,
                   addrinfo->ai_protocol);
-    if (sock < 0)
+
+    if (net->dual)
+    {
+        dual_sock = socket(addrinfo->ai_family, addrinfo->ai_socktype,
+                           addrinfo->ai_protocol);
+    }
+    else
+    {
+        dual_sock = sock;
+    }
+
+    if (sock < 0 || dual_sock < 0)
     {
         net->status = NET_STATUS_CLOSED;
         return -1;
     }
 
     net_nonblock_sock(sock);
+
+    if (net->dual)
+    {
+        net_nonblock_sock(dual_sock);
+    }
 
     if (addrinfo->ai_protocol == IPPROTO_UDP)
     {
@@ -267,6 +313,12 @@ static int net_on_resolve(struct eio_req *request)
             log_debug("* Failed to bind (%s)\n", strerror(errno));
             return -1;
         }
+
+        if (net->dual && bind(dual_sock, udp, udp_length) != 0)
+        {
+            log_debug("* Failed to bind (%s)\n", strerror(errno));
+            return -1;
+        }
     }
     else
     {
@@ -277,14 +329,26 @@ static int net_on_resolve(struct eio_req *request)
                 log_debug("* Failed to bind (%s)\n", strerror(errno));
                 return -1;
             }
+
+            if (net->dual && bind(dual_sock, net->src->ai_addr, net->src->ai_addrlen) != 0)
+            {
+                log_debug("* Failed to bind (%s)\n", strerror(errno));
+                return -1;
+            }
         }
     }
 
     status = connect(sock, addrinfo->ai_addr, addrinfo->ai_addrlen);
 
+    if (net->dual)
+    {
+        status = connect(dual_sock, addrinfo->ai_addr, addrinfo->ai_addrlen);
+    }
+
     if (status == 0 || errno == EINPROGRESS || errno == EWOULDBLOCK)
     {
-        io_add_pipes(net->io, sock, sock);
+        io_add_pipes(net->io, sock, dual_sock);
+        log_debug("* Socket %d:%d\n", sock, dual_sock);
 
         ev_io_init(&net->event_io, net_on_connect, sock, EV_WRITE);
         net->event_io.data = net;
@@ -294,6 +358,8 @@ static int net_on_resolve(struct eio_req *request)
     }
 
     close(sock);
+    close(dual_sock);
+
     return -1;
 }
 
@@ -321,7 +387,7 @@ void net_start(net_t *net)
     {
         ev_timer_stop(net->loop, &net->timer);
         ev_timer_init(&net->timer, net_timer, 0, net->delay);
-        log_debug("Delay: %f\n", net->delay);
+
         net->timer.data = net;
         ev_timer_start(net->loop, &net->timer);
     }

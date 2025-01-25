@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#include <api.h>
-#include <c2.h>
-#include <tlv.h>
-#include <tlv_types.h>
-#include <tab.h>
+#include <pwny/api.h>
+#include <pwny/c2.h>
+#include <pwny/tlv.h>
+#include <pwny/tlv_types.h>
+#include <pwny/tab.h>
 
 #define TEST \
         TLV_TAG_CUSTOM(API_CALL_DYNAMIC, \

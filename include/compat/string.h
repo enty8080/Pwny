@@ -27,8 +27,8 @@
 #endif
 
 #ifndef HAVE_STRCASECMP
-int strcasecmp(const char *s1, const char *s2);
-int strncasecmp(const char *s1, const char *s2, size_t len);
+__declspec(dllimport) int strcasecmp(const char *s1, const char *s2);
+__declspec(dllimport) int strncasecmp(const char *s1, const char *s2, size_t len);
 #endif
 
 #ifndef HAVE_STRLCPY

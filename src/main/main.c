@@ -27,9 +27,9 @@
 #include <getopt.h>
 #include <signal.h>
 
-#include <core.h>
-#include <misc.h>
-#include <log.h>
+#include <pwny/core.h>
+#include <pwny/misc.h>
+#include <pwny/log.h>
 
 static void parse_argv(int argc, char *argv[], core_t *core)
 {
@@ -128,7 +128,9 @@ int main(int argc, char *argv[])
     char *uri;
     core_t *core;
 
+#ifndef __windows__
     signal(SIGPIPE, SIG_IGN);
+#endif
     core = core_create();
 
     if (core == NULL)

@@ -74,6 +74,32 @@ class ExternalCommand(Command):
             ]
         })
 
+    def fetch_tunnels(self):
+        result = self.session.send_command(
+            tag=NET_TUNNELS)
+
+        if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            self.print_error("Failed to retrieve tunnels!")
+            return
+
+        data = []
+        tunnel = result.get_tlv(TLV_TYPE_GROUP)
+
+        while tunnel:
+            asterisk = '*' if tunnel.get_int(TLV_TYPE_BOOL) else ''
+            status = 'active' if tunnel.get_int(TLV_TYPE_INT) else 'suspended'
+            keep_alive = 'on' if tunnel.get_int(NET_TYPE_KEEP_ALIVE) else 'off'
+
+            data.append(
+                (asterisk, tunnel.get_int(NET_TYPE_ID),
+                 tunnel.get_string(NET_TYPE_URI),
+                 ALGO[tunnel.get_int(NET_TYPE_ALGO)], status,
+                 f'{str(tunnel.get_int(NET_TYPE_DELAY))}s',
+                 keep_alive))
+            tunnel = result.get_tlv(TLV_TYPE_GROUP)
+
+        return data
+
     def run(self, args):
         if args.create:
             result = self.session.send_command(
@@ -89,29 +115,11 @@ class ExternalCommand(Command):
             return
 
         if args.list:
-            result = self.session.send_command(
-                tag=NET_TUNNELS)
-
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-                self.print_error("Failed to retrieve tunnels!")
-                return
-
-            data = []
             headers = ('Self', 'ID', 'URI', 'Encryption', 'Status', 'Delay', 'Keep-Alive')
-            tunnel = result.get_tlv(TLV_TYPE_GROUP)
+            data = self.fetch_tunnels()
 
-            while tunnel:
-                asterisk = '*' if tunnel.get_int(TLV_TYPE_BOOL) else ''
-                status = 'active' if tunnel.get_int(TLV_TYPE_INT) else 'suspended'
-                keep_alive = 'on' if tunnel.get_int(NET_TYPE_KEEP_ALIVE) else 'off'
-
-                data.append(
-                    (asterisk, tunnel.get_int(NET_TYPE_ID),
-                     tunnel.get_string(NET_TYPE_URI),
-                     ALGO[tunnel.get_int(NET_TYPE_ALGO)], status,
-                     f'{str(tunnel.get_int(NET_TYPE_DELAY))}s',
-                     keep_alive))
-                tunnel = result.get_tlv(TLV_TYPE_GROUP)
+            if not data:
+                return
 
             self.print_table('Tunnels', headers, *data)
             return
@@ -131,6 +139,17 @@ class ExternalCommand(Command):
             )
 
         if args.alive:
+            data = self.fetch_tunnels()
+
+            if not data:
+                return
+
+            for tunnel in data:
+                if tunnel[1] == args.tunnel and \
+                        not tunnel[2].startswith('tcp://'):
+                    self.print_error("Failed to toggle keep-alive on non-TCP tunnel!")
+                    return
+
             delay = args.delay or 10
             self.print_process(f"Toggling keep-alive {args.alive} (delay: {str(delay)}s)...")
 

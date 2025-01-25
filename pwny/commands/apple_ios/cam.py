@@ -65,7 +65,7 @@ class ExternalCommand(Command):
 
             while device:
                 self.print_information(f"{str(id): <4}: {device}")
-                id -= 1
+                id += 1
 
                 device = result.get_string(TLV_TYPE_STRING)
 

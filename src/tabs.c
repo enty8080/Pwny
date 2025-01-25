@@ -27,24 +27,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <signal.h>
 #include <ev.h>
 
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#include <tabs.h>
-#include <c2.h>
-#include <log.h>
-#include <tlv.h>
-#include <link.h>
-#include <queue.h>
-#include <group.h>
+#include <pwny/tabs.h>
+#include <pwny/c2.h>
+#include <pwny/log.h>
+#include <pwny/tlv.h>
+#include <pwny/link.h>
+#include <pwny/queue.h>
+#include <pwny/group.h>
 
 #include <uthash/uthash.h>
 
+#ifndef __windows__
 extern char **environ;
+#else
+__declspec(dllimport) extern char **environ;
+#endif
 
 void tabs_err(void *data)
 {

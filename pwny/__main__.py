@@ -89,15 +89,29 @@ class Pwny(object):
 
         return binary.replace(sign + b' ' * (length - len(sign)), options)
 
-    def to_binary(self, format: str = 'exe') -> Union[bytes, None]:
+    def stat_binary(self, format: str = 'exe') -> Union[str, None]:
         """ Convert implant to binary image.
 
-        :param str format: format (e.g. exe, bin, so, dylib)
+        :param str format: format (e.g. exe, bin, so, dylib, dll)
         :return Union[bytes, None]: binary image if exists else None
         """
 
         binary = self.target + '.' + format
         result = glob.glob(binary)
+
+        if not result:
+            return
+
+        return result[0]
+
+    def to_binary(self, format: str = 'exe') -> Union[bytes, None]:
+        """ Convert implant to format.
+
+        :param str format: format (e.g. exe, bin, so, dylib, dll)
+        :return Union[bytes, None]: binary image if exists else None
+        """
+
+        result = self.stat_binary(format=format)
 
         if not result:
             return

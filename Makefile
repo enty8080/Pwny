@@ -25,9 +25,9 @@
 include make/Makefile.common
 
 ifneq (,$(findstring iphone,$(TARGET)))
-all: setup libev libeio mbedtls sigar
+all: setup libz mbedtls curl injector libev libeio sigar
 else
-all: setup injector libev libeio mbedtls sigar libpawn
+all: setup libz mbedtls curl injector libev libeio sigar libpawn
 endif
 
 setup:
@@ -40,9 +40,11 @@ clean:
 	$(RM) $(BUILD)
 	$(QUIET) $(LOG) "[Done cleaning old build]"
 
+include make/Makefile.libz
+include make/Makefile.curl
+include make/Makefile.mbedtls
 include make/Makefile.libev
 include make/Makefile.libeio
-include make/Makefile.mbedtls
 include make/Makefile.sigar
 include make/Makefile.libpawn
 include make/Makefile.injector

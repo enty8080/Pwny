@@ -24,12 +24,12 @@
 
 #include <stdlib.h>
 
-#include <tlv.h>
-#include <log.h>
-#include <group.h>
-#include <queue.h>
-#include <crypt.h>
-#include <tlv_types.h>
+#include <pwny/tlv.h>
+#include <pwny/log.h>
+#include <pwny/group.h>
+#include <pwny/queue.h>
+#include <pwny/crypt.h>
+#include <pwny/tlv_types.h>
 
 #include <mbedtls/aes.h>
 #include <mbedtls/ctr_drbg.h>
@@ -45,7 +45,7 @@ group_t *group_create(tlv_pkt_t *tlv_pkt, crypt_t *crypt)
     ssize_t bytes;
 
     bytes = crypt_process(crypt, tlv_pkt->buffer, tlv_pkt->bytes,
-                          &buffer, CRYPT_ENCRYPT);
+                          &buffer, CRYPT_ENCRYPTS);
 
     if (bytes < 0)
     {
@@ -123,7 +123,7 @@ ssize_t group_tlv_dequeue(queue_t *queue, tlv_pkt_t **tlv_pkt, crypt_t *crypt)
 
     tlv = tlv_pkt_create();
     tlv->bytes = crypt_process(crypt, buffer, length,
-                               &tlv->buffer, CRYPT_DECRYPT);
+                               &tlv->buffer, CRYPT_DECRYPTS);
 
     if (tlv->bytes < 0)
     {

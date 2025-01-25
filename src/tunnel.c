@@ -24,8 +24,8 @@
 
 #include <uthash/uthash.h>
 
-#include <tunnel.h>
-#include <log.h>
+#include <pwny/tunnel.h>
+#include <pwny/log.h>
 
 void register_tunnel(tunnels_t **tunnels, char *proto,
                      tunnel_callbacks_t callbacks)

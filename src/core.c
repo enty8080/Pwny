@@ -27,20 +27,19 @@
 #include <eio.h>
 #include <ev.h>
 
-#include <c2.h>
-#include <core.h>
-#include <tabs.h>
-#include <pipe.h>
-#include <tunnel.h>
-#include <log.h>
-#include <net_client.h>
-#include <calls.h>
-#include <misc.h>
+#include <pwny/c2.h>
+#include <pwny/core.h>
+#include <pwny/tabs.h>
+#include <pwny/pipe.h>
+#include <pwny/tunnel.h>
+#include <pwny/log.h>
+#include <pwny/calls.h>
+#include <pwny/misc.h>
 
-#include <tlv.h>
-#include <tlv_types.h>
+#include <pwny/tlv.h>
+#include <pwny/tlv_types.h>
 
-#include <tunnels/tunnels.h>
+#include <pwny/tunnels/tunnels.h>
 
 #ifdef __linux__
 #include <sys/prctl.h>

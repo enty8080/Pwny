@@ -28,15 +28,18 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/un.h>
 #include <netinet/in.h>
 #include <netdb.h>
 
-#include <ev.h>
-#include <log.h>
+#ifndef __windows__
+#include <sys/un.h>
+#endif
 
-#include <net_server.h>
-#include <net_client.h>
+#include <ev.h>
+#include <pwny/log.h>
+
+#include <pwny/net_server.h>
+#include <pwny/net_client.h>
 
 net_server_t *net_server_create(void)
 {
@@ -117,13 +120,17 @@ int net_server_start(net_server_t *net_server, enum NET_PROTO proto,
 
     struct sockaddr_in6 *ipv6;
     struct sockaddr_in6 sockaddr6;
+
+#ifndef __windows__
     struct sockaddr_un sockaddr;
+#endif
 
     is_ipv6 = 0;
     reuseaddr = 1;
 
     if (proto == NET_PROTO_UNIX)
     {
+#ifndef __windows__
         memset(&sockaddr, 0, sizeof(sockaddr));
         sockaddr.sun_family = AF_UNIX;
         strcpy(sockaddr.sun_path, host);
@@ -135,6 +142,9 @@ int net_server_start(net_server_t *net_server, enum NET_PROTO proto,
             goto fail;
         }
         net_nonblock_sock(net_server->listener);
+#else
+        goto fail;
+#endif
     }
     else
     {
@@ -193,10 +203,14 @@ int net_server_start(net_server_t *net_server, enum NET_PROTO proto,
 
     if (proto == NET_PROTO_UNIX)
     {
+#ifndef __windows__
         if (bind(net_server->listener, (struct sockaddr *)&sockaddr, sizeof(sockaddr)) < 0)
         {
             goto fail;
         }
+#else
+        goto fail;
+#endif
     }
     else
     {

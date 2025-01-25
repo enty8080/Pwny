@@ -45,10 +45,10 @@
 #endif
 
 #include <ev.h>
-#include <misc.h>
-#include <log.h>
-#include <queue.h>
-#include <child.h>
+#include <pwny/misc.h>
+#include <pwny/log.h>
+#include <pwny/queue.h>
+#include <pwny/child.h>
 
 #include <uthash/uthash.h>
 

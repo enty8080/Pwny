@@ -34,15 +34,15 @@
 #include <sys/types.h>
 #include <sys/select.h>
 
-#include <log.h>
-#include <tlv.h>
-#include <tab.h>
-#include <api.h>
-#include <c2.h>
-#include <pipe.h>
-#include <link.h>
-#include <group.h>
-#include <tlv_types.h>
+#include <pwny/log.h>
+#include <pwny/tlv.h>
+#include <pwny/tab.h>
+#include <pwny/api.h>
+#include <pwny/c2.h>
+#include <pwny/pipe.h>
+#include <pwny/link.h>
+#include <pwny/group.h>
+#include <pwny/tlv_types.h>
 
 #include <uthash/uthash.h>
 

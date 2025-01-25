@@ -29,7 +29,44 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include <misc.h>
+#include <pwny/misc.h>
+
+#ifdef __windows__
+#include <windows.h>
+#endif
+
+#ifdef __windows__
+char *wchar_to_utf8(const wchar_t *in)
+{
+	char *out;
+	int len;
+
+	if (in == NULL)
+	{
+		return NULL;
+	}
+
+	len = WideCharToMultiByte(CP_UTF8, 0, in, -1, NULL, 0, NULL, NULL);
+	if (len <= 0)
+	{
+		return NULL;
+	}
+
+	out = calloc(len, sizeof(char));
+	if (out == NULL)
+	{
+		return NULL;
+	}
+
+	if (WideCharToMultiByte(CP_UTF8, 0, in, -1, out, len, NULL, FALSE) == 0)
+	{
+		free(out);
+		out = NULL;
+	}
+
+	return out;
+}
+#endif
 
 static uint64_t xor_shift_128_plus(uint64_t *seed)
 {
@@ -138,7 +175,7 @@ int misc_uuid(char *buffer)
     int iter;
     int part;
 
-#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__macintosh__)
     FILE *fp;
 
     fp = fopen("/dev/urandom", "rb");
@@ -156,7 +193,7 @@ int misc_uuid(char *buffer)
         return -1;
     }
 
-#elif defined(_WIN32)
+#elif defined(__windows__)
     HCRYPTPROV hCryptProv;
 
     bytes_read = CryptAcquireContext(
@@ -182,7 +219,7 @@ int misc_uuid(char *buffer)
     seed.word[0] = xor_shift_128_plus(new_seed);
     seed.word[1] = xor_shift_128_plus(new_seed);
 
-    uuid = UUID;
+    uuid = UUID4_TEMPLATE;
     iter = 0;
 
     while (*uuid)

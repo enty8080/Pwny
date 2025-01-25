@@ -32,16 +32,15 @@
 #include <ev.h>
 
 #include <sys/types.h>
-#include <sys/wait.h>
 
-#include <api.h>
-#include <tab.h>
-#include <log.h>
-#include <link.h>
-#include <queue.h>
-#include <tunnel.h>
+#include <pwny/api.h>
+#include <pwny/tab.h>
+#include <pwny/log.h>
+#include <pwny/link.h>
+#include <pwny/queue.h>
+#include <pwny/tunnel.h>
 
-#include <tunnels/tunnels.h>
+#include <pwny/tunnels/tunnels.h>
 
 static void tab_signal_handler(struct ev_loop *loop, ev_signal *w, int revents)
 {
@@ -140,12 +139,14 @@ tab_t *tab_create(void)
     tab->api_calls = NULL;
     tab->tunnels = NULL;
 
+#ifndef __windows__
     flags = fcntl(STDIN_FILENO, F_GETFL, 0);
     fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
     flags = fcntl(STDOUT_FILENO, F_GETFL, 0);
     fcntl(STDOUT_FILENO, F_SETFL, flags | O_NONBLOCK);
     flags = fcntl(STDERR_FILENO, F_GETFL, 0);
     fcntl(STDERR_FILENO, F_SETFL, flags | O_NONBLOCK);
+#endif
 
     return tab;
 }

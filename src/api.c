@@ -27,14 +27,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <api.h>
-#include <tabs.h>
-#include <c2.h>
-#include <tlv.h>
-#include <log.h>
-#include <core.h>
+#include <pwny/api.h>
+#include <pwny/tabs.h>
+#include <pwny/c2.h>
+#include <pwny/tlv.h>
+#include <pwny/log.h>
+#include <pwny/core.h>
 
-#include <tlv_types.h>
+#include <pwny/tlv_types.h>
 #include <uthash/uthash.h>
 
 api_signal_t api_process_c2(c2_t *c2, api_calls_t *api_calls, tabs_t *tabs)
