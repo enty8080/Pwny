@@ -11,6 +11,7 @@ from pwny.session import PwnyHTTPSession
 def main():
     print('Waiting for connection ...')
     l = HTTPListener(sys.argv[1], sys.argv[2])
+    l.listen()
 
     p = PwnyHTTPSession()
     p.info['Platform'] = sys.argv[3]
