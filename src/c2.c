@@ -60,6 +60,7 @@ c2_t *c2_create(int id)
     c2->id = id;
     c2->pipes = NULL;
     c2->crypt = crypt_create();
+    c2->active = 0;
 
     return c2;
 }
@@ -166,15 +167,25 @@ void c2_start(c2_t *c2)
     }
 
     tunnel_start(c2->tunnel);
+    c2->active = 1;
 }
 
 void c2_stop(c2_t *c2)
 {
+    if (!c2->active)
+    {
+        log_debug("* C2 server is already stopped (%d)\n", c2->id);
+        return;
+    }
+
     log_debug("* Stopping C2 server (%d)\n",
               c2->id);
 
+    tunnel_stop(c2->tunnel);
     tunnel_exit(c2->tunnel);
+
     crypt_set_secure(c2->crypt, STAT_NOT_SECURE);
+    c2->active = 0;
 }
 
 int c2_active_tunnels(c2_t *c2_table)

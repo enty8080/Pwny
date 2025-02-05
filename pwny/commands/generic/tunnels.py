@@ -70,7 +70,7 @@ class ExternalCommand(Command):
                         'help': "Delay for tunnel keep alive.",
                         'type': int
                     }
-                )
+                ),
             ]
         })
 

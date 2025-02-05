@@ -1,4 +1,5 @@
 import sys
+import threading
 
 from pex.proto.http import HTTPListener
 
@@ -13,11 +14,17 @@ def main():
     l = HTTPListener(sys.argv[1], sys.argv[2])
     l.listen()
 
+    thread = threading.Thread(target=l.loop)
+    thread.start()
+
     p = PwnyHTTPSession()
     p.info['Platform'] = sys.argv[3]
     p.info['Arch'] = sys.argv[4]
     p.open(l)
     p.interact()
+
+    l.stop()
+    thread.join()
 
 
 if __name__ == '__main__':

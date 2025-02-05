@@ -36,6 +36,8 @@
 #include <pwny/tunnel.h>
 #include <pwny/http_client.h>
 
+#define MUL_NO_OVERFLOW	((size_t)1 << (sizeof(size_t) * 4))
+
 typedef struct
 {
     char *uri;
@@ -48,9 +50,21 @@ typedef struct
     int running;
 } http_t;
 
+void *reallocarray(void *optr, size_t nmemb, size_t size)
+{
+	if ((nmemb >= MUL_NO_OVERFLOW || size >= MUL_NO_OVERFLOW) &&
+	    nmemb > 0 && SIZE_MAX / nmemb < size)
+	{
+		errno = ENOMEM;
+		return NULL;
+	}
+
+	return realloc(optr, size * nmemb);
+}
+
 static int http_add_header(http_t *http, const char *header)
 {
-    /*http->headers = reallocarray(http->headers, http->data.num_headers + 1,
+    http->headers = reallocarray(http->headers, http->data.num_headers + 1,
                                  sizeof(char *));
     if (!http->headers)
     {
@@ -62,28 +76,6 @@ static int http_add_header(http_t *http, const char *header)
     {
         return -1;
     }
-
-    return 0;*/
-    // Calculate the new number of headers
-    size_t new_size = (http->data.num_headers + 1) * sizeof(char *);
-
-    // Reallocate memory for headers
-    char **new_headers = realloc(http->headers, new_size);
-    if (!new_headers)
-    {
-        return -1; // Memory allocation failed
-    }
-    http->headers = new_headers;
-
-    // Duplicate the header string and add it to the array
-    http->headers[http->data.num_headers] = strdup(header);
-    if (http->headers[http->data.num_headers] == NULL)
-    {
-        return -1; // Memory allocation for the header string failed
-    }
-
-    // Increment the number of headers
-    http->data.num_headers++;
 
     return 0;
 }
@@ -193,25 +185,13 @@ static void http_tunnel_timer(struct ev_loop *loop, struct ev_timer *w, int reve
     tunnel = w->data;
     http = tunnel->data;
 
+    log_debug("* Requesting %s\n", http->uri);
+
     http_request(http->uri, HTTP_GET, http_tunnel_read, tunnel,
                  &http->data, &http->options);
 }
 
 int http_tunnel_start(tunnel_t *tunnel)
-{
-    http_t *http;
-
-    http = tunnel->data;
-    http->running = 1;
-    http->timer.repeat = 0.1;
-
-    ev_timer_again(tunnel->loop, &http->timer);
-
-    http->timer.repeat = 0;
-    return 0;
-}
-
-int http_tunnel_init(tunnel_t *tunnel)
 {
     http_t *http;
 
@@ -222,12 +202,8 @@ int http_tunnel_init(tunnel_t *tunnel)
     size_t argc;
     size_t iter;
 
-    http = calloc(1, sizeof(*http));
-
-    if (http == NULL)
-    {
-        return -1;
-    }
+    http = tunnel->data;
+    log_debug("* Starting HTTP tunnel context\n");
 
     http->uri = strdup(tunnel->uri);
     if (http->uri == NULL)
@@ -295,28 +271,82 @@ int http_tunnel_init(tunnel_t *tunnel)
 
     http->data.headers = http->headers;
 
-    tunnel->data = http;
-    tunnel->active = 1;
-
-    tunnel->ingress = queue_create();
-    tunnel->egress = queue_create();
-
     ev_init(&http->timer, http_tunnel_timer);
     http->timer.data = tunnel;
+
+    http->running = 1;
+    http->timer.repeat = 0.1;
+
+    ev_timer_again(tunnel->loop, &http->timer);
+
+    http->timer.repeat = 0;
+    tunnel->active = 1;
 
     return 0;
 
 fail:
-    free(http);
+    free(http->uri);
     return -1;
+}
+
+void http_tunnel_stop(tunnel_t *tunnel)
+{
+    http_t *http;
+    int iter;
+
+    http = tunnel->data;
+
+    log_debug("* Stopping HTTP tunnel context\n");
+    ev_timer_stop(tunnel->loop, &http->timer);
+
+    for (iter = 0; iter < http->data.num_headers; iter++)
+    {
+        free(http->headers[iter]);
+    }
+    free(http->uri);
+
+    if (http->data.user_agent)
+    {
+        free(http->data.user_agent);
+    }
+
+    if (http->data.referer)
+    {
+        free(http->data.referer);
+    }
+
+    if (http->data.cookies)
+    {
+        free(http->data.cookies);
+    }
+}
+
+int http_tunnel_init(tunnel_t *tunnel)
+{
+    http_t *http;
+
+    http = calloc(1, sizeof(*http));
+    log_debug("* Init HTTP tunnel context\n");
+
+    if (http == NULL)
+    {
+        return -1;
+    }
+
+    tunnel->data = http;
+
+    tunnel->ingress = queue_create();
+    tunnel->egress = queue_create();
+
+    return 0;
 }
 
 void http_tunnel_exit(tunnel_t *tunnel)
 {
-    int iter;
     http_t *http;
 
     http = tunnel->data;
+    log_debug("* Exiting HTTP tunnel context\n");
 
     if (!tunnel->active)
     {
@@ -329,16 +359,10 @@ void http_tunnel_exit(tunnel_t *tunnel)
     queue_free(tunnel->ingress);
     queue_free(tunnel->egress);
 
-    for (iter = 0; iter < http->data.num_headers; iter++)
+    if (http->headers)
     {
-        free(http->headers[iter]);
+        free(http->headers);
     }
-
-    free(http->uri);
-    free(http->headers);
-    free(http->data.user_agent);
-    free(http->data.referer);
-    free(http->data.cookies);
 
     free(http);
 }
@@ -350,6 +374,7 @@ void register_http_tunnels(tunnels_t **tunnels)
     http_callbacks.init_cb = http_tunnel_init;
     http_callbacks.start_cb = http_tunnel_start;
     http_callbacks.write_cb = http_tunnel_write;
+    http_callbacks.stop_cb = http_tunnel_stop;
     http_callbacks.exit_cb = http_tunnel_exit;
 
     register_tunnel(tunnels, "http", http_callbacks);

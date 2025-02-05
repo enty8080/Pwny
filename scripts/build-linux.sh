@@ -50,6 +50,7 @@ function build_target ()
 
     cp build/main pwny/templates/$1.exe
     elf2bin build/main pwny/templates/$1.bin &>/dev/null
+    rm -rf build
 
     echo "[Done deploying Pwny ($1)]"
 }

@@ -52,6 +52,7 @@
 struct c2_table
 {
     int id;
+    int active;
 
     struct ev_loop *loop;
     tunnel_t *tunnel;

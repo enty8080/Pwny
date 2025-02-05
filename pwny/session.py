@@ -44,6 +44,7 @@ from pwny.console import Console
 
 from pex.fs import FS
 from pex.ssl import OpenSSL
+from pex.string import String
 
 from pex.proto.tlv import (
     TLVClient,
@@ -378,6 +379,8 @@ class PwnyHTTPSession(PwnySessionTemplate):
         self.channel = HTTPTLV(TLVServerHTTP(server))
         self.channel.queue_start()
 
+        self.redirect()
+
         tlv = self.send_command(BUILTIN_UUID)
         self.uuid = tlv.get_string(TLV_TYPE_UUID)
 
@@ -391,6 +394,46 @@ class PwnyHTTPSession(PwnySessionTemplate):
 
         self.console = Console(self)
         self.console.start_pwny()
+
+    def redirect(self) -> Union[str, None]:
+        """ Generate new URL path and redirect client to it.
+
+        :return str: new URL path
+        """
+
+        urlpath = String().random_string(16)
+
+        result = self.send_command(
+            tag=NET_GET_TUNNEL
+        )
+
+        if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            self.print_error("Unable to obtain current tunnel ID!")
+            return
+
+        tunnel = result.get_int(NET_TYPE_ID)
+        uri = result.get_string(NET_TYPE_URI).split('|')  # In case if flags are set
+        new_uri = uri[0] + urlpath
+
+        if len(uri) == 2:
+            new_uri += '|' + uri[1]
+
+        result = self.send_command(
+            tag=NET_RESTART_TUNNEL,
+            args={
+                NET_TYPE_ID: tunnel,
+                NET_TYPE_URI: new_uri
+            }
+        )
+
+        self.print_success(f"Redirected client to /{urlpath}!")
+
+        if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            self.print_error("Failed to perform redirect, perhaps incompatible session!")
+            return
+
+        self.channel.redirect(urlpath)
+        return urlpath
 
     def close(self) -> None:
         """ Close the Pwny session.

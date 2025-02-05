@@ -55,10 +55,6 @@ static void tcp_tunnel_write(tunnel_t *tunnel, queue_t *egress)
 
     while ((size = queue_remove_all(egress, &buffer)) > 0)
     {
-        if (size == -1)
-        {
-            log_debug("* Sas!\n");
-        }
         log_debug("* Writing bytes to TCP (%d) - (%d)\n", net->io->pipe[1], size);
 
         do
@@ -179,6 +175,14 @@ int tcp_tunnel_init(tunnel_t *tunnel)
     return 0;
 }
 
+void tcp_tunnel_stop(tunnel_t *tunnel)
+{
+    net_t *net;
+
+    net = tunnel->data;
+    net_stop_timer(net);
+}
+
 void tcp_tunnel_exit(tunnel_t *tunnel)
 {
     net_t *net;
@@ -191,7 +195,6 @@ void tcp_tunnel_exit(tunnel_t *tunnel)
     net = tunnel->data;
 
     net_stop(net);
-    net_stop_timer(net);
     net_free(net);
 
     tunnel->active = 0;
@@ -252,11 +255,13 @@ void register_tcp_tunnels(tunnels_t **tunnels)
     tcp_callbacks.init_cb = tcp_tunnel_init;
     tcp_callbacks.start_cb = tcp_tunnel_start;
     tcp_callbacks.write_cb = tcp_tunnel_write;
+    tcp_callbacks.stop_cb = tcp_tunnel_stop;
     tcp_callbacks.exit_cb = tcp_tunnel_exit;
 
     dtcp_callbacks.init_cb = tcp_tunnel_init;
     dtcp_callbacks.start_cb = dtcp_tunnel_start;
     dtcp_callbacks.write_cb = tcp_tunnel_write;
+    dtcp_callbacks.stop_cb = tcp_tunnel_stop;
     dtcp_callbacks.exit_cb = tcp_tunnel_exit;
 
     sock_callbacks.init_cb = sock_tunnel_init;

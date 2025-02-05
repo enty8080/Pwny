@@ -39,6 +39,7 @@ struct tunnel_callbacks
 {
     int (*init_cb)(tunnel_t *tunnel);
     int (*start_cb)(tunnel_t *tunnel);
+    void (*stop_cb)(tunnel_t *tunnel);
     void (*write_cb)(tunnel_t *tunnel, queue_t *egress);
     void (*exit_cb)(tunnel_t *tunnel);
 };
@@ -46,13 +47,17 @@ struct tunnel_callbacks
 struct tunnel
 {
     char *uri;
+    char *next_uri;
 
     void *data;
     void *link_data;
     struct ev_loop *loop;
 
     float delay;
+    float next_delay;
     int keep_alive;
+    int next_keep_alive;
+
     int active;
 
     queue_t *ingress;
@@ -89,6 +94,7 @@ void tunnel_set_uri(tunnel_t *tunnel, char *uri);
 void tunnel_setup(tunnel_t *tunnel, struct ev_loop *loop);
 int tunnel_init(tunnel_t *tunnel);
 int tunnel_start(tunnel_t *tunnel);
+void tunnel_stop(tunnel_t *tunnel);
 void tunnel_exit(tunnel_t *tunnel);
 void tunnel_write(tunnel_t *tunnel, queue_t *egress);
 

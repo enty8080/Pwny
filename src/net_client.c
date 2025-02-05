@@ -385,9 +385,9 @@ void net_start(net_t *net)
 {
     if (net->proto == NET_PROTO_UDP || net->proto == NET_PROTO_TCP)
     {
-        ev_timer_stop(net->loop, &net->timer);
-        ev_timer_init(&net->timer, net_timer, 0, net->delay);
+        net_stop_timer(net);
 
+        ev_timer_init(&net->timer, net_timer, 0, net->delay);
         net->timer.data = net;
         ev_timer_start(net->loop, &net->timer);
     }

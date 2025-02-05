@@ -26,6 +26,7 @@ uint32_t arc4random_uniform(uint32_t upper_bound);
 #endif
 
 #ifndef HAVE_REALLOCARRAY
+#error "sas"
 void *reallocarray(void *, size_t, size_t);
 #endif
 

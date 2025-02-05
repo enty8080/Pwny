@@ -148,6 +148,14 @@ void tunnel_exit(tunnel_t *tunnel)
     }
 }
 
+void tunnel_stop(tunnel_t *tunnel)
+{
+    if (tunnel->callbacks.stop_cb)
+    {
+        return tunnel->callbacks.stop_cb(tunnel);
+    }
+}
+
 void tunnel_free(tunnel_t *tunnel)
 {
     free(tunnel->uri);

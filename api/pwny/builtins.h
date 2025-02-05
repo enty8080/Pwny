@@ -108,11 +108,27 @@
 
 static tlv_pkt_t *builtin_quit(c2_t *c2)
 {
+    /* Quit client and terminate current connection
+     * if c2->tunnel->keep_alive is not set.
+     *
+     * :in NULL: NULL
+     * :out u32(TLV_TYPE_STATUS): API_CALL_QUIT
+     *
+     */
+
     return api_craft_tlv_pkt(API_CALL_QUIT, c2->request);
 }
 
 static tlv_pkt_t *builtin_add_tab_disk(c2_t *c2)
 {
+    /* Load TAB (The Additional Bundle) from disk location.
+     *
+     * :in string(TLV_TYPE_FILENAME): location of a TAB on disk
+     * :out u32(TLV_TYPE_TAB_ID): loaded TAB ID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     char filename[128];
     tlv_pkt_t *result;
@@ -136,6 +152,14 @@ static tlv_pkt_t *builtin_add_tab_disk(c2_t *c2)
 
 static tlv_pkt_t *builtin_add_tab_buffer(c2_t *c2)
 {
+    /* Load TAB (The Additional Bundle) from memory location.
+     *
+     * :in bytes(TLV_TYPE_TAB): buffer containing TAB executable
+     * :out u32(TLV_TYPE_TAB_ID): loaded TAB ID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     int tab_size;
     unsigned char *tab;
@@ -165,6 +189,13 @@ static tlv_pkt_t *builtin_add_tab_buffer(c2_t *c2)
 
 static tlv_pkt_t *builtin_delete_tab(c2_t *c2)
 {
+    /* Delete loaded TAB (The Additional Bundle).
+     *
+     * :in u32(TLV_TYPE_TAB_ID): loaded TAB ID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     int tab_id;
 
@@ -181,6 +212,14 @@ static tlv_pkt_t *builtin_delete_tab(c2_t *c2)
 
 static tlv_pkt_t *builtin_time(c2_t *c2)
 {
+    /* Retrieve system local time.
+     *
+     * :out string(TLV_TYPE_STRING): local time in
+     *                               %Y-%m-%d %H:%M:%S %Z (UTC%z) format
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     tlv_pkt_t *result;
     char date_time[128];
 
@@ -221,6 +260,22 @@ static tlv_pkt_t *builtin_time(c2_t *c2)
 
 static tlv_pkt_t *builtin_sysinfo(c2_t *c2)
 {
+    /* Retrieve system information.
+     *
+     * :out string(TLV_TYPE_PLATFORM): system platform
+     * :out string(TLV_TYPE_VERSION): system version
+     * :out string(TLV_TYPE_ARCH): CPU architecture
+     * :out string(TLV_TYPE_MACHINE): machine type
+     * :out string(TLV_TYPE_VENDOR): system vendor
+     *
+     * :out u64(TLV_TYPE_RAM_TOTAL): total RAM space
+     * :out u64(TLV_TYPE_RAM_USED): used RAM
+     *
+     * :out u32(TLV_TYPE_FLAGS): client flags
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     int status;
     tlv_pkt_t *result;
     sigar_sys_info_t sysinfo;
@@ -287,6 +342,13 @@ DWORD get_user_token(LPVOID pTokenUser, DWORD dwBufferSize)
 
 static tlv_pkt_t *builtin_whoami(c2_t *c2)
 {
+    /* Retrieve current username.
+     *
+     * :out string(TLV_TYPE_STRING): current username
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     tlv_pkt_t *result;
 
 #ifndef __windows__
@@ -345,6 +407,13 @@ static tlv_pkt_t *builtin_whoami(c2_t *c2)
 
 static tlv_pkt_t *builtin_uuid(c2_t *c2)
 {
+    /* Retrieve current client UUID.
+     *
+     * :out string(TLV_TYPE_UUID): current client UUID
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     core_t *core;
     tlv_pkt_t *result;
 
@@ -391,9 +460,21 @@ static void builtin_disable_security(struct eio_req *request)
 
 static tlv_pkt_t *builtin_unsecure(c2_t *c2)
 {
+    /* Disable client secure communication.
+     *
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS
+     *
+     */
+
     c2->response = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 
     log_debug("* Disabling security\n");
+
+    /* Using asyncronous call so that client could send back
+     * reply with old configuration before applying new one.
+     *
+     */
+
     eio_custom(builtin_disable_security, 0, NULL, c2);
 
     return NULL;
@@ -401,6 +482,14 @@ static tlv_pkt_t *builtin_unsecure(c2_t *c2)
 
 static tlv_pkt_t *builtin_secure(c2_t *c2)
 {
+    /* Enable client secure communication.
+     *
+     * :in string(TLV_TYPE_PUBLIC_KEY): RSA public key for encryption
+     * :in u32(TLV_TYPE_INT): encryption algorithm
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     *
+     */
+
     size_t length;
 
     int algo;
@@ -445,6 +534,11 @@ static tlv_pkt_t *builtin_secure(c2_t *c2)
 
     log_debug("Symmetric key encrypted with PKCS: \n");
     log_hexdump(buffer, length);
+
+    /* Using asyncronous call so that client could send back
+     * reply with old configuration before applying new one.
+     *
+     */
 
     eio_custom(builtin_enable_security, 0, NULL, c2);
     return NULL;

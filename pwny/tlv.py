@@ -540,7 +540,6 @@ class HTTPTLV(QueueProcessor):
         super().__init__()
 
         self.server = server
-        self.job = None
 
         self.running = True
         self.error = None
@@ -549,6 +548,15 @@ class HTTPTLV(QueueProcessor):
 
         self.cipher = CipherProcessor()
 
+    def redirect(self, urlpath: str) -> None:
+        """ Set new URI and redirect client to it.
+
+        :param str urlpath: new URL path
+        :return None: None
+        """
+
+        self.server.set_urlpath(urlpath)
+
     def queue_stop(self) -> None:
         """ Stop queue thread.
 
@@ -556,7 +564,6 @@ class HTTPTLV(QueueProcessor):
         """
 
         self.server.close()
-        self.job.shutdown()
 
     def queue_start(self) -> None:
         """ Start queue thread.
@@ -565,8 +572,6 @@ class HTTPTLV(QueueProcessor):
         """
 
         self.server.callback = self.queue_callback
-        self.job = Job(target=self.server.loop)
-        self.job.start()
 
     def queue_callback(self, packet: TLVPacket) -> None:
         """ Queue callback that is triggered when server
