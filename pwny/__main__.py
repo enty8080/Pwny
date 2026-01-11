@@ -116,5 +116,5 @@ class Pwny(object):
         if not result:
             return
 
-        with open(result[0], 'rb') as f:
+        with open(result, 'rb') as f:
             return self.add_options(f.read())
