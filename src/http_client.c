@@ -324,6 +324,7 @@ int http_request(const char *uri, enum HTTP_REQUEST request, http_callback_t cal
 			if (status > 0)
 			{
 				client->request_headers = curl_slist_append(client->request_headers, content_type);
+                free(content_type);
 			}
 
 			if (request_data->flags & HTTP_DATA_COMPRESS)

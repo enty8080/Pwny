@@ -304,40 +304,65 @@ static pid_t child_fork(child_t *child, char *filename, unsigned char *image,
 
 child_t *child_create(char *filename, unsigned char *image, child_options_t *options)
 {
-    child_t *child;
+    child_t *child = NULL;
     child_pipes_t pipes;
 
     size_t argc;
-    char *args;
+    char *args = NULL;  /* track asprintf buffer so we can free it */
 
     argc = 0;
     options->argv = NULL;
 
+    /* Build argv if args are provided */
     if (options->args)
     {
+        int rc;
+
         if (filename != NULL)
         {
-            asprintf(&args, "%s %s", filename, options->args);
+            rc = asprintf(&args, "%s %s", filename, options->args);
         }
         else
         {
-            asprintf(&args, "pwny %s", options->args);
+            rc = asprintf(&args, "pwny %s", options->args);
+        }
+
+        if (rc == -1 || args == NULL)
+        {
+            log_debug("* Failed to build argv string\n");
+            goto fail;
         }
 
         options->argv = misc_argv_split(args, options->argv, &argc);
+        if (!options->argv)
+        {
+            log_debug("* misc_argv_split() failed\n");
+            goto fail;
+        }
     }
 
     if (options->argv == NULL)
     {
         options->argv = realloc(options->argv, sizeof(char *) * 2);
+        if (!options->argv)
+        {
+            log_debug("* Failed to allocate argv\n");
+            goto fail;
+        }
+
         options->argv[0] = filename != NULL ? filename : "pwny";
         options->argv[1] = NULL;
     }
 
-    for (int i = 0; i < argc; i++)
+    for (int i = 0; i < (int)argc; i++)
     {
         log_debug("* %d: %s\n", i, options->argv[i]);
     }
+
+    /* Initialise pipe fds to an invalid value so we can safely close on fail */
+    pipes.err_pair[0] = pipes.err_pair[1] = -1;
+    pipes.in_pair[0]  = pipes.in_pair[1]  = -1;
+    pipes.out_pair[0] = pipes.out_pair[1] = -1;
 
     if (pipe(pipes.err_pair) == -1)
     {
@@ -358,9 +383,9 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     }
 
     child = calloc(1, sizeof(*child));
-
     if (child == NULL)
     {
+        log_debug("* Failed to allocate child structure\n");
         goto fail;
     }
 
@@ -373,12 +398,23 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
         child->pid = child_fork(child, filename, image, options, &pipes);
     }
 
-    free(options->argv);
-
     if (child->pid == -1)
     {
-        free(child);
-        return NULL;
+        log_debug("* Failed to spawn/fork child\n");
+        goto fail;
+    }
+
+    /* Parent no longer needs argv/args; child has its own copy (fork/exec or posix_spawn) */
+    if (options->argv)
+    {
+        free(options->argv);
+        options->argv = NULL;
+    }
+
+    if (args)
+    {
+        free(args);
+        args = NULL;
     }
 
     child->child.data = child;
@@ -391,7 +427,6 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     child->in = pipes.in_pair[1];
 
     fcntl(pipes.out_pair[0], F_SETFL, O_NONBLOCK);
-
     child->out = pipes.out_pair[0];
     child->out_queue.io.data = child;
     child->out_queue.queue = queue_create();
@@ -400,7 +435,6 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     ev_io_start(child->loop, &child->out_queue.io);
 
     fcntl(pipes.err_pair[0], F_SETFL, O_NONBLOCK);
-
     child->err = pipes.err_pair[0];
     child->err_queue.io.data = child;
     child->err_queue.queue = queue_create();
@@ -408,6 +442,7 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     ev_io_init(&child->err_queue.io, child_err, child->err, EV_READ);
     ev_io_start(child->loop, &child->err_queue.io);
 
+    /* Close parent-side pipe ends we no longer need */
     close(pipes.in_pair[0]);
     close(pipes.out_pair[1]);
     close(pipes.err_pair[1]);
@@ -417,7 +452,31 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     return child;
 
 fail:
-    free(options->argv);
+    /* Close any pipes that were successfully created */
+    if (pipes.err_pair[0] != -1) close(pipes.err_pair[0]);
+    if (pipes.err_pair[1] != -1) close(pipes.err_pair[1]);
+    if (pipes.in_pair[0]  != -1) close(pipes.in_pair[0]);
+    if (pipes.in_pair[1]  != -1) close(pipes.in_pair[1]);
+    if (pipes.out_pair[0] != -1) close(pipes.out_pair[0]);
+    if (pipes.out_pair[1] != -1) close(pipes.out_pair[1]);
+
+    if (options->argv)
+    {
+        free(options->argv);
+        options->argv = NULL;
+    }
+
+    if (args)
+    {
+        free(args);
+        args = NULL;
+    }
+
+    if (child)
+    {
+        free(child);
+    }
+
     return NULL;
 }
 

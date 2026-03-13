@@ -27,6 +27,10 @@
 #include <eio.h>
 #include <ev.h>
 
+#ifdef __windows__
+#include <winsock2.h>
+#endif
+
 #include <pwny/c2.h>
 #include <pwny/core.h>
 #include <pwny/tabs.h>
@@ -170,6 +174,16 @@ core_t *core_create(void)
         return NULL;
     }
 
+#ifdef __windows__
+    WSADATA wsa_data;
+
+    if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0)
+    {
+        free(core);
+        return NULL;
+    }
+#endif
+
     core->loop = ev_default_loop(CORE_EV_FLAGS);
     core->t_count = 0;
     core->c_count = 0;
@@ -284,6 +298,10 @@ void core_destroy(core_t *core)
     {
         free(core->path);
     }
+
+#ifdef __windows__
+    WSACleanup();
+#endif
 
     free(core);
 }

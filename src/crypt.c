@@ -83,11 +83,11 @@ crypt_t *crypt_create(void)
     if (status != 0)
     {
         log_debug("* Failed to seed PRNG (%d)\n", status);
-        free(crypt);
 
         mbedtls_entropy_free(&crypt->entropy);
         mbedtls_ctr_drbg_free(&crypt->ctr_drbg);
 
+        free(crypt);
         return NULL;
     }
 
@@ -206,14 +206,16 @@ void crypt_set_key(crypt_t *crypt, unsigned char *key, unsigned char *iv)
     memcpy(crypt->key, key, key_size);
 }
 
-size_t crypt_pkcs_decrypt(crypt_t *crypt, unsigned char *data, size_t length, unsigned char *pkey,
-                          size_t pkey_length, unsigned char *result)
+size_t crypt_pkcs_decrypt(crypt_t *crypt,
+                          unsigned char *data, size_t length,
+                          unsigned char *pkey, size_t pkey_length,
+                          unsigned char *result)
 {
     int status;
     mbedtls_pk_context pk;
 
-    size_t result_size;
-    result_size = 0;
+    size_t result_size = 0;
+    size_t max_output_len;
 
     mbedtls_pk_init(&pk);
     status = mbedtls_pk_parse_key(&pk, pkey, pkey_length, NULL, 0);
@@ -224,12 +226,17 @@ size_t crypt_pkcs_decrypt(crypt_t *crypt, unsigned char *data, size_t length, un
         goto finalize;
     }
 
-    status = mbedtls_pk_decrypt(&pk, data, length, result, &result_size,
-                                sizeof(result), mbedtls_ctr_drbg_random,
-                                &crypt->ctr_drbg);
+    max_output_len = mbedtls_pk_get_len(&pk);
+
+    status = mbedtls_pk_decrypt(&pk,
+                                data, length,
+                                result, &result_size,
+                                max_output_len,
+                                mbedtls_ctr_drbg_random, &crypt->ctr_drbg);
     if (status != 0)
     {
         log_debug("* Failed to decrypt key with PKCS (%d)\n", status);
+        result_size = 0;
         goto finalize;
     }
 
@@ -333,35 +340,21 @@ ssize_t crypt_aes_encrypt(crypt_t *crypt, unsigned char *data,
     int status;
     mbedtls_aes_context aes;
 
-    unsigned char *padded;
-    unsigned char *encrypted;
-
+    unsigned char *padded = NULL;
     unsigned char iv[AES256_IV_SIZE];
 
+    /* Copy IV (crypt->iv should already be set by key exchange) */
     memcpy(iv, crypt->iv, AES256_IV_SIZE);
 
-    if (length % 16 != 0)
+    /* Always apply PKCS#7 padding */
+    ssize_t padded_len = crypt_apply_padding(data, length, &padded);
+    if (padded_len <= 0)
     {
-        length = crypt_apply_padding(data, length, &padded);
-    }
-    else
-    {
-        padded = malloc(length);
-        if (padded == NULL)
-        {
-            return -1;
-        }
-        memcpy(padded, data, length);
-    }
-
-    if (length <= 0)
-    {
-        log_debug("* Length is too small to encrypt (%d)\n", length);
-        free(padded);
+        log_debug("* Failed to apply padding\n");
         return -1;
     }
 
-    *result = calloc(AES256_IV_SIZE + length, 1);
+    *result = calloc(AES256_IV_SIZE + padded_len, 1);
     if (*result == NULL)
     {
         log_debug("* Failed to allocate memory for result\n");
@@ -372,15 +365,19 @@ ssize_t crypt_aes_encrypt(crypt_t *crypt, unsigned char *data,
     mbedtls_aes_init(&aes);
     mbedtls_aes_setkey_enc(&aes, crypt->key, 256);
 
-    status = mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, length,
-                                   crypt->iv, padded, *result + AES256_IV_SIZE);
+    /* Use a local IV copy for CBC */
+    unsigned char iv_local[AES256_IV_SIZE];
+    memcpy(iv_local, iv, AES256_IV_SIZE);
+
+    status = mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT,
+                                   padded_len, iv_local,
+                                   padded, *result + AES256_IV_SIZE);
     mbedtls_aes_free(&aes);
     free(padded);
 
     if (status != 0)
     {
-        log_debug("* Failed to encrypt with ALGO_AES256_CBC (%d)\n",
-                  status);
+        log_debug("* Failed to encrypt with ALGO_AES256_CBC (%d)\n", status);
         free(*result);
         return -1;
     }
@@ -389,9 +386,8 @@ ssize_t crypt_aes_encrypt(crypt_t *crypt, unsigned char *data,
     log_hexdump(iv, AES256_IV_SIZE);
 
     memcpy(*result, iv, AES256_IV_SIZE);
-    length += AES256_IV_SIZE;
 
-    return length;
+    return AES256_IV_SIZE + padded_len;
 }
 
 ssize_t crypt_chacha20_decrypt(crypt_t *crypt, unsigned char *data,
@@ -435,36 +431,67 @@ ssize_t crypt_aes_decrypt(crypt_t *crypt, unsigned char *data,
 {
     int status;
     unsigned char iv[AES256_IV_SIZE];
-
     mbedtls_aes_context aes;
 
-    length -= AES256_IV_SIZE;
-    *result = malloc(length);
+    if (length < AES256_IV_SIZE)
+    {
+        log_debug("* Data too short to contain IV\n");
+        return -1;
+    }
 
+    length -= AES256_IV_SIZE;  // ciphertext length
+    *result = malloc(length);
     if (*result == NULL)
     {
         log_debug("* Failed to allocate space for result\n");
         return -1;
     }
 
+    memcpy(iv, data, AES256_IV_SIZE);
+
     mbedtls_aes_init(&aes);
     mbedtls_aes_setkey_dec(&aes, crypt->key, 256);
 
-    memcpy(iv, data, AES256_IV_SIZE);
-
-    status = mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, length,
-                                   iv, data + AES256_IV_SIZE, *result);
+    status = mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT,
+                                   length, iv,
+                                   data + AES256_IV_SIZE, *result);
     mbedtls_aes_free(&aes);
 
     if (status != 0)
     {
-        log_debug("* Failed to decrypt with ALGO_AES256_CBC (%d)\n",
-                  status);
+        log_debug("* Failed to decrypt with ALGO_AES256_CBC (%d)\n", status);
         free(*result);
         return -1;
     }
 
-    return length;
+    /* Remove PKCS#7 padding */
+    if (length == 0)
+    {
+        free(*result);
+        log_debug("* Decrypted length is zero\n");
+        return -1;
+    }
+
+    unsigned char pad_len = (*result)[length - 1];
+    if (pad_len == 0 || pad_len > AES256_BLOCK_SIZE || pad_len > length)
+    {
+        log_debug("* Invalid PKCS#7 padding length: %u\n", pad_len);
+        free(*result);
+        return -1;
+    }
+
+    /* Verify padding bytes */
+    for (size_t i = 0; i < pad_len; i++)
+    {
+        if ((*result)[length - 1 - i] != pad_len)
+        {
+            log_debug("* Invalid PKCS#7 padding byte\n");
+            free(*result);
+            return -1;
+        }
+    }
+
+    return length - pad_len;
 }
 
 ssize_t crypt_process(crypt_t *crypt, unsigned char *data, size_t length,

@@ -150,12 +150,6 @@ class CipherProcessor(object):
         return data
 
     def decrypt(self, data: bytes) -> TLVPacket:
-        """ Decrypt TLV packet with AES CBC 256-bit.
-
-        :param bytes data: data to decrypt
-        :return TLVPacket: decrypted TLV packet
-        """
-
         if not self.key:
             raise RuntimeError("No key set, unable to decrypt!")
 
@@ -163,16 +157,29 @@ class CipherProcessor(object):
             iv = data[:16]
             data = data[16:]
 
-            cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend)
+            cipher = Cipher(algorithms.AES(self.key),
+                            modes.CBC(iv),
+                            backend=default_backend())
             decryptor = cipher.decryptor()
-
             padded_data = decryptor.update(data) + decryptor.finalize()
-            return TLVPacket(padded_data)
+
+            # --- Remove PKCS#7 padding ---
+            if not padded_data:
+                raise ValueError("Decrypted data is empty")
+
+            pad_len = padded_data[-1]
+            if pad_len < 1 or pad_len > 16 or pad_len > len(padded_data):
+                raise ValueError(f"Invalid PKCS#7 padding length: {pad_len}")
+
+            if padded_data[-pad_len:] != bytes([pad_len]) * pad_len:
+                raise ValueError("Invalid PKCS#7 padding bytes")
+
+            unpadded = padded_data[:-pad_len]
+            return TLVPacket(unpadded)
 
         if self.algo == ALGO_CHACHA20:
             iv = data[:12]
             data = data[12:]
-
             cipher = ChaCha20.new(key=self.key, nonce=iv)
             return TLVPacket(cipher.decrypt(data))
 

@@ -298,6 +298,7 @@ void queue_free(queue_t *queue)
 {
     if (queue)
     {
+        queue_drain_all(queue);
         free(queue);
     }
 }

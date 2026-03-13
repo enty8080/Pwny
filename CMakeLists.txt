@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 project(libpwny VERSION 1.0.0)
 
 option(DEBUG "Build in debug mode" OFF)
@@ -77,12 +77,31 @@ set_property(TARGET pwny PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_target_properties(pwny PROPERTIES OUTPUT_NAME pwny)
 include_directories(include api deps/build/${CMAKE_SYSTEM_TARGET}/include)
 
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    target_compile_definitions(pwny PRIVATE
+        __windows__
+        CURL_STATICLIB
+    )
+endif()
+
 if(MAIN)
     file(GLOB MAIN_SOURCES ${SOURCE})
     add_executable(main ${MAIN_SOURCES})
 
     target_link_directories(main PRIVATE deps/build/${CMAKE_SYSTEM_TARGET}/lib)
-    target_link_libraries(main PRIVATE pwny mbedtls mbedx509 mbedcrypto ev eio sigar curl z)
+    target_link_libraries(main PRIVATE
+    pwny
+    pawn
+    injector
+    sigar
+    eio
+    ev
+    curl
+    z
+    mbedx509
+    mbedtls
+    mbedcrypto
+)
 
     if(NOT CMAKE_SYSTEM_NAME STREQUAL iOS)
         target_link_libraries(main PRIVATE pawn injector)
@@ -90,7 +109,7 @@ if(MAIN)
 
     if(CMAKE_SYSTEM_NAME STREQUAL Windows)
         target_link_libraries(main PRIVATE injector pawn)
-        target_link_libraries(main PRIVATE ws2_32 netapi32 version)
+        target_link_libraries(main PRIVATE ws2_32 netapi32 version crypt32 avicap32 winmm advapi32 credui)
         if(SHARED)
             target_link_options(main PRIVATE -shared)
         else()

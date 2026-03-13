@@ -25,11 +25,13 @@
 #ifndef _CHILD_H_
 #define _CHILD_H_
 
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <io.h>
 #include <ev.h>
 
 #include <pwny/link.h>
@@ -55,9 +57,12 @@ typedef struct
 
 typedef struct
 {
-    int in_pair[2];
-    int out_pair[2];
-    int err_pair[2];
+    HANDLE hStdinRead;
+    HANDLE hStdinWrite;
+    HANDLE hStdoutRead;
+    HANDLE hStdoutWrite;
+    HANDLE hStderrRead;
+    HANDLE hStderrWrite;
 } child_pipes_t;
 
 typedef struct
@@ -68,10 +73,10 @@ typedef struct
 
 typedef struct
 {
-    pid_t pid;
+    DWORD pid;
 
     struct ev_loop *loop;
-    struct ev_child child;
+    struct ev_async exit_async;
 
     child_queue_t out_queue;
     child_queue_t err_queue;
@@ -87,6 +92,23 @@ typedef struct
     link_t err_link;
     link_t exit_link;
 
+    HANDLE hProcess;
+    HANDLE hThread;
+    HANDLE hStdinWrite;
+    HANDLE hStdoutRead;
+    HANDLE hStderrRead;
+
+    int out_relay_wr;
+    int err_relay_wr;
+
+    HANDLE hOutThread;
+    HANDLE hErrThread;
+    HANDLE hWaitThread;
+
+    volatile LONG stopping;
+
+    char *temp_image_path;
+
     UT_hash_handle hh;
 } child_t;
 
@@ -100,7 +122,6 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
 
 void child_out(struct ev_loop *loop, struct ev_io *w, int events);
 void child_err(struct ev_loop *loop, struct ev_io *w, int events);
-void child_exit(struct ev_loop *loop, struct ev_child *w, int revents);
 
 size_t child_read(child_t *child, void *buffer, size_t length);
 size_t child_write(child_t *child, void *buffer, size_t length);

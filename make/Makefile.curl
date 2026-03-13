@@ -28,9 +28,11 @@ CURL_DEPS = $(BUILD_LIB)/libz.a
 
 ifneq (,$(findstring mingw,$(BUILD)))
     CURL_OPTS = --without-ssl --with-winssl
+	CURL_CPPFLAGS = CPPFLAGS="$(CPPFLAGS) -DHAVE_IOCTLSOCKET_FIONBIO=1"
 else
     CURL_DEPS += $(BUILD_LIB)/libmbedtls.a
     CURL_OPTS = --without-ssl --with-mbedtls=$(BUILD)
+	CURL_CPPFLAGS =
 endif
 
 $(BUILD)/curl/configure:
@@ -44,7 +46,7 @@ $(BUILD)/curl/Makefile: $(BUILD)/curl/configure
 	$(QUIET) $(LOG) "[Configuring curl]"
 	$(CHDIR) $(BUILD)/curl; \
 	    $(CONFIG); \
-	    $(ENV) ./$(CONFIGURE) \
+	    $(ENV) $(CURL_CPPFLAGS) ./$(CONFIGURE) \
 	    $(CURL_OPTS) \
 	    --without-libpsl \
 	    --without-nghttp2 \
@@ -66,6 +68,7 @@ $(BUILD)/curl/Makefile: $(BUILD)/curl/configure
 		--without-libidn  \
 		--without-librtmp  \
 		--without-libssh2  \
+		--without-brotli \
 		--disable-shared \
 		--without-ca-bundle --without-ca-path \
 		--enable-threaded-resolver \

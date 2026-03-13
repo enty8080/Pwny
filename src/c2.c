@@ -107,6 +107,10 @@ c2_t *c2_add_uri(c2_t **c2_table, int id, char *uri, tunnels_t *tunnels)
     return c2;
 
 fail:
+    if (c2->tunnel)
+        tunnel_free(c2->tunnel);
+    if (c2->crypt)
+        crypt_free(c2->crypt);
     free(c2);
     return NULL;
 }

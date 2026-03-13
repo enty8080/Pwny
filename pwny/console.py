@@ -117,6 +117,11 @@ Running as %blue$user%end on %line$dir%end
                 '/usr/bin',
                 '/sbin',
                 '/bin'
+            ],
+            OS_WINDOWS: [
+                'C:\\Windows\\System32',
+                'C:\\Windows',
+                'C:\\Windows\\System32\\WindowsPowerShell\\v1.0'
             ]
         }
 

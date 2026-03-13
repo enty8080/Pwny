@@ -78,13 +78,16 @@ void tabs_exit(void *data)
 void tabs_out(void *data)
 {
     tabs_t *tab;
+    tlv_pkt_t *tlv_pkt;
     queue_t *queue;
 
     tab = data;
     queue = tab->child->out_queue.queue;
 
-    queue_move_all(queue, tab->c2->tunnel->egress);
-
+    if (group_tlv_dequeue(queue, &tlv_pkt, NULL) > 0) { // null because TABs don't encrypt outgoing data
+        group_tlv_enqueue(tab->c2->tunnel->egress, tlv_pkt, tab->c2->crypt);
+        tlv_pkt_destroy(tlv_pkt);
+    }
     if (tab->c2->write_link)
     {
         tab->c2->write_link(tab->c2->link_data);
@@ -168,6 +171,7 @@ int tabs_delete(tabs_t **tabs, int id)
 
     if (tab != NULL)
     {
+        child_destroy(tab->child);
         HASH_DEL(*tabs, tab);
         free(tab);
 
@@ -187,6 +191,16 @@ void tabs_free(tabs_t *tabs)
     {
         log_debug("* Freed TAB entry (%d)\n", tab->id);
         HASH_DEL(tabs, tab);
+
+        if (tab->child)
+        {
+            if (tab->child->status == CHILD_ALIVE)
+            {
+                child_kill(tab->child);
+            }
+
+            child_destroy(tab->child);
+        }
 
         free(tab);
     }
