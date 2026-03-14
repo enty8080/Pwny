@@ -138,7 +138,11 @@ tlv_pkt_t *net_add_tunnel(c2_t *c2)
     char uri[256];
 
     core = c2->data;
-    tlv_pkt_get_string(c2->request, TLV_TYPE_TUNNEL_URI, uri);
+
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_TUNNEL_URI, uri) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     if (core_add_uri(core, uri) < 0)
     {
@@ -163,7 +167,11 @@ tlv_pkt_t *net_suspend_tunnel(c2_t *c2)
     int id;
 
     core = c2->data;
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id);
+
+    if (tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     if (id == c2->id)
     {
@@ -198,7 +206,12 @@ tlv_pkt_t *net_activate_tunnel(c2_t *c2)
     c2_t *c2_tmp;
     int id;
 
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id);
+    core = c2->data;
+
+    if (tlv_pkt_get_u32(c2->request, TLV_TYPE_TUNNEL_ID, &id) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     HASH_ITER(hh, core->c2, curr_c2, c2_tmp)
     {
@@ -226,6 +239,8 @@ static void update_tunnel(struct eio_req *request)
     int keep_alive;
     int found;
     int status;
+
+    found = 0;
 
     char uri[256];
 

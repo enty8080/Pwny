@@ -68,7 +68,7 @@ static void parse_options(core_t *core)
     size_t argc;
     char **argv;
 
-    static char options[] = "INJECT_OPTIONS"
+    static char options[] = "CFGDATA_INIT"
         "                                                  "
         "                                                  "
         "                                                  "
@@ -78,42 +78,22 @@ static void parse_options(core_t *core)
         "                                                  "
         "                                                  "
         "                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  "
-		"                                                  ";
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  "
+        "                                                  ";
 
     argc = 0;
     argv = NULL;
 
-    if (strncasecmp(options, "INJECT_OPTIONS", strlen("INJECT_OPTIONS")))
+    if (strncasecmp(options, "CFGDATA_INIT", strlen("CFGDATA_INIT")))
     {
         if ((argv = misc_argv_split(options, argv, &argc)))
         {

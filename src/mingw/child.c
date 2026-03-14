@@ -530,6 +530,7 @@ child_t *child_create(char *filename, unsigned char *image, child_options_t *opt
     /* Determine the executable path */
     if (image != NULL && filename == NULL)
     {
+        /* Write image to a temp file */
         exec_path = write_image_to_temp(image, options->length);
         if (exec_path == NULL)
         {

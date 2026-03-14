@@ -108,8 +108,10 @@ class ExternalCommand(Command):
             if entry is None:
                 break
 
-            name = entry.get_string(TLV_TYPE_SVC_NAME) or ''
-            display = entry.get_string(TLV_TYPE_SVC_DISPLAY) or ''
+            name_raw = entry.get_raw(TLV_TYPE_SVC_NAME)
+            display_raw = entry.get_raw(TLV_TYPE_SVC_DISPLAY)
+            name = name_raw.decode('utf-8', errors='replace') if name_raw else ''
+            display = display_raw.decode('utf-8', errors='replace') if display_raw else ''
             state = entry.get_int(TLV_TYPE_SVC_STATE) or 0
             pid = entry.get_int(TLV_TYPE_SVC_PID) or 0
 

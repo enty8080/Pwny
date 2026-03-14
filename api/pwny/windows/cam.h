@@ -116,6 +116,7 @@ static int cam_device_open(cam_t *cam, int device_id)
     if (cam->hCapWnd == NULL)
     {
         log_debug("* Failed to create capture window\n");
+        DeleteCriticalSection(&cam->cs);
         return -1;
     }
 
@@ -206,6 +207,10 @@ static int cam_create(pipe_t *pipe, c2_t *c2)
         return -1;
     }
 
+    /* VFW capture windows are thread-affine — PeekMessage/capGrabFrame
+     * must run on the same thread that called capCreateCaptureWindow.
+     * Force synchronous pipe I/O so readall stays on the C2 thread. */
+    pipe->flags |= PIPE_SYNCHRONOUS;
     pipe->data = cam;
     return 0;
 }

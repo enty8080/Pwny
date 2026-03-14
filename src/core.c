@@ -27,6 +27,8 @@
 #include <eio.h>
 #include <ev.h>
 
+#include <curl/curl.h>
+
 #ifdef __windows__
 #include <winsock2.h>
 #endif
@@ -39,6 +41,7 @@
 #include <pwny/log.h>
 #include <pwny/calls.h>
 #include <pwny/misc.h>
+#include <pwny/worker.h>
 
 #include <pwny/tlv.h>
 #include <pwny/tlv_types.h>
@@ -184,6 +187,8 @@ core_t *core_create(void)
     }
 #endif
 
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
     core->loop = ev_default_loop(CORE_EV_FLAGS);
     core->t_count = 0;
     core->c_count = 0;
@@ -196,6 +201,8 @@ core_t *core_create(void)
     ev_idle_init(&eio_idle_watcher, eio_idle_cb);
     ev_async_init(&eio_async_watcher, eio_async_cb);
     eio_init(eio_want_poll, eio_done_poll);
+
+    core->pool = worker_pool_create(core->loop, WORKER_POOL_SIZE);
 
     return core;
 }
@@ -226,6 +233,8 @@ int core_add_uri(core_t *core, char *uri)
 
     c2_set_links(c2, core_read, core_write, NULL, NULL);
     c2_setup(c2, core->loop, pipes, core);
+
+    c2->worker = core->pool;
     c2_start(c2);
 
     core->c_count++;
@@ -282,6 +291,8 @@ void core_destroy(core_t *core)
 {
     ev_break(core->loop, EVBREAK_ALL);
 
+    worker_pool_destroy((worker_pool_t *)core->pool);
+
     c2_free(core->c2);
     sigar_close(core->sigar);
 
@@ -298,6 +309,8 @@ void core_destroy(core_t *core)
     {
         free(core->path);
     }
+
+    curl_global_cleanup();
 
 #ifdef __windows__
     WSACleanup();

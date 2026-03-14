@@ -1,0 +1,21 @@
+CMakeFiles/tab_dll.dir/src/compat/progname.c.obj: \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/src/compat/progname.c \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/string.h \
+ /opt/local/x86_64-w64-mingw32/include/string.h \
+ /opt/local/x86_64-w64-mingw32/include/crtdefs.h \
+ /opt/local/x86_64-w64-mingw32/include/corecrt.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_mac.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ /opt/local/x86_64-w64-mingw32/include/vadefs.h \
+ /opt/local/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ /opt/local/x86_64-w64-mingw32/include/sec_api/string_s.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h \
+ /opt/local/x86_64-w64-mingw32/include/sys/types.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_off_t.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h \
+ /opt/local/x86_64-w64-mingw32/include/stdint.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stddef.h \
+ /opt/local/x86_64-w64-mingw32/include/stddef.h \
+ /opt/local/x86_64-w64-mingw32/include/_bsd_types.h \
+ /opt/local/x86_64-w64-mingw32/include/errno.h

@@ -103,19 +103,37 @@ static tlv_pkt_t *process_list(c2_t *c2)
     for (iter = 0; iter < proc_list.number; iter++)
     {
         proc_pid = proc_list.data[iter];
+
+        if (proc_pid == 0)
+        {
+            continue;
+        }
+
         proc_info = tlv_pkt_create();
 
         tlv_pkt_add_u32(proc_info, TLV_TYPE_PID, (int)proc_pid);
 
         if ((status = sigar_proc_state_get(core->sigar, proc_pid, &proc_state)) == SIGAR_OK)
         {
-            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_NAME, proc_state.name);
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_NAME,
+                               proc_state.name[0] ? proc_state.name : "");
+        }
+        else
+        {
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_NAME, "");
         }
 
         if ((status = sigar_proc_exe_get(core->sigar, proc_pid, &proc_exec)) == SIGAR_OK)
         {
-            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_CPU, (char *)proc_exec.arch);
-            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_PATH, (char *)proc_exec.name);
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_CPU,
+                               proc_exec.arch ? (char *)proc_exec.arch : "");
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_PATH,
+                               proc_exec.name[0] ? (char *)proc_exec.name : "");
+        }
+        else
+        {
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_CPU, "");
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_PATH, "");
         }
 
         tlv_pkt_add_tlv(result, TLV_TYPE_GROUP, proc_info);
@@ -133,7 +151,11 @@ static tlv_pkt_t *process_kill(c2_t *c2)
     core_t *core;
 
     core = c2->data;
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_PID, &pid);
+
+    if (tlv_pkt_get_u32(c2->request, TLV_TYPE_PID, &pid) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     if (proc_kill(core->sigar, pid) == -1)
     {
@@ -150,7 +172,11 @@ static tlv_pkt_t *process_killall(c2_t *c2)
     core_t *core;
 
     core = c2->data;
-    tlv_pkt_get_string(c2->request, TLV_TYPE_PID_NAME, name);
+
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_PID_NAME, name) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     if ((pid = proc_find(core->sigar, name)) != -1)
     {

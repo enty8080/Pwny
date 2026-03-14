@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/src/main/gate_x64.S
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/src/main/obfuscate_x64.S
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/src/main/stager_x64.S
+

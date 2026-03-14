@@ -132,7 +132,13 @@ static void http_tunnel_read(struct http_client *client, void *data)
         }
         else if (http->timer.repeat < 10)
         {
-            http->timer.repeat += 0.1;
+            http->timer.repeat = http->timer.repeat < 0.5
+                ? 0.5
+                : http->timer.repeat * 1.5;
+            if (http->timer.repeat > 10)
+            {
+                http->timer.repeat = 10;
+            }
         }
     }
     else

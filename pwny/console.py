@@ -243,16 +243,14 @@ Running as %blue$user%end on %line$dir%end
             path = self.pwd()
 
             if len(path) > 32:
-                paths = path.split('/')
-                pointer = 0
+                sep = '\\' if '\\' in path else '/'
+                paths = path.split(sep)
 
-                while len(path) > 32:
-                    paths = paths[pointer:]
-                    if paths:
-                        path = os.path.join(*paths)
-                    pointer += 1
+                while len(path) > 32 and len(paths) > 1:
+                    paths = paths[1:]
+                    path = os.path.join(*paths)
 
-                path = '*/' + path
+                path = '*' + sep + path
 
             message = message.replace('$dir', path)
 

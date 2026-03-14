@@ -413,7 +413,8 @@ class PwnyHTTPSession(PwnySessionTemplate):
 
         tunnel = result.get_int(NET_TYPE_ID)
         uri = result.get_string(NET_TYPE_URI).split('|')  # In case if flags are set
-        new_uri = uri[0] + urlpath
+        base = uri[0].rstrip('/')
+        new_uri = base + '/' + urlpath
 
         if len(uri) == 2:
             new_uri += '|' + uri[1]
@@ -445,7 +446,7 @@ class PwnyHTTPSession(PwnySessionTemplate):
         self.reason = TERM_CLOSED
         self.terminated = True
 
-    def send_command(self, tag: int, args: dict = {}, plugin: Optional[int] = None) -> TLVPacket:
+    def send_command(self, tag: int, args: Optional[dict] = None, plugin: Optional[int] = None) -> TLVPacket:
         """ Send command to the Pwny session.
 
         :param int tag: tag
@@ -453,6 +454,9 @@ class PwnyHTTPSession(PwnySessionTemplate):
         :param Optional[int] plugin: plugin ID if tag is presented within the plugin
         :return TLVPacket: packets
         """
+
+        if args is None:
+            args = {}
 
         tlv = TLVPacket()
 
@@ -576,7 +580,7 @@ class PwnySession(PwnySessionTemplate):
 
         self.channel.queue_resume()
 
-    def send_command(self, tag: int, args: dict = {}, plugin: Optional[int] = None) -> TLVPacket:
+    def send_command(self, tag: int, args: Optional[dict] = None, plugin: Optional[int] = None) -> TLVPacket:
         """ Send command to the Pwny session.
 
         :param int tag: tag
@@ -584,6 +588,9 @@ class PwnySession(PwnySessionTemplate):
         :param Optional[int] plugin: plugin ID if tag is presented within the plugin
         :return TLVPacket: packets
         """
+
+        if args is None:
+            args = {}
 
         tlv = TLVPacket()
 

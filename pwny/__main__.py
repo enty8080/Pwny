@@ -73,8 +73,8 @@ class Pwny(object):
         if not self.options:
             return binary
 
-        sign = b"INJECT_OPTIONS"
-        length = 2000
+        sign = b"CFGDATA_INIT"
+        length = 1012
         options = "pwny"
 
         for key, value in self.options.items():

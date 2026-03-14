@@ -55,7 +55,7 @@ class Pipes(object):
         self.plugin_pipes = {}
 
     def create_event(self, pipe_type: int, pipe_id: int, pipe_data: int,
-                     target: Callable[..., Any], args: list = [],
+                     target: Callable[..., Any], args: Optional[list] = None,
                      plugin: Optional[int] = None) -> None:
         """ Create event on a pipe (wait for event).
 
@@ -67,6 +67,9 @@ class Pipes(object):
         :param Optional[int] plugin: plugin ID if refer to plugin
         :return None: None
         """
+
+        if args is None:
+            args = []
 
         self.check_pipe(pipe_type, pipe_id, plugin)
         pipes = self.pipes
@@ -110,7 +113,7 @@ class Pipes(object):
         if pipe_id not in pipes[pipe_type]:
             raise RuntimeError(f"No such pipe with ID {str(pipe_id)}!")
 
-    def heartbeat_pipe(self, pipe_type: int, pipe_id: int, args: dict = {},
+    def heartbeat_pipe(self, pipe_type: int, pipe_id: int, args: Optional[dict] = None,
                        plugin: Optional[int] = None) -> bool:
         """ Check pipe is alive or not.
 
@@ -120,6 +123,9 @@ class Pipes(object):
         :param Optional[int] plugin: plugin ID if refer to plugin
         :return bool: True if alive else False
         """
+
+        if args is None:
+            args = {}
 
         self.check_pipe(pipe_type, pipe_id, plugin)
 
@@ -278,7 +284,7 @@ class Pipes(object):
 
         return tlv.get_raw(PIPE_TYPE_BUFFER)
 
-    def create_pipe(self, pipe_type: int, args: dict = {},
+    def create_pipe(self, pipe_type: int, args: Optional[dict] = None,
                     flags: Optional[int] = 0,
                     plugin: Optional[int] = None) -> int:
         """ Create new pipe of type.
@@ -290,6 +296,9 @@ class Pipes(object):
         :return int: pipe ID
         :raises RuntimeError: with trailing error message
         """
+
+        if args is None:
+            args = {}
 
         pipes = self.pipes
 
@@ -322,7 +331,7 @@ class Pipes(object):
         pipes[pipe_type][pipe_id] = []
         return pipe_id
 
-    def destroy_pipe(self, pipe_type: int, pipe_id: int, args: dict = {},
+    def destroy_pipe(self, pipe_type: int, pipe_id: int, args: Optional[dict] = None,
                      plugin: Optional[int] = None) -> None:
         """ Destroy pipe of type by ID.
 
@@ -333,6 +342,9 @@ class Pipes(object):
         :return None: None
         :raises RuntimeError: with trailing error message
         """
+
+        if args is None:
+            args = {}
 
         self.check_pipe(pipe_type, pipe_id, plugin)
 

@@ -60,6 +60,7 @@ typedef struct
     api_calls_t *api_calls;
     tunnels_t *tunnels;
 
+    void *pool;
     struct ev_loop *loop;
 } core_t;
 

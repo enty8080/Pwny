@@ -17,6 +17,8 @@ UI_BASE = 6
 
 UI_SCREENSHOT = tlv_custom_tag(API_CALL_STATIC, UI_BASE, API_CALL)
 
+UI_PIPE = tlv_custom_pipe(PIPE_STATIC, UI_BASE, PIPE_TYPE)
+
 
 class ExternalCommand(Command):
     def __init__(self):
@@ -56,34 +58,38 @@ class ExternalCommand(Command):
 
         self.stop = False
 
-    def read_thread(self, path: str):
-        while True:
-            if self.stop:
+    def read_thread(self, path: str, pipe_id: int):
+        while not self.stop:
+            try:
+                frame = self.session.pipes.readall_pipe(
+                    pipe_type=UI_PIPE,
+                    pipe_id=pipe_id
+                )
+            except Exception:
                 break
-
-            result = self.session.send_command(
-                tag=UI_SCREENSHOT
-            )
-
-            if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-                self.print_error("Failed to take screenshot!")
-                break
-
-            frame = result.get_raw(TLV_TYPE_BYTES)
 
             try:
                 with open(path, 'wb') as f:
                     f.write(frame)
-
             except Exception:
                 self.print_error(f"Failed to write image to {path}!")
 
     def run(self, args):
         if args.stream:
+            try:
+                pipe_id = self.session.pipes.create_pipe(
+                    pipe_type=UI_PIPE
+                )
+            except RuntimeError:
+                self.print_error("Failed to open screen pipe!")
+                return
+
             file = self.session.loot.random_loot('bmp')
             path = self.session.loot.random_loot('html')
 
-            thread = threading.Thread(target=self.read_thread, args=(file,))
+            self.stop = False
+            thread = threading.Thread(target=self.read_thread,
+                                      args=(file, pipe_id))
             thread.setDaemon(True)
             thread.start()
 
@@ -104,6 +110,7 @@ class ExternalCommand(Command):
             self.stop = True
             thread.join()
 
+            self.session.pipes.destroy_pipe(UI_PIPE, pipe_id)
             self.session.loot.remove_loot(file)
             self.session.loot.remove_loot(path)
 

@@ -1,0 +1,3 @@
+/opt/local/bin/cmake -E rm -f CMakeFiles/pwny_dll.dir/objects.a
+x86_64-w64-mingw32-ar qc CMakeFiles/pwny_dll.dir/objects.a @CMakeFiles/pwny_dll.dir/objects1.rsp
+/opt/local/bin/x86_64-w64-mingw32-gcc -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols -shared -o pwny.dll -Wl,--out-implib,libpwny.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/pwny_dll.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/pwny_dll.dir/linkLibs.rsp

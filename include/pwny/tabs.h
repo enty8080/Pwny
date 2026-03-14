@@ -33,15 +33,30 @@
 #include <pwny/tlv_types.h>
 #include <pwny/child.h>
 
+#ifdef __windows__
+#include <windows.h>
+#endif
+
 #include <uthash/uthash.h>
 
 typedef struct c2_table c2_t;
+typedef struct api_calls_table api_calls_t;
 
 typedef struct tabs_table
 {
     int id;
-    child_t *child;
     c2_t *c2;
+
+#ifdef __windows__
+    /* In-process DLL tab (Windows) — loaded via LoadLibrary */
+    api_calls_t *api_calls;
+    HMODULE hModule;     /* Standard loaded module handle */
+    char *temp_path;     /* Temp file path for cleanup (NULL if loaded from disk) */
+#else
+    /* Child-process tab (POSIX) */
+    child_t *child;
+#endif
+
     UT_hash_handle hh;
 } tabs_t;
 

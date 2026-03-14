@@ -1,0 +1,559 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:200 (message)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      The target system is: Windows -  - x64
+      The host system is: Darwin - 24.5.0 - arm64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /opt/local/bin/x86_64-w64-mingw32-gcc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.exe"
+      
+      The C compiler identification is GNU, found in:
+        /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/3.31.7/CompilerIdC/a.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/local/bin/x86_64-w64-mingw32-g++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.exe"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/3.31.7/CompilerIdCXX/a.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-0Gq0RZ"
+      binary: "/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-0Gq0RZ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-0Gq0RZ'
+        
+        Run Build Command(s): /opt/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_dfca8/fast
+        /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_dfca8.dir/build.make CMakeFiles/cmTC_dfca8.dir/build
+        Building C object CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj
+        /opt/local/bin/x86_64-w64-mingw32-gcc   -v -o CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj -c /opt/local/share/cmake-3.31/Modules/CMakeCCompilerABI.c
+        Using built-in specs.
+        COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-gcc
+        Target: x86_64-w64-mingw32
+        Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 15.2.0 (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/'
+         /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1 -quiet -v -D_REENTRANT /opt/local/share/cmake-3.31/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_dfca8.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccuzKB5s.s
+        GNU C23 (GCC) version 15.2.0 (x86_64-w64-mingw32)
+        	compiled by GNU C version Apple LLVM 17.0.0 (clang-1700.0.13.5), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/sys-include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include
+        End of search list.
+        Compiler executable checksum: 7a5cad1b3a2f46e1d3398398337dfac4
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/'
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as -v -o CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccuzKB5s.s
+        GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.45
+        COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
+        LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.'
+        Linking C executable cmTC_dfca8.exe
+        /opt/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dfca8.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-gcc
+        COLLECT_LTO_WRAPPER=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper
+        Target: x86_64-w64-mingw32
+        Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 15.2.0 (GCC) 
+        COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
+        LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_dfca8.exe' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_dfca8.'
+         /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2 -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc5s3tVu.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_dfca8.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_dfca8.dir/objects.a --no-whole-archive --out-implib libcmTC_dfca8.dll.a --major-image-version 0 --minor-image-version 0 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        collect2 version 15.2.0
+        /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc5s3tVu.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_dfca8.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_dfca8.dir/objects.a --no-whole-archive --out-implib libcmTC_dfca8.dll.a --major-image-version 0 --minor-image-version 0 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        GNU ld (GNU Binutils) 2.45
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_dfca8.exe' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_dfca8.'
+        /opt/local/bin/cmake -E rm -f CMakeFiles/cmTC_dfca8.dir/objects.a
+        x86_64-w64-mingw32-ar qc CMakeFiles/cmTC_dfca8.dir/objects.a @CMakeFiles/cmTC_dfca8.dir/objects1.rsp
+        /opt/local/bin/x86_64-w64-mingw32-gcc  -v -Wl,-v -Wl,--whole-archive CMakeFiles/cmTC_dfca8.dir/objects.a -Wl,--no-whole-archive -o cmTC_dfca8.exe -Wl,--out-implib,libcmTC_dfca8.dll.a -Wl,--major-image-version,0,--minor-image-version,0
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include]
+        end of search list found
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include] ==> [/opt/local/x86_64-w64-mingw32/include]
+        implicit include dirs: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed;/opt/local/x86_64-w64-mingw32/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-0Gq0RZ']
+        ignore line: []
+        ignore line: [Run Build Command(s): /opt/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_dfca8/fast]
+        ignore line: [/Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_dfca8.dir/build.make CMakeFiles/cmTC_dfca8.dir/build]
+        ignore line: [Building C object CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj]
+        ignore line: [/opt/local/bin/x86_64-w64-mingw32-gcc   -v -o CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj -c /opt/local/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-gcc]
+        ignore line: [Target: x86_64-w64-mingw32]
+        ignore line: [Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 15.2.0 (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/']
+        ignore line: [ /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1 -quiet -v -D_REENTRANT /opt/local/share/cmake-3.31/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_dfca8.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccuzKB5s.s]
+        ignore line: [GNU C23 (GCC) version 15.2.0 (x86_64-w64-mingw32)]
+        ignore line: [	compiled by GNU C version Apple LLVM 17.0.0 (clang-1700.0.13.5)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.3.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/sys-include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: 7a5cad1b3a2f46e1d3398398337dfac4]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/']
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as -v -o CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccuzKB5s.s]
+        ignore line: [GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.45]
+        ignore line: [COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/]
+        ignore line: [LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_dfca8.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C executable cmTC_dfca8.exe]
+        ignore line: [/opt/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dfca8.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-gcc]
+        ignore line: [COLLECT_LTO_WRAPPER=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper]
+        ignore line: [Target: x86_64-w64-mingw32]
+        ignore line: [Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 15.2.0 (GCC) ]
+        ignore line: [COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/]
+        ignore line: [LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_dfca8.exe' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_dfca8.']
+        link line: [ /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2 -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc5s3tVu.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_dfca8.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_dfca8.dir/objects.a --no-whole-archive --out-implib libcmTC_dfca8.dll.a --major-image-version 0 --minor-image-version 0 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+          arg [/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc5s3tVu.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingw32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_eh] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingwex] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmsvcrt] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+          arg [-plugin-opt=-pass-through=-ladvapi32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lshell32] ==> ignore
+          arg [-plugin-opt=-pass-through=-luser32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingw32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_eh] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingwex] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmsvcrt] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-m] ==> ignore
+          arg [i386pep] ==> ignore
+          arg [-Bdynamic] ==> search dynamic
+          arg [-o] ==> ignore
+          arg [cmTC_dfca8.exe] ==> ignore
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o]
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib]
+          arg [-v] ==> ignore
+          arg [--whole-archive] ==> ignore
+          arg [CMakeFiles/cmTC_dfca8.dir/objects.a] ==> ignore
+          arg [--no-whole-archive] ==> ignore
+          arg [--out-implib] ==> ignore
+          arg [libcmTC_dfca8.dll.a] ==> ignore
+          arg [--major-image-version] ==> ignore
+          arg [0] ==> ignore
+          arg [--minor-image-version] ==> ignore
+          arg [0] ==> ignore
+          arg [-lmingw32] ==> lib [mingw32]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lgcc_eh] ==> lib [gcc_eh]
+          arg [-lmingwex] ==> lib [mingwex]
+          arg [-lmsvcrt] ==> lib [msvcrt]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [-lpthread] ==> lib [pthread]
+          arg [-ladvapi32] ==> lib [advapi32]
+          arg [-lshell32] ==> lib [shell32]
+          arg [-luser32] ==> lib [user32]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [-lmingw32] ==> lib [mingw32]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lgcc_eh] ==> lib [gcc_eh]
+          arg [-lmingwex] ==> lib [mingwex]
+          arg [-lmsvcrt] ==> lib [msvcrt]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        ignore line: [collect2 version 15.2.0]
+        ignore line: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc5s3tVu.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_dfca8.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_dfca8.dir/objects.a --no-whole-archive --out-implib libcmTC_dfca8.dll.a --major-image-version 0 --minor-image-version 0 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc -lgcc_eh -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        linker tool for 'C': /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld
+        remove lib [gcc_eh]
+        remove lib [msvcrt]
+        remove lib [gcc_eh]
+        remove lib [msvcrt]
+        collapse obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o] ==> [/opt/local/x86_64-w64-mingw32/lib/crt2.o]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib] ==> [/opt/local/x86_64-w64-mingw32/lib]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib] ==> [/opt/local/x86_64-w64-mingw32/lib]
+        implicit libs: [mingw32;gcc;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;mingw32;gcc;mingwex;kernel32]
+        implicit objs: [/opt/local/x86_64-w64-mingw32/lib/crt2.o;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        implicit dirs: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0;/opt/local/x86_64-w64-mingw32/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Running the C compiler's linker: "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.45
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-1OCotq"
+      binary: "/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-1OCotq"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-1OCotq'
+        
+        Run Build Command(s): /opt/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c5aac/fast
+        /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_c5aac.dir/build.make CMakeFiles/cmTC_c5aac.dir/build
+        Building CXX object CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj
+        /opt/local/bin/x86_64-w64-mingw32-g++   -v -o CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj -c /opt/local/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp
+        Using built-in specs.
+        COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-g++
+        Target: x86_64-w64-mingw32
+        Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 15.2.0 (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/'
+         /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus -quiet -v -D_REENTRANT /opt/local/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_c5aac.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccyziN2l.s
+        GNU C++17 (GCC) version 15.2.0 (x86_64-w64-mingw32)
+        	compiled by GNU C version Apple LLVM 17.0.0 (clang-1700.0.13.5), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/sys-include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/backward
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include
+        End of search list.
+        Compiler executable checksum: 496270b6d41991853ccf37ef2baf7544
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/'
+         /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as -v -o CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccyziN2l.s
+        GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.45
+        COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
+        LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_c5aac.exe
+        /opt/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c5aac.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-g++
+        COLLECT_LTO_WRAPPER=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper
+        Target: x86_64-w64-mingw32
+        Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 15.2.0 (GCC) 
+        COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
+        LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_c5aac.exe' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_c5aac.'
+         /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2 -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc2hrSmr.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_c5aac.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_c5aac.dir/objects.a --no-whole-archive --out-implib libcmTC_c5aac.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        collect2 version 15.2.0
+        /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc2hrSmr.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_c5aac.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_c5aac.dir/objects.a --no-whole-archive --out-implib libcmTC_c5aac.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        GNU ld (GNU Binutils) 2.45
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_c5aac.exe' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_c5aac.'
+        /opt/local/bin/cmake -E rm -f CMakeFiles/cmTC_c5aac.dir/objects.a
+        x86_64-w64-mingw32-ar qc CMakeFiles/cmTC_c5aac.dir/objects.a @CMakeFiles/cmTC_c5aac.dir/objects1.rsp
+        /opt/local/bin/x86_64-w64-mingw32-g++  -v -Wl,-v -Wl,--whole-archive CMakeFiles/cmTC_c5aac.dir/objects.a -Wl,--no-whole-archive -o cmTC_c5aac.exe -Wl,--out-implib,libcmTC_c5aac.dll.a -Wl,--major-image-version,0,--minor-image-version,0
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/backward]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+          add: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include]
+        end of search list found
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0] ==> [/opt/local/x86_64-w64-mingw32/include/c++/15.2.0]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32] ==> [/opt/local/x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/backward] ==> [/opt/local/x86_64-w64-mingw32/include/c++/15.2.0/backward]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+        collapse include dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include] ==> [/opt/local/x86_64-w64-mingw32/include]
+        implicit include dirs: [/opt/local/x86_64-w64-mingw32/include/c++/15.2.0;/opt/local/x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32;/opt/local/x86_64-w64-mingw32/include/c++/15.2.0/backward;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed;/opt/local/x86_64-w64-mingw32/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/CMakeScratch/TryCompile-1OCotq']
+        ignore line: []
+        ignore line: [Run Build Command(s): /opt/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c5aac/fast]
+        ignore line: [/Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_c5aac.dir/build.make CMakeFiles/cmTC_c5aac.dir/build]
+        ignore line: [Building CXX object CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [/opt/local/bin/x86_64-w64-mingw32-g++   -v -o CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj -c /opt/local/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-g++]
+        ignore line: [Target: x86_64-w64-mingw32]
+        ignore line: [Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 15.2.0 (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/']
+        ignore line: [ /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus -quiet -v -D_REENTRANT /opt/local/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_c5aac.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccyziN2l.s]
+        ignore line: [GNU C++17 (GCC) version 15.2.0 (x86_64-w64-mingw32)]
+        ignore line: [	compiled by GNU C version Apple LLVM 17.0.0 (clang-1700.0.13.5)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.3.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/sys-include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/x86_64-w64-mingw32]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include/c++/15.2.0/backward]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include-fixed]
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: 496270b6d41991853ccf37ef2baf7544]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/']
+        ignore line: [ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as -v -o CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj /var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//ccyziN2l.s]
+        ignore line: [GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (GNU Binutils) 2.45]
+        ignore line: [COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/]
+        ignore line: [LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c5aac.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_c5aac.exe]
+        ignore line: [/opt/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c5aac.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/local/bin/x86_64-w64-mingw32-g++]
+        ignore line: [COLLECT_LTO_WRAPPER=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper]
+        ignore line: [Target: x86_64-w64-mingw32]
+        ignore line: [Configured with: /opt/local/var/macports/build/x86_64-w64-mingw32-gcc-d8793539/work/gcc-15.2.0/configure --prefix=/opt/local --target=x86_64-w64-mingw32 --infodir=/opt/local/share/info --mandir=/opt/local/share/man --datarootdir=/opt/local/share/x86_64-w64-mingw32-gcc --with-system-zlib --with-gmp=/opt/local --with-mpfr=/opt/local --with-mpc=/opt/local --enable-stage1-checking --disable-multilib --disable-libcc1 --enable-shared --with-dwarf --enable-fully-dynamic-string --enable-libssp --enable-lto --enable-threads=posix --enable-libgomp --enable-languages='c c++ fortran objc obj-c++']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 15.2.0 (GCC) ]
+        ignore line: [COMPILER_PATH=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/libexec/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/]
+        ignore line: [LIBRARY_PATH=/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/:/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_c5aac.exe' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_c5aac.']
+        link line: [ /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2 -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc2hrSmr.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_c5aac.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_c5aac.dir/objects.a --no-whole-archive --out-implib libcmTC_c5aac.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+          arg [/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc2hrSmr.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingw32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingwex] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmsvcrt] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+          arg [-plugin-opt=-pass-through=-ladvapi32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lshell32] ==> ignore
+          arg [-plugin-opt=-pass-through=-luser32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingw32] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmingwex] ==> ignore
+          arg [-plugin-opt=-pass-through=-lmsvcrt] ==> ignore
+          arg [-plugin-opt=-pass-through=-lkernel32] ==> ignore
+          arg [-m] ==> ignore
+          arg [i386pep] ==> ignore
+          arg [-Bdynamic] ==> search dynamic
+          arg [-o] ==> ignore
+          arg [cmTC_c5aac.exe] ==> ignore
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o]
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib]
+          arg [-L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib] ==> dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib]
+          arg [-v] ==> ignore
+          arg [--whole-archive] ==> ignore
+          arg [CMakeFiles/cmTC_c5aac.dir/objects.a] ==> ignore
+          arg [--no-whole-archive] ==> ignore
+          arg [--out-implib] ==> ignore
+          arg [libcmTC_c5aac.dll.a] ==> ignore
+          arg [--major-image-version] ==> ignore
+          arg [0] ==> ignore
+          arg [--minor-image-version] ==> ignore
+          arg [0] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lmingw32] ==> lib [mingw32]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lmingwex] ==> lib [mingwex]
+          arg [-lmsvcrt] ==> lib [msvcrt]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [-lpthread] ==> lib [pthread]
+          arg [-ladvapi32] ==> lib [advapi32]
+          arg [-lshell32] ==> lib [shell32]
+          arg [-luser32] ==> lib [user32]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [-lmingw32] ==> lib [mingw32]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lmingwex] ==> lib [mingwex]
+          arg [-lmsvcrt] ==> lib [msvcrt]
+          arg [-lkernel32] ==> lib [kernel32]
+          arg [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o] ==> obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        ignore line: [collect2 version 15.2.0]
+        ignore line: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld -plugin /opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.so -plugin-opt=/opt/local/libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/6n/p_44qpmd697bbd_4p_c_y5s80000gn/T//cc2hrSmr.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_c5aac.exe /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0 -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -L/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -v --whole-archive CMakeFiles/cmTC_c5aac.dir/objects.a --no-whole-archive --out-implib libcmTC_c5aac.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        linker tool for 'CXX': /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld
+        remove lib [msvcrt]
+        remove lib [msvcrt]
+        collapse obj [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o] ==> [/opt/local/x86_64-w64-mingw32/lib/crt2.o]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0] ==> [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib] ==> [/opt/local/x86_64-w64-mingw32/lib]
+        collapse library dir [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib] ==> [/opt/local/x86_64-w64-mingw32/lib]
+        implicit libs: [stdc++;mingw32;gcc_s;gcc;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;mingw32;gcc_s;gcc;mingwex;kernel32]
+        implicit objs: [/opt/local/x86_64-w64-mingw32/lib/crt2.o;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o;/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        implicit dirs: [/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0;/opt/local/x86_64-w64-mingw32/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:26 (project)"
+    message: |
+      Running the CXX compiler's linker: "/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.45
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:1237 (message)"
+      - "/opt/local/share/cmake-3.31/Modules/CMakeDetermineASMCompiler.cmake:135 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
+      - "CMakeLists.txt:115 (enable_language)"
+    message: |
+      Checking whether the ASM compiler is GNU using "--version" matched "(GNU assembler)|(GCC)|(Free Software Foundation)":
+      x86_64-w64-mingw32-gcc (GCC) 15.2.0
+      Copyright (C) 2025 Free Software Foundation, Inc.
+      This is free software; see the source for copying conditions.  There is NO
+      warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+      
+...

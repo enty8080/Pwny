@@ -65,6 +65,7 @@ struct c2_table
 
     void *data;
     void *link_data;
+    void *worker;
 
     link_t read_link;
     link_t write_link;

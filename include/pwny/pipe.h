@@ -78,7 +78,8 @@
 #define TLV_TYPE_PIPE_HEARTBEAT TLV_TYPE_CUSTOM(TLV_TYPE_INT, PIPE_BASE, API_TYPE + 5)
 #define TLV_TYPE_PIPE_FLAGS     TLV_TYPE_CUSTOM(TLV_TYPE_INT, PIPE_BASE, API_TYPE + 6)
 
-#define PIPE_INTERACTIVE 1
+#define PIPE_INTERACTIVE  1
+#define PIPE_SYNCHRONOUS 2  /* readall/read must run on the creating thread */
 
 #define PIPE_TYPE     1
 #define PIPE_INTERNAL 1

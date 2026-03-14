@@ -374,6 +374,7 @@ class TLV(QueueProcessor):
             self.egress = client[0]
 
         self.job = None
+        self.client = client
 
         self.running = False
         self.error = None

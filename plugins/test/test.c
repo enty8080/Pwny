@@ -22,11 +22,15 @@
  * SOFTWARE.
  */
 
-#include <pwny/api.h>
-#include <pwny/c2.h>
-#include <pwny/tlv.h>
-#include <pwny/tlv_types.h>
-#include <pwny/tab.h>
+#ifdef __windows__
+
+/*
+ * Windows: DLL tab plugin loaded reflectively in-process.
+ * Exports TabInit() to register handlers into a private
+ * api_calls hash table. No event loop, no pipe IPC.
+ */
+
+#include <pwny/tab_dll.h>
 
 #define TEST \
         TLV_TAG_CUSTOM(API_CALL_DYNAMIC, \
@@ -43,17 +47,50 @@ static tlv_pkt_t *test(c2_t *c2)
     return result;
 }
 
+TAB_DLL_EXPORT void TabInit(api_calls_t **api_calls)
+{
+    api_call_register(api_calls, TEST, (api_t)test);
+}
+
+#else /* POSIX */
+
+/*
+ * POSIX: Standalone executable tab with pipe-based IPC.
+ * Uses the lightweight tab_lite runtime (no heavy deps).
+ */
+
+#include <pwny/tlv.h>
+#include <pwny/tlv_types.h>
+#include <pwny/tab_lite.h>
+
+#define TEST \
+        TLV_TAG_CUSTOM(API_CALL_DYNAMIC, \
+                       TAB_BASE, \
+                       API_CALL)
+
+static tlv_pkt_t *test(tab_lite_c2_t *c2)
+{
+    tlv_pkt_t *result;
+
+    result = tab_lite_craft_response(TAB_STATUS_SUCCESS, c2->request);
+    tlv_pkt_add_string(result, TLV_TYPE_STRING, "Test");
+
+    return result;
+}
+
 int main(void)
 {
-    tab_t *tab;
+    tab_lite_t *tab;
 
-    tab = tab_create();
-    tab_setup(tab);
+    tab = tab_lite_create();
+    tab_lite_setup(tab);
 
-    tab_register_call(tab, TEST, test);
+    tab_lite_register_call(tab, TEST, test);
 
-    tab_start(tab);
-    tab_destroy(tab);
+    tab_lite_start(tab);
+    tab_lite_destroy(tab);
 
     return 0;
 }
+
+#endif

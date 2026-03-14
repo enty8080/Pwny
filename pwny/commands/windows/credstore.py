@@ -53,10 +53,14 @@ class ExternalCommand(Command):
             if entry is None:
                 break
 
-            target = entry.get_string(TLV_TYPE_CRED_TARGET) or ''
-            user = entry.get_string(TLV_TYPE_CRED_USER) or ''
-            password = entry.get_string(TLV_TYPE_CRED_PASS) or ''
-            comment = entry.get_string(TLV_TYPE_CRED_COMMENT) or ''
+            target_raw = entry.get_raw(TLV_TYPE_CRED_TARGET)
+            user_raw = entry.get_raw(TLV_TYPE_CRED_USER)
+            pass_raw = entry.get_raw(TLV_TYPE_CRED_PASS)
+            comment_raw = entry.get_raw(TLV_TYPE_CRED_COMMENT)
+            target = target_raw.decode('utf-8', errors='replace') if target_raw else ''
+            user = user_raw.decode('utf-8', errors='replace') if user_raw else ''
+            password = pass_raw.decode('utf-8', errors='replace') if pass_raw else ''
+            comment = comment_raw.decode('utf-8', errors='replace') if comment_raw else ''
             cred_type = entry.get_int(TLV_TYPE_CRED_TYPE) or 0
             type_name = CRED_TYPE_NAMES.get(cred_type, f'Unknown({cred_type})')
 

@@ -32,6 +32,7 @@
 #include <pwny/api.h>
 #include <pwny/c2.h>
 #include <pwny/tlv_types.h>
+#include <pwny/misc.h>
 #include <pwny/log.h>
 
 #define SERVICES_BASE 19
@@ -54,12 +55,12 @@ static tlv_pkt_t *services_list(c2_t *c2)
     DWORD bytes_needed;
     DWORD service_count;
     DWORD resume_handle;
-    ENUM_SERVICE_STATUS_PROCESSA *services;
+    ENUM_SERVICE_STATUS_PROCESSW *services;
     DWORD buf_size;
     DWORD i;
     tlv_pkt_t *result;
 
-    scm = OpenSCManagerA(NULL, NULL, SC_MANAGER_ENUMERATE_SERVICE);
+    scm = OpenSCManagerW(NULL, NULL, SC_MANAGER_ENUMERATE_SERVICE);
     if (scm == NULL)
     {
         log_debug("* OpenSCManager failed (%lu)\n", GetLastError());
@@ -70,7 +71,7 @@ static tlv_pkt_t *services_list(c2_t *c2)
     service_count = 0;
     resume_handle = 0;
 
-    EnumServicesStatusExA(
+    EnumServicesStatusExW(
         scm, SC_ENUM_PROCESS_INFO,
         SERVICE_WIN32, SERVICE_STATE_ALL,
         NULL, 0,
@@ -85,7 +86,7 @@ static tlv_pkt_t *services_list(c2_t *c2)
     }
 
     buf_size = bytes_needed;
-    services = (ENUM_SERVICE_STATUS_PROCESSA *)malloc(buf_size);
+    services = (ENUM_SERVICE_STATUS_PROCESSW *)malloc(buf_size);
     if (services == NULL)
     {
         CloseServiceHandle(scm);
@@ -93,7 +94,7 @@ static tlv_pkt_t *services_list(c2_t *c2)
     }
 
     resume_handle = 0;
-    if (!EnumServicesStatusExA(
+    if (!EnumServicesStatusExW(
             scm, SC_ENUM_PROCESS_INFO,
             SERVICE_WIN32, SERVICE_STATE_ALL,
             (LPBYTE)services, buf_size,
@@ -110,9 +111,20 @@ static tlv_pkt_t *services_list(c2_t *c2)
     for (i = 0; i < service_count; i++)
     {
         tlv_pkt_t *entry = tlv_pkt_create();
+        char *name_utf8 = wchar_to_utf8(services[i].lpServiceName);
+        char *display_utf8 = wchar_to_utf8(services[i].lpDisplayName);
 
-        tlv_pkt_add_string(entry, TLV_TYPE_SVC_NAME, services[i].lpServiceName);
-        tlv_pkt_add_string(entry, TLV_TYPE_SVC_DISPLAY, services[i].lpDisplayName);
+        if (name_utf8)
+        {
+            tlv_pkt_add_string(entry, TLV_TYPE_SVC_NAME, name_utf8);
+            free(name_utf8);
+        }
+        if (display_utf8)
+        {
+            tlv_pkt_add_string(entry, TLV_TYPE_SVC_DISPLAY, display_utf8);
+            free(display_utf8);
+        }
+
         tlv_pkt_add_u32(entry, TLV_TYPE_SVC_STATE,
                          (int32_t)services[i].ServiceStatusProcess.dwCurrentState);
         tlv_pkt_add_u32(entry, TLV_TYPE_SVC_TYPE,

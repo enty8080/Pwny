@@ -56,7 +56,9 @@ class ExternalCommand(Command, String):
             file_mode = self.mode_symbolic(hash.get('st_mode', 0))
             file_type = self.mode_type(hash.get('st_mode', 0))
             file_time = self.time_normalize(hash.get('st_mtime', 0))
-            file_name = stat.get_string(TLV_TYPE_FILENAME)
+
+            raw_name = stat.get_raw(TLV_TYPE_FILENAME)
+            file_name = raw_name.decode('utf-8', errors='replace') if raw_name else '?'
 
             data.append((file_mode, file_size, file_type, file_time, file_name))
             stat = result.get_tlv(TLV_TYPE_GROUP)

@@ -56,6 +56,40 @@ tlv_pkt_t *tlv_pkt_create(void)
     return tlv_pkt;
 }
 
+tlv_pkt_t *tlv_pkt_clone(tlv_pkt_t *src)
+{
+    tlv_pkt_t *dst;
+
+    if (src == NULL)
+    {
+        return NULL;
+    }
+
+    dst = tlv_pkt_create();
+
+    if (dst == NULL)
+    {
+        return NULL;
+    }
+
+    if (src->bytes > 0 && src->buffer != NULL)
+    {
+        dst->buffer = (unsigned char *)malloc(src->bytes);
+
+        if (dst->buffer == NULL)
+        {
+            free(dst);
+            return NULL;
+        }
+
+        memcpy(dst->buffer, src->buffer, src->bytes);
+        dst->bytes = src->bytes;
+        dst->count = src->count;
+    }
+
+    return dst;
+}
+
 void tlv_pkt_destroy(tlv_pkt_t *tlv_pkt)
 {
     if (tlv_pkt == NULL)
@@ -74,13 +108,16 @@ void tlv_pkt_destroy(tlv_pkt_t *tlv_pkt)
 int tlv_pkt_add_raw(tlv_pkt_t *tlv_pkt, int type, void *value, size_t length)
 {
     struct tlv_header header;
+    unsigned char *new_buffer;
 
-    tlv_pkt->buffer = realloc(tlv_pkt->buffer, tlv_pkt->bytes + TLV_HEADER + length);
+    new_buffer = realloc(tlv_pkt->buffer, tlv_pkt->bytes + TLV_HEADER + length);
 
-    if (tlv_pkt->buffer == NULL)
+    if (new_buffer == NULL)
     {
         return -1;
     }
+
+    tlv_pkt->buffer = new_buffer;
 
     header.type = htonl(type);
     header.length = htonl(length);

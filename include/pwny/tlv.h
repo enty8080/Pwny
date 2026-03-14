@@ -54,6 +54,7 @@ typedef struct
 } tlv_pkt_t;
 
 tlv_pkt_t *tlv_pkt_create(void);
+tlv_pkt_t *tlv_pkt_clone(tlv_pkt_t *src);
 void tlv_pkt_destroy(tlv_pkt_t *tlv_pkt);
 
 int tlv_pkt_add_raw(tlv_pkt_t *tlv_pkt, int type, void *value, size_t length);

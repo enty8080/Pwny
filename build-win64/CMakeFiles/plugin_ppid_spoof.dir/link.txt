@@ -1,0 +1,3 @@
+/opt/local/bin/cmake -E rm -f CMakeFiles/plugin_ppid_spoof.dir/objects.a
+x86_64-w64-mingw32-ar qc CMakeFiles/plugin_ppid_spoof.dir/objects.a @CMakeFiles/plugin_ppid_spoof.dir/objects1.rsp
+/opt/local/bin/x86_64-w64-mingw32-gcc -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols -shared -o plugins/ppid_spoof.dll -Wl,--out-implib,libppid_spoof.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/plugin_ppid_spoof.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/plugin_ppid_spoof.dir/linkLibs.rsp

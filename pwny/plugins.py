@@ -94,10 +94,18 @@ class Plugins(Badges):
         session = plugin_object.session
         info = plugin_object.info
 
-        tab_path = (session.pwny_tabs +
-                    str(session.info['Platform']) +
-                    '/' + str(session.info['Arch']) +
-                    '/' + info['Plugin'])
+        platform = str(session.info['Platform']).lower()
+        arch = str(session.info['Arch'])
+        tab_name = info['Plugin']
+
+        tab_path = os.path.join(session.pwny_tabs, platform, arch, tab_name)
+
+        if not os.path.exists(tab_path):
+            for ext in ('.dll', '.so', '.dylib'):
+                candidate = tab_path + ext
+                if os.path.exists(candidate):
+                    tab_path = candidate
+                    break
 
         if os.path.exists(tab_path):
             with open(tab_path, 'rb') as f:

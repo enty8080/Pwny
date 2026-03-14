@@ -315,15 +315,13 @@ eio_req *eio_rmtree(char *path, int pri, eio_cb cb, void *data)
         return NULL;
     }
 
-    strncpy(tree->path, path, PATH_MAX);
-
     tree->cb = cb;
     tree->cb_data = data;
 
     tree->group_dents = eio_grp(tree_dents, tree);
     tree->group_dir = eio_grp(tree_dir, tree);
 
-    if (!tree->group_dents && !tree->group_dir)
+    if (!tree->group_dents || !tree->group_dir)
     {
         free(tree);
         return NULL;
@@ -336,6 +334,7 @@ eio_req *eio_rmtree(char *path, int pri, eio_cb cb, void *data)
     }
     else
     {
+        strncpy(tree->path, path, PATH_MAX);
         tree_group_add(tree->group_dents, eio_readdir(path, EIO_READDIR_STAT_ORDER, pri, tree_readdir, tree));
         eio_grp_add(tree->group_dir, tree->group_dents);
     }
@@ -361,6 +360,10 @@ static struct stat_table fs_mkstat(EIO_STRUCT_STAT *stat)
     stat_buffer.mtime = htole64(stat->st_mtim.tv_sec);
     stat_buffer.atime = htole64(stat->st_atim.tv_sec);
     stat_buffer.ctime = htole64(stat->st_ctim.tv_sec);
+#else
+    stat_buffer.mtime = htole64(stat->st_mtime);
+    stat_buffer.atime = htole64(stat->st_atime);
+    stat_buffer.ctime = htole64(stat->st_ctime);
 #endif
 
     return stat_buffer;
@@ -708,6 +711,8 @@ static void fs_eio_find(struct eio_req *request)
     last_entry = curr_entry;
     if ((dir = opendir(root)) == NULL)
     {
+        free(curr_entry->dir);
+        free(curr_entry);
         goto fail;
     }
 
@@ -883,6 +888,7 @@ static void fs_eio_file_copy(struct eio_req *request)
 
     if (dest == NULL)
     {
+        fclose(source);
         status = API_CALL_FAIL;
         goto finalize;
     }

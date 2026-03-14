@@ -148,6 +148,7 @@ static void net_resolve(struct eio_req *request)
         return;
     }
 
+    memset(&hint, 0, sizeof(hint));
     hint.ai_family = AF_UNSPEC;
     hint.ai_flags = AI_CANONNAME;
 

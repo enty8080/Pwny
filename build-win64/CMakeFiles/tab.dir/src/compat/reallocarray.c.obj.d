@@ -1,0 +1,28 @@
+CMakeFiles/tab.dir/src/compat/reallocarray.c.obj: \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/src/compat/reallocarray.c \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h \
+ /opt/local/x86_64-w64-mingw32/include/sys/types.h \
+ /opt/local/x86_64-w64-mingw32/include/crtdefs.h \
+ /opt/local/x86_64-w64-mingw32/include/corecrt.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_mac.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ /opt/local/x86_64-w64-mingw32/include/vadefs.h \
+ /opt/local/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_off_t.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h \
+ /opt/local/x86_64-w64-mingw32/include/stdint.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stddef.h \
+ /opt/local/x86_64-w64-mingw32/include/stddef.h \
+ /opt/local/x86_64-w64-mingw32/include/_bsd_types.h \
+ /opt/local/x86_64-w64-mingw32/include/errno.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdlib.h \
+ /opt/local/x86_64-w64-mingw32/include/stdlib.h \
+ /opt/local/x86_64-w64-mingw32/include/corecrt_wstdlib.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/limits.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/syslimits.h \
+ /opt/local/x86_64-w64-mingw32/include/limits.h \
+ /opt/local/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ /opt/local/x86_64-w64-mingw32/include/malloc.h \
+ /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm_malloc.h

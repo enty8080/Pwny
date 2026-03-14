@@ -77,6 +77,7 @@ static tlv_pkt_t *env_list(c2_t *c2)
     envBlock = GetEnvironmentStringsA();
     if (envBlock == NULL)
     {
+        tlv_pkt_destroy(result);
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 

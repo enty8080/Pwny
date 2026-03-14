@@ -128,6 +128,15 @@ class ExternalCommand(Command):
         )
 
         data = np.frombuffer(audio, dtype=np.int16)
+
+        if len(data) == 0:
+            return stream['Line'],
+
+        if len(data) < 2048:
+            data = np.pad(data, (0, 2048 - len(data)))
+        elif len(data) > 2048:
+            data = data[:2048]
+
         stream['Line'].set_ydata(data)
 
         try:
