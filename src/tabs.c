@@ -290,6 +290,14 @@ static int tabs_add_cot(tabs_t **tabs, int id,
         return -1;
     }
 
+    /* Prevent the OS loader from calling the sacrifice DLL's entry
+     * point on DLL_THREAD_ATTACH / DLL_THREAD_DETACH.  After we
+     * overwrite its code pages with COT code, the cached
+     * AddressOfEntryPoint in the loader's LDR_DATA_TABLE_ENTRY
+     * would dispatch into the wrong code, crashing on the next
+     * thread create/exit. */
+    DisableThreadLibraryCalls(hStomp);
+
     dos = (PIMAGE_DOS_HEADER)hStomp;
     nt  = (PIMAGE_NT_HEADERS)((BYTE *)hStomp + dos->e_lfanew);
     image_size = nt->OptionalHeader.SizeOfImage;

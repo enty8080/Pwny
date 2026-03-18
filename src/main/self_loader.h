@@ -54,6 +54,7 @@ typedef ULONG_PTR (WINAPI *SELFLOADER)(ULONG_PTR);
 typedef BOOL (WINAPI *DLLMAIN)(HINSTANCE, DWORD, LPVOID);
 typedef HMODULE (WINAPI *LOADLIBRARYA)(LPCSTR);
 typedef FARPROC (WINAPI *GETPROCADDRESS)(HMODULE, LPCSTR);
+typedef BOOL    (WINAPI *DISABLETHREADLIBRARYCALLS)(HMODULE);
 
 #define DLLEXPORT __declspec(dllexport)
 
@@ -196,8 +197,9 @@ typedef struct
 #define MOD_NTDLL    0x75E5074D
 
 /* DJB2 over ASCII function names */
-#define FN_LOADLIBRARYA   0x5FBFF0FB
-#define FN_GETPROCADDRESS 0xCF31BB1F
+#define FN_LOADLIBRARYA              0x5FBFF0FB
+#define FN_GETPROCADDRESS            0xCF31BB1F
+#define FN_DISABLETHREADLIBRARYCALLS 0x530574F5
 
 /*
  * Export name for the self-loader function.
