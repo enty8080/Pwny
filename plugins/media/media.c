@@ -166,6 +166,12 @@ static struct
     w.pSendMessageA((hwnd), WM_CAP_DRIVER_DISCONNECT, 0, 0)
 #define capGrabFrame(hwnd) \
     w.pSendMessageA((hwnd), WM_CAP_GRAB_FRAME, 0, 0)
+#undef capGetVideoFormat
+#define capGetVideoFormat(hwnd, psz, wSize) \
+    w.pSendMessageA((hwnd), WM_CAP_GET_VIDEOFORMAT, (WPARAM)(wSize), (LPARAM)(psz))
+#undef capGetVideoFormatSize
+#define capGetVideoFormatSize(hwnd) \
+    w.pSendMessageA((hwnd), WM_CAP_GET_VIDEOFORMAT, 0, 0)
 
 /* ================================================================== */
 /* Camera                                                              */
@@ -179,6 +185,8 @@ typedef struct
     DWORD frame_size;
     CRITICAL_SECTION cs;
     int frame_ready;
+    BITMAPINFOHEADER bih;   /* cached video format for BMP wrapping */
+    int bih_valid;
 } cam_t;
 
 static LRESULT CALLBACK cam_frame_callback(HWND hCapWnd, LPVIDEOHDR lpVHdr)
@@ -237,6 +245,22 @@ static int cam_device_open(cam_t *cam, int device_id)
     capSetCallbackOnFrame(cam->hCapWnd, cam_frame_callback);
     capPreviewRate(cam->hCapWnd, 66);
     capPreview(cam->hCapWnd, TRUE);
+
+    /* Cache the video format so cam_readall can build a valid BMP. */
+    {
+        DWORD fmtSize = (DWORD)capGetVideoFormatSize(cam->hCapWnd);
+        if (fmtSize >= sizeof(BITMAPINFOHEADER))
+        {
+            BITMAPINFO *pBmi = (BITMAPINFO *)calloc(1, fmtSize);
+            if (pBmi != NULL)
+            {
+                capGetVideoFormat(cam->hCapWnd, pBmi, fmtSize);
+                memcpy(&cam->bih, &pBmi->bmiHeader, sizeof(BITMAPINFOHEADER));
+                cam->bih_valid = 1;
+                free(pBmi);
+            }
+        }
+    }
 
     return 0;
 }
@@ -318,13 +342,47 @@ static int cam_readall(pipe_t *pipe, void **buffer)
 {
     cam_t *cam;
     DWORD size;
+    void *raw;
 
     cam = (cam_t *)pipe->data;
     size = 0;
+    raw = NULL;
 
-    if (cam_grab_frame(cam, buffer, &size) == -1)
+    if (cam_grab_frame(cam, &raw, &size) == -1)
         return -1;
 
+    /* Wrap raw DIB pixels in a BMP file so the output is a valid image.
+     * Without this the caller receives headerless pixel data. */
+    if (cam->bih_valid)
+    {
+        DWORD hdrTotal = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+        DWORD fileSize = hdrTotal + size;
+        BYTE *bmp;
+        BITMAPFILEHEADER bfh;
+
+        bmp = (BYTE *)malloc(fileSize);
+        if (bmp == NULL)
+        {
+            free(raw);
+            return -1;
+        }
+
+        memset(&bfh, 0, sizeof(bfh));
+        bfh.bfType = 0x4D42;             /* 'BM' */
+        bfh.bfSize = fileSize;
+        bfh.bfOffBits = hdrTotal;
+
+        memcpy(bmp, &bfh, sizeof(bfh));
+        memcpy(bmp + sizeof(bfh), &cam->bih, sizeof(BITMAPINFOHEADER));
+        memcpy(bmp + hdrTotal, raw, size);
+
+        free(raw);
+        *buffer = bmp;
+        return (int)fileSize;
+    }
+
+    /* Fallback: return raw data if format wasn't captured. */
+    *buffer = raw;
     return (int)size;
 }
 

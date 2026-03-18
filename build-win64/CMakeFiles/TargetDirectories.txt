@@ -15,6 +15,7 @@
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_getsystem.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_inject.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_kerberos.dir
+/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_lsadump.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_media.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_minidump.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_netshare.dir

@@ -16,6 +16,7 @@ from hatsploit.lib.core.plugin import Plugin
 FORGE_CALL = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL)
 FORGE_MEMREAD = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 1)
 FORGE_MEMWRITE = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 2)
+FORGE_RESOLVE = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 3)
 
 FORGE_DLL = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
 FORGE_FUNC = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 1)
@@ -38,6 +39,7 @@ ARG_LPCWSTR = 4
 ARG_BUF_IN = 5
 ARG_BUF_OUT = 6
 ARG_BUF_INOUT = 7
+ARG_PTR = 8
 
 
 class ForgeResult(dict):
@@ -69,6 +71,53 @@ class ForgeResult(dict):
         )
 
 
+class ForgeHandle:
+    """Context manager that auto-closes a Win32 HANDLE.
+
+    Usage::
+
+        with ForgeHandle(forge, handle_value) as h:
+            forge.kernel32.WriteFile(int(h), ...)
+        # CloseHandle called automatically
+
+        # Or via the convenience method:
+        with forge.handle(forge.kernel32.CreateFileA(...)) as h:
+            forge.kernel32.ReadFile(int(h), ("out", 4096), 4096, ("out", 4), None)
+    """
+
+    def __init__(self, forge, handle_or_result, close_func=None):
+        if isinstance(handle_or_result, ForgeResult):
+            self._value = handle_or_result.return_value
+        else:
+            self._value = int(handle_or_result)
+        self._forge = forge
+        self._close_func = close_func
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._value and self._value != 0xFFFFFFFFFFFFFFFF:
+            if self._close_func:
+                self._close_func(self._value)
+            else:
+                self._forge.kernel32.CloseHandle(self._value)
+        return False
+
+    def __int__(self):
+        return self._value
+
+    def __index__(self):
+        return self._value
+
+    def __repr__(self):
+        return f"ForgeHandle(0x{self._value:x})"
+
+    @property
+    def value(self):
+        return self._value
+
+
 class ForgeFunction:
     """Callable proxy for a single Win32 function.
 
@@ -83,6 +132,7 @@ class ForgeFunction:
         ("wstr", str)    -> LPCWSTR (UTF-16LE)
         ("qword", int)   -> force QWORD
         ("dword", int)   -> force DWORD
+        ("ptr", int)     -> raw 64-bit pointer
     """
 
     def __init__(self, forge, dll_name, func_name):
@@ -122,6 +172,8 @@ class ForgeFunction:
                     packer.add_qword(int(val))
                 elif tag == 'dword':
                     packer.add_dword(int(val) & 0xFFFFFFFF)
+                elif tag == 'ptr':
+                    packer.add_ptr(int(val))
                 else:
                     raise TypeError(f"Unknown tuple tag: {tag!r}")
             else:
@@ -264,6 +316,65 @@ class Forge:
         if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
             raise RuntimeError("memwrite failed")
 
+    def resolve(self, dll, func):
+        """Resolve a function address without calling it.
+
+        :param str dll: DLL name (e.g. 'kernel32.dll')
+        :param str func: function name (e.g. 'VirtualAlloc')
+        :return int: 64-bit address of the function
+        :raises RuntimeError: if the function cannot be resolved
+        """
+        dll = dll if '.' in dll else dll + '.dll'
+        result = self._session.send_command(
+            tag=FORGE_RESOLVE,
+            plugin=self._plugin_id,
+            args={
+                FORGE_DLL: dll,
+                FORGE_FUNC: func,
+            },
+        )
+        if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            raise RuntimeError(
+                f"Cannot resolve {dll}!{func}"
+            )
+        addr_raw = result.get_raw(FORGE_ADDR)
+        if addr_raw and len(addr_raw) >= 8:
+            return struct.unpack('<Q', addr_raw[:8])[0]
+        return 0
+
+    def call(self, dll, func, *args):
+        """Call a Win32 function by explicit DLL and function name.
+
+        Alternative to the attribute-proxy pattern.  Useful when DLL or
+        function names contain characters that are not valid Python
+        identifiers.
+
+        :param str dll: DLL name (e.g. 'user32.dll')
+        :param str func: function name
+        :param args: arguments (same type rules as attribute proxy)
+        :return ForgeResult:
+        """
+        dll = dll if '.' in dll else dll + '.dll'
+        return ForgeFunction(self, dll, func)(*args)
+
+    def handle(self, handle_or_result, close_func=None):
+        """Wrap a Win32 HANDLE in a context manager.
+
+        The handle is closed automatically via CloseHandle (or a custom
+        *close_func*) when the ``with`` block exits.
+
+        Usage::
+
+            with forge.handle(forge.kernel32.CreateFileA(...)) as h:
+                forge.kernel32.ReadFile(int(h), ...)
+            # CloseHandle called here
+
+        :param handle_or_result: int or ForgeResult
+        :param close_func: optional callable(int) for non-CloseHandle cleanup
+        :return ForgeHandle:
+        """
+        return ForgeHandle(self, handle_or_result, close_func)
+
     def __repr__(self):
         return "<Forge proxy>"
 
@@ -316,6 +427,10 @@ class ForgePacker:
         self.buffer += struct.pack('<BI', ARG_BUF_INOUT, len(value))
         self.buffer += value
 
+    def add_ptr(self, value):
+        self.buffer += struct.pack('<BI', ARG_PTR, 8)
+        self.buffer += struct.pack('<Q', value & 0xFFFFFFFFFFFFFFFF)
+
     def get(self):
         return self.buffer
 
@@ -344,6 +459,7 @@ TYPE_NAMES = {
     'bi': 'buffer_in',
     'bo': 'buffer_out',
     'bio': 'buffer_inout',
+    'p': 'pointer',
 }
 
 
@@ -379,6 +495,8 @@ def parse_arg_spec(spec):
     elif prefix == 'bio':
         data = bytes.fromhex(value)
         return ARG_BUF_INOUT, data
+    elif prefix == 'p':
+        return ARG_PTR, struct.pack('<Q', int(value, 0) & 0xFFFFFFFFFFFFFFFF)
     else:
         raise ValueError(f"Unknown type prefix: {prefix}")
 
@@ -408,7 +526,7 @@ class HatSploitPlugin(Plugin):
                         ('action',),
                         {
                             'help': "Action to perform.",
-                            'choices': ['call', 'memread', 'memwrite'],
+                            'choices': ['call', 'memread', 'memwrite', 'resolve'],
                         }
                     ),
                     (
@@ -424,7 +542,8 @@ class HatSploitPlugin(Plugin):
                                 "  Examples: d:0x80000002 s:SOFTWARE\\\\Test bo:256\n"
                                 "\n"
                                 "For 'memread': <hex_address> <length>\n"
-                                "For 'memwrite': <hex_address> <hex_data>"
+                                "For 'memwrite': <hex_address> <hex_data>\n"
+                                "For 'resolve': <dll> <func>"
                             ),
                             'nargs': '*',
                         }
@@ -574,6 +693,44 @@ class HatSploitPlugin(Plugin):
             f"Wrote {len(data)} bytes to 0x{addr:016x}."
         )
 
+    def _do_resolve(self, positional):
+        if len(positional) < 2:
+            self.print_error(
+                "Usage: forge resolve <dll> <func>"
+            )
+            return
+
+        dll_name = positional[0]
+        func_name = positional[1]
+
+        if '.' not in dll_name:
+            dll_name += '.dll'
+
+        result = self.session.send_command(
+            tag=FORGE_RESOLVE,
+            plugin=self.plugin,
+            args={
+                FORGE_DLL: dll_name,
+                FORGE_FUNC: func_name,
+            },
+        )
+
+        if result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            self.print_error(
+                f"Cannot resolve {dll_name}!{func_name}"
+            )
+            return
+
+        addr_raw = result.get_raw(FORGE_ADDR)
+        if addr_raw and len(addr_raw) >= 8:
+            addr = struct.unpack('<Q', addr_raw[:8])[0]
+        else:
+            addr = 0
+
+        self.print_success(
+            f"{dll_name}!{func_name} = 0x{addr:016x}"
+        )
+
     def _hexdump(self, data, width=16):
         for i in range(0, len(data), width):
             chunk = data[i:i + width]
@@ -596,6 +753,8 @@ class HatSploitPlugin(Plugin):
             self._do_memread(positional)
         elif action == 'memwrite':
             self._do_memwrite(positional)
+        elif action == 'resolve':
+            self._do_resolve(positional)
 
     def load(self):
         self.session.forge = Forge(self.session, self.plugin)

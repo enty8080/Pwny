@@ -11,6 +11,7 @@ This guide covers compiling Pwny's C implant, dependencies, and plugins for all 
 | CMake >= 3.10 | Build system |
 | Python 3.7+ | `pe2cot.py`, `cotinfo.py`, Python console |
 | Make | Building dependencies |
+| libtool | Library archiving |
 | Cross-compiler toolchain | Target-specific (see below) |
 
 ---

@@ -37,7 +37,7 @@ setup(name='pwny',
       install_requires=[
           'pex @ git+https://github.com/EntySec/Pex',
           'pycryptodome',
-          'pyaudio', 'numpy'
+          'pyaudio', 'numpy', 'matplotlib'
       ],
       zip_safe=False
 )

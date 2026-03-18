@@ -338,6 +338,19 @@ plugin_kerberos/fast:
 .PHONY : plugin_kerberos/fast
 
 #=============================================================================
+# Target rules for targets named plugin_lsadump
+
+# Build rule for target.
+plugin_lsadump: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_lsadump
+.PHONY : plugin_lsadump
+
+# fast build rule for target.
+plugin_lsadump/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/build
+.PHONY : plugin_lsadump/fast
+
+#=============================================================================
 # Target rules for targets named plugin_media
 
 # Build rule for target.
@@ -803,6 +816,38 @@ plugins/kerberos/kerberos.s: plugins/kerberos/kerberos.c.s
 plugins/kerberos/kerberos.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_kerberos.dir/build.make CMakeFiles/plugin_kerberos.dir/plugins/kerberos/kerberos.c.s
 .PHONY : plugins/kerberos/kerberos.c.s
+
+plugins/lsadump/gate.obj: plugins/lsadump/gate.S.obj
+.PHONY : plugins/lsadump/gate.obj
+
+# target to build an object file
+plugins/lsadump/gate.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/plugins/lsadump/gate.S.obj
+.PHONY : plugins/lsadump/gate.S.obj
+
+plugins/lsadump/lsadump.obj: plugins/lsadump/lsadump.c.obj
+.PHONY : plugins/lsadump/lsadump.obj
+
+# target to build an object file
+plugins/lsadump/lsadump.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/plugins/lsadump/lsadump.c.obj
+.PHONY : plugins/lsadump/lsadump.c.obj
+
+plugins/lsadump/lsadump.i: plugins/lsadump/lsadump.c.i
+.PHONY : plugins/lsadump/lsadump.i
+
+# target to preprocess a source file
+plugins/lsadump/lsadump.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/plugins/lsadump/lsadump.c.i
+.PHONY : plugins/lsadump/lsadump.c.i
+
+plugins/lsadump/lsadump.s: plugins/lsadump/lsadump.c.s
+.PHONY : plugins/lsadump/lsadump.s
+
+# target to generate assembly for a file
+plugins/lsadump/lsadump.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/plugins/lsadump/lsadump.c.s
+.PHONY : plugins/lsadump/lsadump.c.s
 
 plugins/media/media.obj: plugins/media/media.c.obj
 .PHONY : plugins/media/media.obj
@@ -2037,6 +2082,7 @@ help:
 	@echo "... plugin_getsystem"
 	@echo "... plugin_inject"
 	@echo "... plugin_kerberos"
+	@echo "... plugin_lsadump"
 	@echo "... plugin_media"
 	@echo "... plugin_minidump"
 	@echo "... plugin_netshare"
@@ -2091,6 +2137,10 @@ help:
 	@echo "... plugins/kerberos/kerberos.obj"
 	@echo "... plugins/kerberos/kerberos.i"
 	@echo "... plugins/kerberos/kerberos.s"
+	@echo "... plugins/lsadump/gate.obj"
+	@echo "... plugins/lsadump/lsadump.obj"
+	@echo "... plugins/lsadump/lsadump.i"
+	@echo "... plugins/lsadump/lsadump.s"
 	@echo "... plugins/media/media.obj"
 	@echo "... plugins/media/media.i"
 	@echo "... plugins/media/media.s"

@@ -73,11 +73,7 @@
 #define TLV_TYPE_PROCESS_ARGV TLV_TYPE_CUSTOM(TLV_TYPE_STRING, PROCESS_BASE, API_TYPE + 3)
 #define TLV_TYPE_PROCESS_ENV  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, PROCESS_BASE, API_TYPE + 4)
 
-#ifndef __windows__
 extern char **environ;
-#else
-__declspec(dllimport) extern char **environ;
-#endif
 
 static tlv_pkt_t *process_list(c2_t *c2)
 {

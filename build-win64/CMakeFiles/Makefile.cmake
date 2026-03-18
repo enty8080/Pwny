@@ -84,6 +84,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/plugin_getsystem.dir/DependInfo.cmake"
   "CMakeFiles/plugin_inject.dir/DependInfo.cmake"
   "CMakeFiles/plugin_kerberos.dir/DependInfo.cmake"
+  "CMakeFiles/plugin_lsadump.dir/DependInfo.cmake"
   "CMakeFiles/plugin_media.dir/DependInfo.cmake"
   "CMakeFiles/plugin_minidump.dir/DependInfo.cmake"
   "CMakeFiles/plugin_netshare.dir/DependInfo.cmake"

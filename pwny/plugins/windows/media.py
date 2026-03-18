@@ -411,7 +411,7 @@ class HatSploitPlugin(Plugin):
                 self.print_error(f"Failed to open device #{str(args.snap)}!")
                 return
 
-            output = args.output or self.session.loot.random_loot('png')
+            output = args.output or self.session.loot.random_loot('bmp')
 
             try:
                 with open(output, 'wb') as f:

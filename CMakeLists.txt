@@ -107,6 +107,7 @@ if(MAIN)
     mbedx509
     mbedtls
     mbedcrypto
+    pthread
 )
 
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -169,7 +170,7 @@ if(MAIN AND CMAKE_SYSTEM_NAME STREQUAL Windows)
     target_link_libraries(pwny_service PRIVATE
         pwny pawn sigar eio ev curl z mbedx509 mbedtls mbedcrypto)
     target_link_libraries(pwny_service PRIVATE
-        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32)
+        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32 pthread)
     target_link_options(pwny_service PRIVATE --static)
 endif()
 
@@ -186,7 +187,7 @@ if(MAIN AND CMAKE_SYSTEM_NAME STREQUAL Windows)
     target_link_libraries(pwny_dll PRIVATE
         pwny pawn sigar eio ev curl z mbedx509 mbedtls mbedcrypto)
     target_link_libraries(pwny_dll PRIVATE
-        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32)
+        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32 pthread)
     target_compile_options(pwny_dll PRIVATE -Os -ffunction-sections -fdata-sections)
     target_link_options(pwny_dll PRIVATE -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols)
     set_target_properties(pwny_dll PROPERTIES
@@ -264,6 +265,7 @@ if(PLUGINS)
         media
         credentials
         execute
+        lsadump
     )
 
     file(GLOB PLUGIN_DIRS plugins/*)

