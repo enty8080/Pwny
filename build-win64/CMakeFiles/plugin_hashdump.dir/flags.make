@@ -6,5 +6,5 @@ C_DEFINES = -D__windows__ -Dplugin_hashdump_EXPORTS
 
 C_INCLUDES = @CMakeFiles/plugin_hashdump.dir/includes_C.rsp
 
-C_FLAGS = -Os -ffunction-sections -fdata-sections
+C_FLAGS = -ffile-prefix-map=/Users/felix/Desktop/EntySec/Projects/Pwny/=./ -Os -ffunction-sections -fdata-sections
 

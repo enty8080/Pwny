@@ -48,11 +48,11 @@ class ExternalCommand(Command):
         if args.remove:
             self.session.loot.remove_loot(args.remove)
 
-        elif args.wipe == '-w':
+        elif args.wipe:
             for loot in self.session.loot.list_loot():
                 self.session.loot.remove_loot(loot[0])
 
-        elif args.list == '-l':
+        elif args.list:
             loot_data = self.session.loot.list_loot()
 
             if not loot_data:

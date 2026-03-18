@@ -1,6 +1,5 @@
 CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/plugins/migrate/migrate.c \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
@@ -345,7 +344,7 @@ CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h \
  /opt/local/x86_64-w64-mingw32/include/fcntl.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h \
@@ -356,4 +355,5 @@ CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h \
  /opt/local/x86_64-w64-mingw32/include/mstcpip.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/inject_tech.h \
- /opt/local/x86_64-w64-mingw32/include/tlhelp32.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h

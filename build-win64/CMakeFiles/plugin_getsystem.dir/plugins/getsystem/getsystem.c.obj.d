@@ -1,6 +1,5 @@
 CMakeFiles/plugin_getsystem.dir/plugins/getsystem/getsystem.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/plugins/getsystem/getsystem.c \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
@@ -346,4 +345,4 @@ CMakeFiles/plugin_getsystem.dir/plugins/getsystem/getsystem.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h \
  /opt/local/x86_64-w64-mingw32/include/fcntl.h \
  /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h

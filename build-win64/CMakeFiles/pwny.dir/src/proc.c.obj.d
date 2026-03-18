@@ -333,4 +333,5 @@ CMakeFiles/pwny.dir/src/proc.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h \
  /opt/local/x86_64-w64-mingw32/include/qos.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/proc.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /opt/local/x86_64-w64-mingw32/include/tlhelp32.h

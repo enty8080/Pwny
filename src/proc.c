@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,71 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sigar.h>
+
+#ifdef __windows__
+#include <tlhelp32.h>
+
+sigar_pid_t proc_find(sigar_t *sigar, const char *name)
+{
+    HANDLE hSnap;
+    PROCESSENTRY32 pe32;
+
+    hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap == INVALID_HANDLE_VALUE)
+    {
+        log_debug("* Cannot build process tree\n");
+        return -1;
+    }
+
+    pe32.dwSize = sizeof(pe32);
+    if (!Process32First(hSnap, &pe32))
+    {
+        CloseHandle(hSnap);
+        return -1;
+    }
+
+    do
+    {
+        if (strcmp(pe32.szExeFile, name) == 0)
+        {
+            sigar_pid_t pid = (sigar_pid_t)pe32.th32ProcessID;
+            log_debug("* Found (%s) on PID (%d)\n", name, pid);
+            CloseHandle(hSnap);
+            return pid;
+        }
+    } while (Process32Next(hSnap, &pe32));
+
+    CloseHandle(hSnap);
+    return -1;
+}
+
+int proc_kill(sigar_t *sigar, sigar_pid_t pid)
+{
+    HANDLE hProc;
+    BOOL ok;
+
+    hProc = OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD)pid);
+    if (hProc == NULL)
+    {
+        log_debug("* Failed to open process for kill (%d) (%lu)\n",
+                  pid, GetLastError());
+        return -1;
+    }
+
+    ok = TerminateProcess(hProc, 1);
+    CloseHandle(hProc);
+
+    if (!ok)
+    {
+        log_debug("* Failed to terminate process (%d) (%lu)\n",
+                  pid, GetLastError());
+        return -1;
+    }
+
+    return 0;
+}
+
+#else
 
 sigar_pid_t proc_find(sigar_t *sigar, const char *name)
 {
@@ -80,3 +145,5 @@ int proc_kill(sigar_t *sigar, sigar_pid_t pid)
 
     return 0;
 }
+
+#endif

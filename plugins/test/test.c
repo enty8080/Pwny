@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,12 @@
 
 #ifdef __windows__
 
-/*
- * Windows: DLL tab plugin loaded reflectively in-process.
- * Exports TabInit() to register handlers into a private
- * api_calls hash table. No event loop, no pipe IPC.
- */
+#include <pwny/api.h>
+#include <pwny/tlv_types.h>
+#include <pwny/c2.h>
 
-#include <pwny/tab_dll.h>
+#define COT_PLUGIN
+#include <pwny/tab_cot.h>
 
 #define TEST \
         TLV_TAG_CUSTOM(API_CALL_DYNAMIC, \
@@ -47,7 +46,7 @@ static tlv_pkt_t *test(c2_t *c2)
     return result;
 }
 
-TAB_DLL_EXPORT void TabInit(api_calls_t **api_calls)
+COT_ENTRY
 {
     api_call_register(api_calls, TEST, (api_t)test);
 }

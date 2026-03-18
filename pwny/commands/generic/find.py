@@ -143,7 +143,7 @@ class ExternalCommand(Command, String):
         self.wait()
 
         if self.result.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
-            self.print_error(f"Remote file: {args[1]}: does not exist!")
+            self.print_error(f"Remote file: {args.keyword}: does not exist!")
             return
 
         stat = self.result.get_tlv(TLV_TYPE_GROUP)

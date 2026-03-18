@@ -256,13 +256,11 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj
  /opt/local/x86_64-w64-mingw32/include/propidl.h
  /opt/local/x86_64-w64-mingw32/include/prsht.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsadata.h
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_xmitfile.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/intrin-impl.h
  /opt/local/x86_64-w64-mingw32/include/pshpack1.h
  /opt/local/x86_64-w64-mingw32/include/pshpack2.h

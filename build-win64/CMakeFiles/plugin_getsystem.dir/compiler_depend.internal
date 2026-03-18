@@ -21,13 +21,12 @@ CMakeFiles/plugin_getsystem.dir/plugins/getsystem/getsystem.c.obj
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h

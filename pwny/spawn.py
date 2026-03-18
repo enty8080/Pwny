@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2020-2024 EntySec
+Copyright (c) 2020-2026 EntySec
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,10 @@ SOFTWARE.
 
 import sys
 import getch
-import ctypes
 import threading
 import selectors
+
+from typing import Optional, Union
 
 from pwny.api import *
 from pwny.types import *
@@ -36,7 +37,6 @@ from pex.proto.tlv import TLVPacket
 
 from hatsploit.lib.core.session import Session
 
-from typing import Union
 from badges import Badges
 
 FLAG_FORK = 1
@@ -86,32 +86,42 @@ class Spawn(Badges, String):
         if packet.get_int(PIPE_TYPE_HEARTBEAT) != TLV_STATUS_SUCCESS:
             self.closed = True
 
-    def write_thread(self, pipe_id: int) -> None:
+    def write_thread(self, pipe_id: int,
+                     done: threading.Event) -> None:
         """ Thread for writing.
 
         :param int pipe_id: pipe ID
+        :param threading.Event done: signalled when thread exits
         :return None: None
         """
 
         selector = selectors.SelectSelector()
         selector.register(sys.stdin, selectors.EVENT_READ)
 
-        while not self.closed:
-            for key, events in selector.select():
-                if key.fileobj is not sys.stdin:
-                    continue
+        try:
+            while not self.closed:
+                for key, events in selector.select(timeout=0.25):
+                    if key.fileobj is not sys.stdin:
+                        continue
 
-                try:
-                    line = sys.stdin.readline()
+                    try:
+                        line = sys.stdin.readline()
 
-                    if not line:
-                        pass
+                        if not line:
+                            self.closed = True
+                            break
 
-                    self.pipes.write_pipe(
-                        PROCESS_PIPE, pipe_id,
-                        (line + '\n').encode())
-                except EOFError:
-                    pass
+                        self.pipes.write_pipe(
+                            PROCESS_PIPE, pipe_id,
+                            line.encode())
+                    except EOFError:
+                        self.closed = True
+                        break
+                    except Exception:
+                        self.closed = True
+                        break
+        finally:
+            done.set()
 
     def change_dir(self, path: str) -> None:
         """ Change directory.
@@ -225,23 +235,22 @@ class Spawn(Badges, String):
             target=self.heartbeat_event
         )
 
-        write_thread = threading.Thread(target=self.write_thread, args=(pipe_id,))
+        done = threading.Event()
+        write_thread = threading.Thread(
+            target=self.write_thread, args=(pipe_id, done))
         write_thread.setDaemon(True)
         write_thread.start()
 
         try:
             while not self.closed:
-                pass
+                if done.wait(timeout=0.25):
+                    break
         except KeyboardInterrupt:
             self.print_process("Cleaning up...")
             self.closed = True
 
-        if write_thread.is_alive():
-            exc = ctypes.py_object(SystemExit)
-            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(write_thread.ident), exc)
-
-            if res > 1:
-                ctypes.pythonapi.PyThreadState_SetAsyncExc(write_thread.ident, None)
+        # Let the write thread finish gracefully (it checks self.closed)
+        done.wait(timeout=2.0)
 
         self.pipes.destroy_pipe(PROCESS_PIPE, pipe_id)
         return True

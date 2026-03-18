@@ -7,11 +7,11 @@ ASM_DEFINES = -D__windows__ -Dplugin_migrate_EXPORTS
 
 ASM_INCLUDES = @CMakeFiles/plugin_migrate.dir/includes_ASM.rsp
 
-ASM_FLAGS = -Os -ffunction-sections -fdata-sections
+ASM_FLAGS = -ffile-prefix-map=/Users/felix/Desktop/EntySec/Projects/Pwny/=./ -Os -ffunction-sections -fdata-sections -fno-stack-protector -fno-asynchronous-unwind-tables
 
 C_DEFINES = -D__windows__ -Dplugin_migrate_EXPORTS
 
 C_INCLUDES = @CMakeFiles/plugin_migrate.dir/includes_C.rsp
 
-C_FLAGS = -Os -ffunction-sections -fdata-sections
+C_FLAGS = -ffile-prefix-map=/Users/felix/Desktop/EntySec/Projects/Pwny/=./ -Os -ffunction-sections -fdata-sections -fno-stack-protector -fno-asynchronous-unwind-tables
 

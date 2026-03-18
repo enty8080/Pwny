@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -110,6 +110,10 @@ int main(int argc, char *argv[])
 
 #ifndef __windows__
     signal(SIGPIPE, SIG_IGN);
+#else
+    /* Suppress Windows error dialogs (missing DLL dependencies, etc.)
+     * that can appear during LoadLibrary calls for stomp candidates. */
+    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
 #endif
     core = core_create();
 

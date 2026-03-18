@@ -3,15 +3,15 @@
 
 # compile ASM with /opt/local/bin/x86_64-w64-mingw32-gcc
 # compile C with /opt/local/bin/x86_64-w64-mingw32-gcc
-ASM_DEFINES = -D__windows__ -Dpwny_dll_EXPORTS
+ASM_DEFINES = -DDEBUG -D__windows__ -Dpwny_dll_EXPORTS
 
 ASM_INCLUDES = @CMakeFiles/pwny_dll.dir/includes_ASM.rsp
 
-ASM_FLAGS = -Os -ffunction-sections -fdata-sections
+ASM_FLAGS = -ffile-prefix-map=/Users/felix/Desktop/EntySec/Projects/Pwny/=./ -Os -ffunction-sections -fdata-sections
 
-C_DEFINES = -D__windows__ -Dpwny_dll_EXPORTS
+C_DEFINES = -DDEBUG -D__windows__ -Dpwny_dll_EXPORTS
 
 C_INCLUDES = @CMakeFiles/pwny_dll.dir/includes_C.rsp
 
-C_FLAGS = -Os -ffunction-sections -fdata-sections
+C_FLAGS = -ffile-prefix-map=/Users/felix/Desktop/EntySec/Projects/Pwny/=./ -Os -ffunction-sections -fdata-sections
 

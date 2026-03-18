@@ -1,6 +1,5 @@
 CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/plugins/inject/inject.c \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
@@ -345,6 +344,16 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h \
  /opt/local/x86_64-w64-mingw32/include/fcntl.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/win32netcompat.h \
+ /opt/local/x86_64-w64-mingw32/include/ws2tcpip.h \
+ /opt/local/x86_64-w64-mingw32/include/ws2ipdef.h \
+ /opt/local/x86_64-w64-mingw32/include/in6addr.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h \
+ /opt/local/x86_64-w64-mingw32/include/mstcpip.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/inject_tech.h \
- /opt/local/x86_64-w64-mingw32/include/tlhelp32.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h

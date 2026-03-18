@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# Copyright (c) 2020-2024 EntySec
+# Copyright (c) 2020-2026 EntySec
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,9 @@ set(SOURCE src/main/main.c CACHE STRING "File to build as executable")
 if (DEBUG)
     add_compile_definitions(DEBUG)
 endif()
+
+# Strip build paths from binaries (prevents source path leaks)
+add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=./)
 
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     include_directories(include/compat include/mingw)
@@ -112,7 +115,7 @@ if(MAIN)
 
     if(CMAKE_SYSTEM_NAME STREQUAL Windows)
         enable_language(ASM)
-        target_link_libraries(main PRIVATE ws2_32 netapi32 version crypt32 avicap32 winmm advapi32 credui secur32 ole32 oleaut32)
+        target_link_libraries(main PRIVATE ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32)
         if(SHARED)
             target_link_options(main PRIVATE -shared)
         else()
@@ -166,7 +169,7 @@ if(MAIN AND CMAKE_SYSTEM_NAME STREQUAL Windows)
     target_link_libraries(pwny_service PRIVATE
         pwny pawn sigar eio ev curl z mbedx509 mbedtls mbedcrypto)
     target_link_libraries(pwny_service PRIVATE
-        ws2_32 netapi32 version crypt32 avicap32 winmm advapi32 credui secur32 ole32 oleaut32)
+        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32)
     target_link_options(pwny_service PRIVATE --static)
 endif()
 
@@ -183,7 +186,7 @@ if(MAIN AND CMAKE_SYSTEM_NAME STREQUAL Windows)
     target_link_libraries(pwny_dll PRIVATE
         pwny pawn sigar eio ev curl z mbedx509 mbedtls mbedcrypto)
     target_link_libraries(pwny_dll PRIVATE
-        ws2_32 netapi32 version crypt32 avicap32 winmm advapi32 credui secur32 ole32 oleaut32)
+        ws2_32 netapi32 version crypt32 advapi32 secur32 ole32 oleaut32)
     target_compile_options(pwny_dll PRIVATE -Os -ffunction-sections -fdata-sections)
     target_link_options(pwny_dll PRIVATE -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols)
     set_target_properties(pwny_dll PROPERTIES
@@ -232,6 +235,37 @@ endif()
 
 # Build tab plugins
 if(PLUGINS)
+    # Plugins to build as COT blobs (Windows only, module-stomped at runtime).
+    # All other plugins use the legacy DLL-LoadLibrary path.
+    set(COT_PLUGINS
+        evasion
+        test
+        eventlog
+        timestomp
+        services
+        credstore
+        netshare
+        persist
+        token
+        getsystem
+        kerberos
+        inject
+        forge
+        ui
+        clipboard
+        registry
+        uac
+        arp
+        wifi_passwords
+        minidump
+        smb_pipe
+        schtasks
+        sysinfo
+        media
+        credentials
+        execute
+    )
+
     file(GLOB PLUGIN_DIRS plugins/*)
 
     foreach(PLUGIN_DIR ${PLUGIN_DIRS})
@@ -242,37 +276,79 @@ if(PLUGINS)
             if(PLUGIN_SOURCES)
                 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
                     enable_language(ASM)
-                    # Windows: build plugins as plain DLLs (loaded via LoadLibrary)
-                    add_library(plugin_${PLUGIN_NAME} SHARED
-                        ${PLUGIN_SOURCES}
-                    )
-                    target_link_directories(plugin_${PLUGIN_NAME} PRIVATE
-                        deps/build/${CMAKE_SYSTEM_TARGET}/lib)
-                    target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE tab_dll)
-                    target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE
-                        ws2_32 advapi32 netapi32 secur32 crypt32
-                        ole32 oleaut32)
-                    target_compile_options(plugin_${PLUGIN_NAME} PRIVATE
-                        -Os -ffunction-sections -fdata-sections)
-                    target_link_options(plugin_${PLUGIN_NAME} PRIVATE
-                        -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols)
-                    set_target_properties(plugin_${PLUGIN_NAME} PROPERTIES
-                        OUTPUT_NAME ${PLUGIN_NAME}
-                        PREFIX ""
-                        SUFFIX ".dll"
-                        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins
-                        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
 
-                    # Copy built plugin DLL to pwny/tabs/<platform>/<arch>/ for Python loader
+                    # Determine install paths
                     string(TOLOWER ${CMAKE_SYSTEM_NAME} TABS_PLATFORM)
                     set(TABS_ARCH ${CMAKE_SYSTEM_PROCESSOR})
                     set(TABS_DIR ${CMAKE_SOURCE_DIR}/pwny/tabs/${TABS_PLATFORM}/${TABS_ARCH})
-                    add_custom_command(TARGET plugin_${PLUGIN_NAME} POST_BUILD
-                        COMMAND ${CMAKE_COMMAND} -E make_directory ${TABS_DIR}
-                        COMMAND ${CMAKE_COMMAND} -E copy
-                            $<TARGET_FILE:plugin_${PLUGIN_NAME}>
-                            ${TABS_DIR}/${PLUGIN_NAME}
-                        COMMENT "Installing plugin ${PLUGIN_NAME} -> pwny/tabs/${TABS_PLATFORM}/${TABS_ARCH}/${PLUGIN_NAME}")
+
+                    if(PLUGIN_NAME IN_LIST COT_PLUGINS)
+                        # -------------------------------------------
+                        # COT build: compile as DLL, pe2cot -> .cot
+                        # -------------------------------------------
+                        add_library(plugin_${PLUGIN_NAME} SHARED
+                            ${PLUGIN_SOURCES}
+                        )
+                        target_link_directories(plugin_${PLUGIN_NAME} PRIVATE
+                            deps/build/${CMAKE_SYSTEM_TARGET}/lib)
+                        # COT plugins don't call Pwny or Win32 APIs directly,
+                        # but we still link tab_dll for the header dependencies
+                        # and kernel32 for the minimal CRT startup stub.
+                        target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE tab_dll)
+                        target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE kernel32)
+                        target_compile_options(plugin_${PLUGIN_NAME} PRIVATE
+                            -Os -ffunction-sections -fdata-sections
+                            -fno-stack-protector -fno-asynchronous-unwind-tables)
+                        target_link_options(plugin_${PLUGIN_NAME} PRIVATE
+                            -static-libgcc -Wl,--gc-sections -Wl,--strip-all
+                            -Wl,--exclude-all-symbols)
+                        set_target_properties(plugin_${PLUGIN_NAME} PROPERTIES
+                            OUTPUT_NAME ${PLUGIN_NAME}
+                            PREFIX ""
+                            SUFFIX ".dll"
+                            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins
+                            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
+
+                        # Post-build: extract COT blob from the compiled DLL
+                        add_custom_command(TARGET plugin_${PLUGIN_NAME} POST_BUILD
+                            COMMAND ${CMAKE_COMMAND} -E make_directory ${TABS_DIR}
+                            COMMAND python3 ${CMAKE_SOURCE_DIR}/scripts/pe2cot.py
+                                $<TARGET_FILE:plugin_${PLUGIN_NAME}>
+                                ${TABS_DIR}/${PLUGIN_NAME}
+                            COMMENT "Converting plugin ${PLUGIN_NAME} to COT blob -> pwny/tabs/${TABS_PLATFORM}/${TABS_ARCH}/${PLUGIN_NAME}")
+
+                    else()
+                        # -------------------------------------------
+                        # Legacy DLL build (loaded via LoadLibrary)
+                        # -------------------------------------------
+                        add_library(plugin_${PLUGIN_NAME} SHARED
+                            ${PLUGIN_SOURCES}
+                        )
+                        target_link_directories(plugin_${PLUGIN_NAME} PRIVATE
+                            deps/build/${CMAKE_SYSTEM_TARGET}/lib)
+                        target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE tab_dll)
+                        target_link_libraries(plugin_${PLUGIN_NAME} PRIVATE
+                            ws2_32 advapi32 netapi32 secur32 crypt32
+                            ole32 oleaut32 avicap32 vfw32 winmm gdi32 user32)
+                        target_compile_options(plugin_${PLUGIN_NAME} PRIVATE
+                            -Os -ffunction-sections -fdata-sections)
+                        target_link_options(plugin_${PLUGIN_NAME} PRIVATE
+                            -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols)
+                        set_target_properties(plugin_${PLUGIN_NAME} PROPERTIES
+                            OUTPUT_NAME ${PLUGIN_NAME}
+                            PREFIX ""
+                            SUFFIX ".dll"
+                            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins
+                            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
+
+                        # Copy built plugin DLL to pwny/tabs/<platform>/<arch>/ for Python loader
+                        add_custom_command(TARGET plugin_${PLUGIN_NAME} POST_BUILD
+                            COMMAND ${CMAKE_COMMAND} -E make_directory ${TABS_DIR}
+                            COMMAND ${CMAKE_COMMAND} -E copy
+                                $<TARGET_FILE:plugin_${PLUGIN_NAME}>
+                                ${TABS_DIR}/${PLUGIN_NAME}
+                            COMMENT "Installing plugin ${PLUGIN_NAME} -> pwny/tabs/${TABS_PLATFORM}/${TABS_ARCH}/${PLUGIN_NAME}")
+                    endif()
                 else()
                     # POSIX: build plugins as executables with pipe IPC
                     add_executable(plugin_${PLUGIN_NAME} ${PLUGIN_SOURCES})

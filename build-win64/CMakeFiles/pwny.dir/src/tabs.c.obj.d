@@ -344,4 +344,6 @@ CMakeFiles/pwny.dir/src/tabs.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h \
  /opt/local/x86_64-w64-mingw32/include/fcntl.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/pipe.h \
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h

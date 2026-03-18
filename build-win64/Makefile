@@ -195,17 +195,56 @@ tab_dll/fast:
 .PHONY : tab_dll/fast
 
 #=============================================================================
-# Target rules for targets named plugin_bof_loader
+# Target rules for targets named plugin_arp
 
 # Build rule for target.
-plugin_bof_loader: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_bof_loader
-.PHONY : plugin_bof_loader
+plugin_arp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_arp
+.PHONY : plugin_arp
 
 # fast build rule for target.
-plugin_bof_loader/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_bof_loader.dir/build.make CMakeFiles/plugin_bof_loader.dir/build
-.PHONY : plugin_bof_loader/fast
+plugin_arp/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_arp.dir/build.make CMakeFiles/plugin_arp.dir/build
+.PHONY : plugin_arp/fast
+
+#=============================================================================
+# Target rules for targets named plugin_clipboard
+
+# Build rule for target.
+plugin_clipboard: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_clipboard
+.PHONY : plugin_clipboard
+
+# fast build rule for target.
+plugin_clipboard/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_clipboard.dir/build.make CMakeFiles/plugin_clipboard.dir/build
+.PHONY : plugin_clipboard/fast
+
+#=============================================================================
+# Target rules for targets named plugin_credentials
+
+# Build rule for target.
+plugin_credentials: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_credentials
+.PHONY : plugin_credentials
+
+# fast build rule for target.
+plugin_credentials/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credentials.dir/build.make CMakeFiles/plugin_credentials.dir/build
+.PHONY : plugin_credentials/fast
+
+#=============================================================================
+# Target rules for targets named plugin_credstore
+
+# Build rule for target.
+plugin_credstore: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_credstore
+.PHONY : plugin_credstore
+
+# fast build rule for target.
+plugin_credstore/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credstore.dir/build.make CMakeFiles/plugin_credstore.dir/build
+.PHONY : plugin_credstore/fast
 
 #=============================================================================
 # Target rules for targets named plugin_evasion
@@ -234,17 +273,30 @@ plugin_eventlog/fast:
 .PHONY : plugin_eventlog/fast
 
 #=============================================================================
-# Target rules for targets named plugin_execute_assembly
+# Target rules for targets named plugin_execute
 
 # Build rule for target.
-plugin_execute_assembly: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_execute_assembly
-.PHONY : plugin_execute_assembly
+plugin_execute: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_execute
+.PHONY : plugin_execute
 
 # fast build rule for target.
-plugin_execute_assembly/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute_assembly.dir/build.make CMakeFiles/plugin_execute_assembly.dir/build
-.PHONY : plugin_execute_assembly/fast
+plugin_execute/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute.dir/build.make CMakeFiles/plugin_execute.dir/build
+.PHONY : plugin_execute/fast
+
+#=============================================================================
+# Target rules for targets named plugin_forge
+
+# Build rule for target.
+plugin_forge: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_forge
+.PHONY : plugin_forge
+
+# fast build rule for target.
+plugin_forge/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_forge.dir/build.make CMakeFiles/plugin_forge.dir/build
+.PHONY : plugin_forge/fast
 
 #=============================================================================
 # Target rules for targets named plugin_getsystem
@@ -258,19 +310,6 @@ plugin_getsystem: cmake_check_build_system
 plugin_getsystem/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_getsystem.dir/build.make CMakeFiles/plugin_getsystem.dir/build
 .PHONY : plugin_getsystem/fast
-
-#=============================================================================
-# Target rules for targets named plugin_hashdump
-
-# Build rule for target.
-plugin_hashdump: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_hashdump
-.PHONY : plugin_hashdump
-
-# fast build rule for target.
-plugin_hashdump/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_hashdump.dir/build.make CMakeFiles/plugin_hashdump.dir/build
-.PHONY : plugin_hashdump/fast
 
 #=============================================================================
 # Target rules for targets named plugin_inject
@@ -299,43 +338,30 @@ plugin_kerberos/fast:
 .PHONY : plugin_kerberos/fast
 
 #=============================================================================
-# Target rules for targets named plugin_keyscan
+# Target rules for targets named plugin_media
 
 # Build rule for target.
-plugin_keyscan: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_keyscan
-.PHONY : plugin_keyscan
+plugin_media: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_media
+.PHONY : plugin_media
 
 # fast build rule for target.
-plugin_keyscan/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_keyscan.dir/build.make CMakeFiles/plugin_keyscan.dir/build
-.PHONY : plugin_keyscan/fast
+plugin_media/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_media.dir/build.make CMakeFiles/plugin_media.dir/build
+.PHONY : plugin_media/fast
 
 #=============================================================================
-# Target rules for targets named plugin_lsa_secrets
+# Target rules for targets named plugin_minidump
 
 # Build rule for target.
-plugin_lsa_secrets: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_lsa_secrets
-.PHONY : plugin_lsa_secrets
+plugin_minidump: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_minidump
+.PHONY : plugin_minidump
 
 # fast build rule for target.
-plugin_lsa_secrets/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsa_secrets.dir/build.make CMakeFiles/plugin_lsa_secrets.dir/build
-.PHONY : plugin_lsa_secrets/fast
-
-#=============================================================================
-# Target rules for targets named plugin_migrate
-
-# Build rule for target.
-plugin_migrate: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_migrate
-.PHONY : plugin_migrate
-
-# fast build rule for target.
-plugin_migrate/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_migrate.dir/build.make CMakeFiles/plugin_migrate.dir/build
-.PHONY : plugin_migrate/fast
+plugin_minidump/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/build
+.PHONY : plugin_minidump/fast
 
 #=============================================================================
 # Target rules for targets named plugin_netshare
@@ -364,17 +390,69 @@ plugin_persist/fast:
 .PHONY : plugin_persist/fast
 
 #=============================================================================
-# Target rules for targets named plugin_ppid_spoof
+# Target rules for targets named plugin_registry
 
 # Build rule for target.
-plugin_ppid_spoof: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_ppid_spoof
-.PHONY : plugin_ppid_spoof
+plugin_registry: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_registry
+.PHONY : plugin_registry
 
 # fast build rule for target.
-plugin_ppid_spoof/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ppid_spoof.dir/build.make CMakeFiles/plugin_ppid_spoof.dir/build
-.PHONY : plugin_ppid_spoof/fast
+plugin_registry/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/build
+.PHONY : plugin_registry/fast
+
+#=============================================================================
+# Target rules for targets named plugin_schtasks
+
+# Build rule for target.
+plugin_schtasks: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_schtasks
+.PHONY : plugin_schtasks
+
+# fast build rule for target.
+plugin_schtasks/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/build
+.PHONY : plugin_schtasks/fast
+
+#=============================================================================
+# Target rules for targets named plugin_services
+
+# Build rule for target.
+plugin_services: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_services
+.PHONY : plugin_services
+
+# fast build rule for target.
+plugin_services/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_services.dir/build.make CMakeFiles/plugin_services.dir/build
+.PHONY : plugin_services/fast
+
+#=============================================================================
+# Target rules for targets named plugin_smb_pipe
+
+# Build rule for target.
+plugin_smb_pipe: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_smb_pipe
+.PHONY : plugin_smb_pipe
+
+# fast build rule for target.
+plugin_smb_pipe/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/build
+.PHONY : plugin_smb_pipe/fast
+
+#=============================================================================
+# Target rules for targets named plugin_sysinfo
+
+# Build rule for target.
+plugin_sysinfo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_sysinfo
+.PHONY : plugin_sysinfo
+
+# fast build rule for target.
+plugin_sysinfo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/build
+.PHONY : plugin_sysinfo/fast
 
 #=============================================================================
 # Target rules for targets named plugin_test
@@ -416,41 +494,139 @@ plugin_token/fast:
 .PHONY : plugin_token/fast
 
 #=============================================================================
-# Target rules for targets named plugin_uictl
+# Target rules for targets named plugin_uac
 
 # Build rule for target.
-plugin_uictl: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_uictl
-.PHONY : plugin_uictl
+plugin_uac: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_uac
+.PHONY : plugin_uac
 
 # fast build rule for target.
-plugin_uictl/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uictl.dir/build.make CMakeFiles/plugin_uictl.dir/build
-.PHONY : plugin_uictl/fast
+plugin_uac/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/build
+.PHONY : plugin_uac/fast
 
-plugins/bof_loader/bof_loader.obj: plugins/bof_loader/bof_loader.c.obj
-.PHONY : plugins/bof_loader/bof_loader.obj
+#=============================================================================
+# Target rules for targets named plugin_ui
+
+# Build rule for target.
+plugin_ui: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_ui
+.PHONY : plugin_ui
+
+# fast build rule for target.
+plugin_ui/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/build
+.PHONY : plugin_ui/fast
+
+#=============================================================================
+# Target rules for targets named plugin_wifi_passwords
+
+# Build rule for target.
+plugin_wifi_passwords: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_wifi_passwords
+.PHONY : plugin_wifi_passwords
+
+# fast build rule for target.
+plugin_wifi_passwords/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/build
+.PHONY : plugin_wifi_passwords/fast
+
+plugins/arp/arp.obj: plugins/arp/arp.c.obj
+.PHONY : plugins/arp/arp.obj
 
 # target to build an object file
-plugins/bof_loader/bof_loader.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_bof_loader.dir/build.make CMakeFiles/plugin_bof_loader.dir/plugins/bof_loader/bof_loader.c.obj
-.PHONY : plugins/bof_loader/bof_loader.c.obj
+plugins/arp/arp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_arp.dir/build.make CMakeFiles/plugin_arp.dir/plugins/arp/arp.c.obj
+.PHONY : plugins/arp/arp.c.obj
 
-plugins/bof_loader/bof_loader.i: plugins/bof_loader/bof_loader.c.i
-.PHONY : plugins/bof_loader/bof_loader.i
+plugins/arp/arp.i: plugins/arp/arp.c.i
+.PHONY : plugins/arp/arp.i
 
 # target to preprocess a source file
-plugins/bof_loader/bof_loader.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_bof_loader.dir/build.make CMakeFiles/plugin_bof_loader.dir/plugins/bof_loader/bof_loader.c.i
-.PHONY : plugins/bof_loader/bof_loader.c.i
+plugins/arp/arp.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_arp.dir/build.make CMakeFiles/plugin_arp.dir/plugins/arp/arp.c.i
+.PHONY : plugins/arp/arp.c.i
 
-plugins/bof_loader/bof_loader.s: plugins/bof_loader/bof_loader.c.s
-.PHONY : plugins/bof_loader/bof_loader.s
+plugins/arp/arp.s: plugins/arp/arp.c.s
+.PHONY : plugins/arp/arp.s
 
 # target to generate assembly for a file
-plugins/bof_loader/bof_loader.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_bof_loader.dir/build.make CMakeFiles/plugin_bof_loader.dir/plugins/bof_loader/bof_loader.c.s
-.PHONY : plugins/bof_loader/bof_loader.c.s
+plugins/arp/arp.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_arp.dir/build.make CMakeFiles/plugin_arp.dir/plugins/arp/arp.c.s
+.PHONY : plugins/arp/arp.c.s
+
+plugins/clipboard/clipboard.obj: plugins/clipboard/clipboard.c.obj
+.PHONY : plugins/clipboard/clipboard.obj
+
+# target to build an object file
+plugins/clipboard/clipboard.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_clipboard.dir/build.make CMakeFiles/plugin_clipboard.dir/plugins/clipboard/clipboard.c.obj
+.PHONY : plugins/clipboard/clipboard.c.obj
+
+plugins/clipboard/clipboard.i: plugins/clipboard/clipboard.c.i
+.PHONY : plugins/clipboard/clipboard.i
+
+# target to preprocess a source file
+plugins/clipboard/clipboard.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_clipboard.dir/build.make CMakeFiles/plugin_clipboard.dir/plugins/clipboard/clipboard.c.i
+.PHONY : plugins/clipboard/clipboard.c.i
+
+plugins/clipboard/clipboard.s: plugins/clipboard/clipboard.c.s
+.PHONY : plugins/clipboard/clipboard.s
+
+# target to generate assembly for a file
+plugins/clipboard/clipboard.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_clipboard.dir/build.make CMakeFiles/plugin_clipboard.dir/plugins/clipboard/clipboard.c.s
+.PHONY : plugins/clipboard/clipboard.c.s
+
+plugins/credentials/credentials.obj: plugins/credentials/credentials.c.obj
+.PHONY : plugins/credentials/credentials.obj
+
+# target to build an object file
+plugins/credentials/credentials.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credentials.dir/build.make CMakeFiles/plugin_credentials.dir/plugins/credentials/credentials.c.obj
+.PHONY : plugins/credentials/credentials.c.obj
+
+plugins/credentials/credentials.i: plugins/credentials/credentials.c.i
+.PHONY : plugins/credentials/credentials.i
+
+# target to preprocess a source file
+plugins/credentials/credentials.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credentials.dir/build.make CMakeFiles/plugin_credentials.dir/plugins/credentials/credentials.c.i
+.PHONY : plugins/credentials/credentials.c.i
+
+plugins/credentials/credentials.s: plugins/credentials/credentials.c.s
+.PHONY : plugins/credentials/credentials.s
+
+# target to generate assembly for a file
+plugins/credentials/credentials.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credentials.dir/build.make CMakeFiles/plugin_credentials.dir/plugins/credentials/credentials.c.s
+.PHONY : plugins/credentials/credentials.c.s
+
+plugins/credstore/credstore.obj: plugins/credstore/credstore.c.obj
+.PHONY : plugins/credstore/credstore.obj
+
+# target to build an object file
+plugins/credstore/credstore.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credstore.dir/build.make CMakeFiles/plugin_credstore.dir/plugins/credstore/credstore.c.obj
+.PHONY : plugins/credstore/credstore.c.obj
+
+plugins/credstore/credstore.i: plugins/credstore/credstore.c.i
+.PHONY : plugins/credstore/credstore.i
+
+# target to preprocess a source file
+plugins/credstore/credstore.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credstore.dir/build.make CMakeFiles/plugin_credstore.dir/plugins/credstore/credstore.c.i
+.PHONY : plugins/credstore/credstore.c.i
+
+plugins/credstore/credstore.s: plugins/credstore/credstore.c.s
+.PHONY : plugins/credstore/credstore.s
+
+# target to generate assembly for a file
+plugins/credstore/credstore.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_credstore.dir/build.make CMakeFiles/plugin_credstore.dir/plugins/credstore/credstore.c.s
+.PHONY : plugins/credstore/credstore.c.s
 
 plugins/evasion/evasion.obj: plugins/evasion/evasion.c.obj
 .PHONY : plugins/evasion/evasion.obj
@@ -500,29 +676,53 @@ plugins/eventlog/eventlog.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_eventlog.dir/build.make CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.s
 .PHONY : plugins/eventlog/eventlog.c.s
 
-plugins/execute_assembly/execute_assembly.obj: plugins/execute_assembly/execute_assembly.c.obj
-.PHONY : plugins/execute_assembly/execute_assembly.obj
+plugins/execute/execute.obj: plugins/execute/execute.c.obj
+.PHONY : plugins/execute/execute.obj
 
 # target to build an object file
-plugins/execute_assembly/execute_assembly.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute_assembly.dir/build.make CMakeFiles/plugin_execute_assembly.dir/plugins/execute_assembly/execute_assembly.c.obj
-.PHONY : plugins/execute_assembly/execute_assembly.c.obj
+plugins/execute/execute.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute.dir/build.make CMakeFiles/plugin_execute.dir/plugins/execute/execute.c.obj
+.PHONY : plugins/execute/execute.c.obj
 
-plugins/execute_assembly/execute_assembly.i: plugins/execute_assembly/execute_assembly.c.i
-.PHONY : plugins/execute_assembly/execute_assembly.i
+plugins/execute/execute.i: plugins/execute/execute.c.i
+.PHONY : plugins/execute/execute.i
 
 # target to preprocess a source file
-plugins/execute_assembly/execute_assembly.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute_assembly.dir/build.make CMakeFiles/plugin_execute_assembly.dir/plugins/execute_assembly/execute_assembly.c.i
-.PHONY : plugins/execute_assembly/execute_assembly.c.i
+plugins/execute/execute.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute.dir/build.make CMakeFiles/plugin_execute.dir/plugins/execute/execute.c.i
+.PHONY : plugins/execute/execute.c.i
 
-plugins/execute_assembly/execute_assembly.s: plugins/execute_assembly/execute_assembly.c.s
-.PHONY : plugins/execute_assembly/execute_assembly.s
+plugins/execute/execute.s: plugins/execute/execute.c.s
+.PHONY : plugins/execute/execute.s
 
 # target to generate assembly for a file
-plugins/execute_assembly/execute_assembly.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute_assembly.dir/build.make CMakeFiles/plugin_execute_assembly.dir/plugins/execute_assembly/execute_assembly.c.s
-.PHONY : plugins/execute_assembly/execute_assembly.c.s
+plugins/execute/execute.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_execute.dir/build.make CMakeFiles/plugin_execute.dir/plugins/execute/execute.c.s
+.PHONY : plugins/execute/execute.c.s
+
+plugins/forge/forge.obj: plugins/forge/forge.c.obj
+.PHONY : plugins/forge/forge.obj
+
+# target to build an object file
+plugins/forge/forge.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_forge.dir/build.make CMakeFiles/plugin_forge.dir/plugins/forge/forge.c.obj
+.PHONY : plugins/forge/forge.c.obj
+
+plugins/forge/forge.i: plugins/forge/forge.c.i
+.PHONY : plugins/forge/forge.i
+
+# target to preprocess a source file
+plugins/forge/forge.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_forge.dir/build.make CMakeFiles/plugin_forge.dir/plugins/forge/forge.c.i
+.PHONY : plugins/forge/forge.c.i
+
+plugins/forge/forge.s: plugins/forge/forge.c.s
+.PHONY : plugins/forge/forge.s
+
+# target to generate assembly for a file
+plugins/forge/forge.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_forge.dir/build.make CMakeFiles/plugin_forge.dir/plugins/forge/forge.c.s
+.PHONY : plugins/forge/forge.c.s
 
 plugins/getsystem/getsystem.obj: plugins/getsystem/getsystem.c.obj
 .PHONY : plugins/getsystem/getsystem.obj
@@ -548,30 +748,6 @@ plugins/getsystem/getsystem.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_getsystem.dir/build.make CMakeFiles/plugin_getsystem.dir/plugins/getsystem/getsystem.c.s
 .PHONY : plugins/getsystem/getsystem.c.s
 
-plugins/hashdump/hashdump.obj: plugins/hashdump/hashdump.c.obj
-.PHONY : plugins/hashdump/hashdump.obj
-
-# target to build an object file
-plugins/hashdump/hashdump.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_hashdump.dir/build.make CMakeFiles/plugin_hashdump.dir/plugins/hashdump/hashdump.c.obj
-.PHONY : plugins/hashdump/hashdump.c.obj
-
-plugins/hashdump/hashdump.i: plugins/hashdump/hashdump.c.i
-.PHONY : plugins/hashdump/hashdump.i
-
-# target to preprocess a source file
-plugins/hashdump/hashdump.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_hashdump.dir/build.make CMakeFiles/plugin_hashdump.dir/plugins/hashdump/hashdump.c.i
-.PHONY : plugins/hashdump/hashdump.c.i
-
-plugins/hashdump/hashdump.s: plugins/hashdump/hashdump.c.s
-.PHONY : plugins/hashdump/hashdump.s
-
-# target to generate assembly for a file
-plugins/hashdump/hashdump.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_hashdump.dir/build.make CMakeFiles/plugin_hashdump.dir/plugins/hashdump/hashdump.c.s
-.PHONY : plugins/hashdump/hashdump.c.s
-
 plugins/inject/inject.obj: plugins/inject/inject.c.obj
 .PHONY : plugins/inject/inject.obj
 
@@ -595,6 +771,14 @@ plugins/inject/inject.s: plugins/inject/inject.c.s
 plugins/inject/inject.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_inject.dir/build.make CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.s
 .PHONY : plugins/inject/inject.c.s
+
+plugins/inject/stager_x64.obj: plugins/inject/stager_x64.S.obj
+.PHONY : plugins/inject/stager_x64.obj
+
+# target to build an object file
+plugins/inject/stager_x64.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_inject.dir/build.make CMakeFiles/plugin_inject.dir/plugins/inject/stager_x64.S.obj
+.PHONY : plugins/inject/stager_x64.S.obj
 
 plugins/kerberos/kerberos.obj: plugins/kerberos/kerberos.c.obj
 .PHONY : plugins/kerberos/kerberos.obj
@@ -620,85 +804,53 @@ plugins/kerberos/kerberos.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_kerberos.dir/build.make CMakeFiles/plugin_kerberos.dir/plugins/kerberos/kerberos.c.s
 .PHONY : plugins/kerberos/kerberos.c.s
 
-plugins/keyscan/keyscan.obj: plugins/keyscan/keyscan.c.obj
-.PHONY : plugins/keyscan/keyscan.obj
+plugins/media/media.obj: plugins/media/media.c.obj
+.PHONY : plugins/media/media.obj
 
 # target to build an object file
-plugins/keyscan/keyscan.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_keyscan.dir/build.make CMakeFiles/plugin_keyscan.dir/plugins/keyscan/keyscan.c.obj
-.PHONY : plugins/keyscan/keyscan.c.obj
+plugins/media/media.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_media.dir/build.make CMakeFiles/plugin_media.dir/plugins/media/media.c.obj
+.PHONY : plugins/media/media.c.obj
 
-plugins/keyscan/keyscan.i: plugins/keyscan/keyscan.c.i
-.PHONY : plugins/keyscan/keyscan.i
+plugins/media/media.i: plugins/media/media.c.i
+.PHONY : plugins/media/media.i
 
 # target to preprocess a source file
-plugins/keyscan/keyscan.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_keyscan.dir/build.make CMakeFiles/plugin_keyscan.dir/plugins/keyscan/keyscan.c.i
-.PHONY : plugins/keyscan/keyscan.c.i
+plugins/media/media.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_media.dir/build.make CMakeFiles/plugin_media.dir/plugins/media/media.c.i
+.PHONY : plugins/media/media.c.i
 
-plugins/keyscan/keyscan.s: plugins/keyscan/keyscan.c.s
-.PHONY : plugins/keyscan/keyscan.s
+plugins/media/media.s: plugins/media/media.c.s
+.PHONY : plugins/media/media.s
 
 # target to generate assembly for a file
-plugins/keyscan/keyscan.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_keyscan.dir/build.make CMakeFiles/plugin_keyscan.dir/plugins/keyscan/keyscan.c.s
-.PHONY : plugins/keyscan/keyscan.c.s
+plugins/media/media.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_media.dir/build.make CMakeFiles/plugin_media.dir/plugins/media/media.c.s
+.PHONY : plugins/media/media.c.s
 
-plugins/lsa_secrets/lsa_secrets.obj: plugins/lsa_secrets/lsa_secrets.c.obj
-.PHONY : plugins/lsa_secrets/lsa_secrets.obj
+plugins/minidump/minidump.obj: plugins/minidump/minidump.c.obj
+.PHONY : plugins/minidump/minidump.obj
 
 # target to build an object file
-plugins/lsa_secrets/lsa_secrets.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsa_secrets.dir/build.make CMakeFiles/plugin_lsa_secrets.dir/plugins/lsa_secrets/lsa_secrets.c.obj
-.PHONY : plugins/lsa_secrets/lsa_secrets.c.obj
+plugins/minidump/minidump.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/plugins/minidump/minidump.c.obj
+.PHONY : plugins/minidump/minidump.c.obj
 
-plugins/lsa_secrets/lsa_secrets.i: plugins/lsa_secrets/lsa_secrets.c.i
-.PHONY : plugins/lsa_secrets/lsa_secrets.i
+plugins/minidump/minidump.i: plugins/minidump/minidump.c.i
+.PHONY : plugins/minidump/minidump.i
 
 # target to preprocess a source file
-plugins/lsa_secrets/lsa_secrets.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsa_secrets.dir/build.make CMakeFiles/plugin_lsa_secrets.dir/plugins/lsa_secrets/lsa_secrets.c.i
-.PHONY : plugins/lsa_secrets/lsa_secrets.c.i
+plugins/minidump/minidump.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/plugins/minidump/minidump.c.i
+.PHONY : plugins/minidump/minidump.c.i
 
-plugins/lsa_secrets/lsa_secrets.s: plugins/lsa_secrets/lsa_secrets.c.s
-.PHONY : plugins/lsa_secrets/lsa_secrets.s
-
-# target to generate assembly for a file
-plugins/lsa_secrets/lsa_secrets.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsa_secrets.dir/build.make CMakeFiles/plugin_lsa_secrets.dir/plugins/lsa_secrets/lsa_secrets.c.s
-.PHONY : plugins/lsa_secrets/lsa_secrets.c.s
-
-plugins/migrate/migrate.obj: plugins/migrate/migrate.c.obj
-.PHONY : plugins/migrate/migrate.obj
-
-# target to build an object file
-plugins/migrate/migrate.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_migrate.dir/build.make CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.obj
-.PHONY : plugins/migrate/migrate.c.obj
-
-plugins/migrate/migrate.i: plugins/migrate/migrate.c.i
-.PHONY : plugins/migrate/migrate.i
-
-# target to preprocess a source file
-plugins/migrate/migrate.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_migrate.dir/build.make CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.i
-.PHONY : plugins/migrate/migrate.c.i
-
-plugins/migrate/migrate.s: plugins/migrate/migrate.c.s
-.PHONY : plugins/migrate/migrate.s
+plugins/minidump/minidump.s: plugins/minidump/minidump.c.s
+.PHONY : plugins/minidump/minidump.s
 
 # target to generate assembly for a file
-plugins/migrate/migrate.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_migrate.dir/build.make CMakeFiles/plugin_migrate.dir/plugins/migrate/migrate.c.s
-.PHONY : plugins/migrate/migrate.c.s
-
-plugins/migrate/stager_x64.obj: plugins/migrate/stager_x64.S.obj
-.PHONY : plugins/migrate/stager_x64.obj
-
-# target to build an object file
-plugins/migrate/stager_x64.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_migrate.dir/build.make CMakeFiles/plugin_migrate.dir/plugins/migrate/stager_x64.S.obj
-.PHONY : plugins/migrate/stager_x64.S.obj
+plugins/minidump/minidump.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/plugins/minidump/minidump.c.s
+.PHONY : plugins/minidump/minidump.c.s
 
 plugins/netshare/netshare.obj: plugins/netshare/netshare.c.obj
 .PHONY : plugins/netshare/netshare.obj
@@ -748,29 +900,125 @@ plugins/persist/persist.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_persist.dir/build.make CMakeFiles/plugin_persist.dir/plugins/persist/persist.c.s
 .PHONY : plugins/persist/persist.c.s
 
-plugins/ppid_spoof/ppid_spoof.obj: plugins/ppid_spoof/ppid_spoof.c.obj
-.PHONY : plugins/ppid_spoof/ppid_spoof.obj
+plugins/registry/registry.obj: plugins/registry/registry.c.obj
+.PHONY : plugins/registry/registry.obj
 
 # target to build an object file
-plugins/ppid_spoof/ppid_spoof.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ppid_spoof.dir/build.make CMakeFiles/plugin_ppid_spoof.dir/plugins/ppid_spoof/ppid_spoof.c.obj
-.PHONY : plugins/ppid_spoof/ppid_spoof.c.obj
+plugins/registry/registry.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/plugins/registry/registry.c.obj
+.PHONY : plugins/registry/registry.c.obj
 
-plugins/ppid_spoof/ppid_spoof.i: plugins/ppid_spoof/ppid_spoof.c.i
-.PHONY : plugins/ppid_spoof/ppid_spoof.i
+plugins/registry/registry.i: plugins/registry/registry.c.i
+.PHONY : plugins/registry/registry.i
 
 # target to preprocess a source file
-plugins/ppid_spoof/ppid_spoof.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ppid_spoof.dir/build.make CMakeFiles/plugin_ppid_spoof.dir/plugins/ppid_spoof/ppid_spoof.c.i
-.PHONY : plugins/ppid_spoof/ppid_spoof.c.i
+plugins/registry/registry.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/plugins/registry/registry.c.i
+.PHONY : plugins/registry/registry.c.i
 
-plugins/ppid_spoof/ppid_spoof.s: plugins/ppid_spoof/ppid_spoof.c.s
-.PHONY : plugins/ppid_spoof/ppid_spoof.s
+plugins/registry/registry.s: plugins/registry/registry.c.s
+.PHONY : plugins/registry/registry.s
 
 # target to generate assembly for a file
-plugins/ppid_spoof/ppid_spoof.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ppid_spoof.dir/build.make CMakeFiles/plugin_ppid_spoof.dir/plugins/ppid_spoof/ppid_spoof.c.s
-.PHONY : plugins/ppid_spoof/ppid_spoof.c.s
+plugins/registry/registry.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/plugins/registry/registry.c.s
+.PHONY : plugins/registry/registry.c.s
+
+plugins/schtasks/schtasks.obj: plugins/schtasks/schtasks.c.obj
+.PHONY : plugins/schtasks/schtasks.obj
+
+# target to build an object file
+plugins/schtasks/schtasks.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/plugins/schtasks/schtasks.c.obj
+.PHONY : plugins/schtasks/schtasks.c.obj
+
+plugins/schtasks/schtasks.i: plugins/schtasks/schtasks.c.i
+.PHONY : plugins/schtasks/schtasks.i
+
+# target to preprocess a source file
+plugins/schtasks/schtasks.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/plugins/schtasks/schtasks.c.i
+.PHONY : plugins/schtasks/schtasks.c.i
+
+plugins/schtasks/schtasks.s: plugins/schtasks/schtasks.c.s
+.PHONY : plugins/schtasks/schtasks.s
+
+# target to generate assembly for a file
+plugins/schtasks/schtasks.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/plugins/schtasks/schtasks.c.s
+.PHONY : plugins/schtasks/schtasks.c.s
+
+plugins/services/services.obj: plugins/services/services.c.obj
+.PHONY : plugins/services/services.obj
+
+# target to build an object file
+plugins/services/services.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_services.dir/build.make CMakeFiles/plugin_services.dir/plugins/services/services.c.obj
+.PHONY : plugins/services/services.c.obj
+
+plugins/services/services.i: plugins/services/services.c.i
+.PHONY : plugins/services/services.i
+
+# target to preprocess a source file
+plugins/services/services.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_services.dir/build.make CMakeFiles/plugin_services.dir/plugins/services/services.c.i
+.PHONY : plugins/services/services.c.i
+
+plugins/services/services.s: plugins/services/services.c.s
+.PHONY : plugins/services/services.s
+
+# target to generate assembly for a file
+plugins/services/services.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_services.dir/build.make CMakeFiles/plugin_services.dir/plugins/services/services.c.s
+.PHONY : plugins/services/services.c.s
+
+plugins/smb_pipe/smb_pipe.obj: plugins/smb_pipe/smb_pipe.c.obj
+.PHONY : plugins/smb_pipe/smb_pipe.obj
+
+# target to build an object file
+plugins/smb_pipe/smb_pipe.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/plugins/smb_pipe/smb_pipe.c.obj
+.PHONY : plugins/smb_pipe/smb_pipe.c.obj
+
+plugins/smb_pipe/smb_pipe.i: plugins/smb_pipe/smb_pipe.c.i
+.PHONY : plugins/smb_pipe/smb_pipe.i
+
+# target to preprocess a source file
+plugins/smb_pipe/smb_pipe.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/plugins/smb_pipe/smb_pipe.c.i
+.PHONY : plugins/smb_pipe/smb_pipe.c.i
+
+plugins/smb_pipe/smb_pipe.s: plugins/smb_pipe/smb_pipe.c.s
+.PHONY : plugins/smb_pipe/smb_pipe.s
+
+# target to generate assembly for a file
+plugins/smb_pipe/smb_pipe.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/plugins/smb_pipe/smb_pipe.c.s
+.PHONY : plugins/smb_pipe/smb_pipe.c.s
+
+plugins/sysinfo/sysinfo.obj: plugins/sysinfo/sysinfo.c.obj
+.PHONY : plugins/sysinfo/sysinfo.obj
+
+# target to build an object file
+plugins/sysinfo/sysinfo.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/plugins/sysinfo/sysinfo.c.obj
+.PHONY : plugins/sysinfo/sysinfo.c.obj
+
+plugins/sysinfo/sysinfo.i: plugins/sysinfo/sysinfo.c.i
+.PHONY : plugins/sysinfo/sysinfo.i
+
+# target to preprocess a source file
+plugins/sysinfo/sysinfo.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/plugins/sysinfo/sysinfo.c.i
+.PHONY : plugins/sysinfo/sysinfo.c.i
+
+plugins/sysinfo/sysinfo.s: plugins/sysinfo/sysinfo.c.s
+.PHONY : plugins/sysinfo/sysinfo.s
+
+# target to generate assembly for a file
+plugins/sysinfo/sysinfo.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/plugins/sysinfo/sysinfo.c.s
+.PHONY : plugins/sysinfo/sysinfo.c.s
 
 plugins/test/test.obj: plugins/test/test.c.obj
 .PHONY : plugins/test/test.obj
@@ -844,29 +1092,77 @@ plugins/token/token.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_token.dir/build.make CMakeFiles/plugin_token.dir/plugins/token/token.c.s
 .PHONY : plugins/token/token.c.s
 
-plugins/uictl/uictl.obj: plugins/uictl/uictl.c.obj
-.PHONY : plugins/uictl/uictl.obj
+plugins/uac/uac.obj: plugins/uac/uac.c.obj
+.PHONY : plugins/uac/uac.obj
 
 # target to build an object file
-plugins/uictl/uictl.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uictl.dir/build.make CMakeFiles/plugin_uictl.dir/plugins/uictl/uictl.c.obj
-.PHONY : plugins/uictl/uictl.c.obj
+plugins/uac/uac.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/plugins/uac/uac.c.obj
+.PHONY : plugins/uac/uac.c.obj
 
-plugins/uictl/uictl.i: plugins/uictl/uictl.c.i
-.PHONY : plugins/uictl/uictl.i
+plugins/uac/uac.i: plugins/uac/uac.c.i
+.PHONY : plugins/uac/uac.i
 
 # target to preprocess a source file
-plugins/uictl/uictl.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uictl.dir/build.make CMakeFiles/plugin_uictl.dir/plugins/uictl/uictl.c.i
-.PHONY : plugins/uictl/uictl.c.i
+plugins/uac/uac.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/plugins/uac/uac.c.i
+.PHONY : plugins/uac/uac.c.i
 
-plugins/uictl/uictl.s: plugins/uictl/uictl.c.s
-.PHONY : plugins/uictl/uictl.s
+plugins/uac/uac.s: plugins/uac/uac.c.s
+.PHONY : plugins/uac/uac.s
 
 # target to generate assembly for a file
-plugins/uictl/uictl.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uictl.dir/build.make CMakeFiles/plugin_uictl.dir/plugins/uictl/uictl.c.s
-.PHONY : plugins/uictl/uictl.c.s
+plugins/uac/uac.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/plugins/uac/uac.c.s
+.PHONY : plugins/uac/uac.c.s
+
+plugins/ui/ui.obj: plugins/ui/ui.c.obj
+.PHONY : plugins/ui/ui.obj
+
+# target to build an object file
+plugins/ui/ui.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/plugins/ui/ui.c.obj
+.PHONY : plugins/ui/ui.c.obj
+
+plugins/ui/ui.i: plugins/ui/ui.c.i
+.PHONY : plugins/ui/ui.i
+
+# target to preprocess a source file
+plugins/ui/ui.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/plugins/ui/ui.c.i
+.PHONY : plugins/ui/ui.c.i
+
+plugins/ui/ui.s: plugins/ui/ui.c.s
+.PHONY : plugins/ui/ui.s
+
+# target to generate assembly for a file
+plugins/ui/ui.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/plugins/ui/ui.c.s
+.PHONY : plugins/ui/ui.c.s
+
+plugins/wifi_passwords/wifi_passwords.obj: plugins/wifi_passwords/wifi_passwords.c.obj
+.PHONY : plugins/wifi_passwords/wifi_passwords.obj
+
+# target to build an object file
+plugins/wifi_passwords/wifi_passwords.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/plugins/wifi_passwords/wifi_passwords.c.obj
+.PHONY : plugins/wifi_passwords/wifi_passwords.c.obj
+
+plugins/wifi_passwords/wifi_passwords.i: plugins/wifi_passwords/wifi_passwords.c.i
+.PHONY : plugins/wifi_passwords/wifi_passwords.i
+
+# target to preprocess a source file
+plugins/wifi_passwords/wifi_passwords.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/plugins/wifi_passwords/wifi_passwords.c.i
+.PHONY : plugins/wifi_passwords/wifi_passwords.c.i
+
+plugins/wifi_passwords/wifi_passwords.s: plugins/wifi_passwords/wifi_passwords.c.s
+.PHONY : plugins/wifi_passwords/wifi_passwords.s
+
+# target to generate assembly for a file
+plugins/wifi_passwords/wifi_passwords.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/plugins/wifi_passwords/wifi_passwords.c.s
+.PHONY : plugins/wifi_passwords/wifi_passwords.c.s
 
 src/api.obj: src/api.c.obj
 .PHONY : src/api.obj
@@ -1730,72 +2026,98 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main"
-	@echo "... plugin_bof_loader"
+	@echo "... plugin_arp"
+	@echo "... plugin_clipboard"
+	@echo "... plugin_credentials"
+	@echo "... plugin_credstore"
 	@echo "... plugin_evasion"
 	@echo "... plugin_eventlog"
-	@echo "... plugin_execute_assembly"
+	@echo "... plugin_execute"
+	@echo "... plugin_forge"
 	@echo "... plugin_getsystem"
-	@echo "... plugin_hashdump"
 	@echo "... plugin_inject"
 	@echo "... plugin_kerberos"
-	@echo "... plugin_keyscan"
-	@echo "... plugin_lsa_secrets"
-	@echo "... plugin_migrate"
+	@echo "... plugin_media"
+	@echo "... plugin_minidump"
 	@echo "... plugin_netshare"
 	@echo "... plugin_persist"
-	@echo "... plugin_ppid_spoof"
+	@echo "... plugin_registry"
+	@echo "... plugin_schtasks"
+	@echo "... plugin_services"
+	@echo "... plugin_smb_pipe"
+	@echo "... plugin_sysinfo"
 	@echo "... plugin_test"
 	@echo "... plugin_timestomp"
 	@echo "... plugin_token"
-	@echo "... plugin_uictl"
+	@echo "... plugin_uac"
+	@echo "... plugin_ui"
+	@echo "... plugin_wifi_passwords"
 	@echo "... pwny"
 	@echo "... pwny_dll"
 	@echo "... pwny_service"
 	@echo "... tab"
 	@echo "... tab_dll"
-	@echo "... plugins/bof_loader/bof_loader.obj"
-	@echo "... plugins/bof_loader/bof_loader.i"
-	@echo "... plugins/bof_loader/bof_loader.s"
+	@echo "... plugins/arp/arp.obj"
+	@echo "... plugins/arp/arp.i"
+	@echo "... plugins/arp/arp.s"
+	@echo "... plugins/clipboard/clipboard.obj"
+	@echo "... plugins/clipboard/clipboard.i"
+	@echo "... plugins/clipboard/clipboard.s"
+	@echo "... plugins/credentials/credentials.obj"
+	@echo "... plugins/credentials/credentials.i"
+	@echo "... plugins/credentials/credentials.s"
+	@echo "... plugins/credstore/credstore.obj"
+	@echo "... plugins/credstore/credstore.i"
+	@echo "... plugins/credstore/credstore.s"
 	@echo "... plugins/evasion/evasion.obj"
 	@echo "... plugins/evasion/evasion.i"
 	@echo "... plugins/evasion/evasion.s"
 	@echo "... plugins/eventlog/eventlog.obj"
 	@echo "... plugins/eventlog/eventlog.i"
 	@echo "... plugins/eventlog/eventlog.s"
-	@echo "... plugins/execute_assembly/execute_assembly.obj"
-	@echo "... plugins/execute_assembly/execute_assembly.i"
-	@echo "... plugins/execute_assembly/execute_assembly.s"
+	@echo "... plugins/execute/execute.obj"
+	@echo "... plugins/execute/execute.i"
+	@echo "... plugins/execute/execute.s"
+	@echo "... plugins/forge/forge.obj"
+	@echo "... plugins/forge/forge.i"
+	@echo "... plugins/forge/forge.s"
 	@echo "... plugins/getsystem/getsystem.obj"
 	@echo "... plugins/getsystem/getsystem.i"
 	@echo "... plugins/getsystem/getsystem.s"
-	@echo "... plugins/hashdump/hashdump.obj"
-	@echo "... plugins/hashdump/hashdump.i"
-	@echo "... plugins/hashdump/hashdump.s"
 	@echo "... plugins/inject/inject.obj"
 	@echo "... plugins/inject/inject.i"
 	@echo "... plugins/inject/inject.s"
+	@echo "... plugins/inject/stager_x64.obj"
 	@echo "... plugins/kerberos/kerberos.obj"
 	@echo "... plugins/kerberos/kerberos.i"
 	@echo "... plugins/kerberos/kerberos.s"
-	@echo "... plugins/keyscan/keyscan.obj"
-	@echo "... plugins/keyscan/keyscan.i"
-	@echo "... plugins/keyscan/keyscan.s"
-	@echo "... plugins/lsa_secrets/lsa_secrets.obj"
-	@echo "... plugins/lsa_secrets/lsa_secrets.i"
-	@echo "... plugins/lsa_secrets/lsa_secrets.s"
-	@echo "... plugins/migrate/migrate.obj"
-	@echo "... plugins/migrate/migrate.i"
-	@echo "... plugins/migrate/migrate.s"
-	@echo "... plugins/migrate/stager_x64.obj"
+	@echo "... plugins/media/media.obj"
+	@echo "... plugins/media/media.i"
+	@echo "... plugins/media/media.s"
+	@echo "... plugins/minidump/minidump.obj"
+	@echo "... plugins/minidump/minidump.i"
+	@echo "... plugins/minidump/minidump.s"
 	@echo "... plugins/netshare/netshare.obj"
 	@echo "... plugins/netshare/netshare.i"
 	@echo "... plugins/netshare/netshare.s"
 	@echo "... plugins/persist/persist.obj"
 	@echo "... plugins/persist/persist.i"
 	@echo "... plugins/persist/persist.s"
-	@echo "... plugins/ppid_spoof/ppid_spoof.obj"
-	@echo "... plugins/ppid_spoof/ppid_spoof.i"
-	@echo "... plugins/ppid_spoof/ppid_spoof.s"
+	@echo "... plugins/registry/registry.obj"
+	@echo "... plugins/registry/registry.i"
+	@echo "... plugins/registry/registry.s"
+	@echo "... plugins/schtasks/schtasks.obj"
+	@echo "... plugins/schtasks/schtasks.i"
+	@echo "... plugins/schtasks/schtasks.s"
+	@echo "... plugins/services/services.obj"
+	@echo "... plugins/services/services.i"
+	@echo "... plugins/services/services.s"
+	@echo "... plugins/smb_pipe/smb_pipe.obj"
+	@echo "... plugins/smb_pipe/smb_pipe.i"
+	@echo "... plugins/smb_pipe/smb_pipe.s"
+	@echo "... plugins/sysinfo/sysinfo.obj"
+	@echo "... plugins/sysinfo/sysinfo.i"
+	@echo "... plugins/sysinfo/sysinfo.s"
 	@echo "... plugins/test/test.obj"
 	@echo "... plugins/test/test.i"
 	@echo "... plugins/test/test.s"
@@ -1805,9 +2127,15 @@ help:
 	@echo "... plugins/token/token.obj"
 	@echo "... plugins/token/token.i"
 	@echo "... plugins/token/token.s"
-	@echo "... plugins/uictl/uictl.obj"
-	@echo "... plugins/uictl/uictl.i"
-	@echo "... plugins/uictl/uictl.s"
+	@echo "... plugins/uac/uac.obj"
+	@echo "... plugins/uac/uac.i"
+	@echo "... plugins/uac/uac.s"
+	@echo "... plugins/ui/ui.obj"
+	@echo "... plugins/ui/ui.i"
+	@echo "... plugins/ui/ui.s"
+	@echo "... plugins/wifi_passwords/wifi_passwords.obj"
+	@echo "... plugins/wifi_passwords/wifi_passwords.i"
+	@echo "... plugins/wifi_passwords/wifi_passwords.s"
 	@echo "... src/api.obj"
 	@echo "... src/api.i"
 	@echo "... src/api.s"

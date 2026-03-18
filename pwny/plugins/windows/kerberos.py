@@ -14,21 +14,20 @@ from pex.proto.tlv import TLVPacket
 
 from hatsploit.lib.core.plugin import Plugin
 
-KERBEROS_BASE = 31
 
-KERBEROS_LIST = tlv_custom_tag(API_CALL_STATIC, KERBEROS_BASE, API_CALL)
-KERBEROS_DUMP = tlv_custom_tag(API_CALL_STATIC, KERBEROS_BASE, API_CALL + 1)
-KERBEROS_PURGE = tlv_custom_tag(API_CALL_STATIC, KERBEROS_BASE, API_CALL + 2)
+KERBEROS_LIST = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL)
+KERBEROS_DUMP = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 1)
+KERBEROS_PURGE = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 2)
 
-KERBEROS_TYPE_CLIENT = tlv_custom_type(TLV_TYPE_STRING, KERBEROS_BASE, API_TYPE)
-KERBEROS_TYPE_SERVER = tlv_custom_type(TLV_TYPE_STRING, KERBEROS_BASE, API_TYPE + 1)
-KERBEROS_TYPE_REALM = tlv_custom_type(TLV_TYPE_STRING, KERBEROS_BASE, API_TYPE + 2)
-KERBEROS_TYPE_ENCTYPE = tlv_custom_type(TLV_TYPE_INT, KERBEROS_BASE, API_TYPE)
-KERBEROS_TYPE_FLAGS = tlv_custom_type(TLV_TYPE_INT, KERBEROS_BASE, API_TYPE + 1)
-KERBEROS_TYPE_START = tlv_custom_type(TLV_TYPE_INT, KERBEROS_BASE, API_TYPE + 2)
-KERBEROS_TYPE_END = tlv_custom_type(TLV_TYPE_INT, KERBEROS_BASE, API_TYPE + 3)
-KERBEROS_TYPE_RENEW = tlv_custom_type(TLV_TYPE_INT, KERBEROS_BASE, API_TYPE + 4)
-KERBEROS_TYPE_KIRBI = tlv_custom_type(TLV_TYPE_BYTES, KERBEROS_BASE, API_TYPE)
+KERBEROS_TYPE_CLIENT = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
+KERBEROS_TYPE_SERVER = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 1)
+KERBEROS_TYPE_REALM = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE + 2)
+KERBEROS_TYPE_ENCTYPE = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE)
+KERBEROS_TYPE_FLAGS = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE + 1)
+KERBEROS_TYPE_START = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE + 2)
+KERBEROS_TYPE_END = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE + 3)
+KERBEROS_TYPE_RENEW = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE + 4)
+KERBEROS_TYPE_KIRBI = tlv_custom_type(TLV_TYPE_BYTES, TAB_BASE, API_TYPE)
 
 ETYPE_NAMES = {
     0x01: "DES-CBC-CRC",
@@ -137,27 +136,20 @@ class HatSploitPlugin(Plugin):
             self.print_error("Failed to list Kerberos tickets!")
             return
 
-        groups = result.get_tlv(TLV_TYPE_GROUP)
-        if not groups:
-            self.print_information("No cached tickets found.")
-            return
-
-        if isinstance(groups, TLVPacket):
-            groups = [groups]
-
         headers = ("Client", "Server", "Realm", "Encryption", "Flags",
                    "Start", "End", "Renew")
         data = []
 
-        for entry in groups:
-            client = entry.get_string(KERBEROS_TYPE_CLIENT)
-            server = entry.get_string(KERBEROS_TYPE_SERVER)
-            realm = entry.get_string(KERBEROS_TYPE_REALM)
-            etype = entry.get_int(KERBEROS_TYPE_ENCTYPE)
-            flags = entry.get_int(KERBEROS_TYPE_FLAGS)
-            start = entry.get_int(KERBEROS_TYPE_START)
-            end = entry.get_int(KERBEROS_TYPE_END)
-            renew = entry.get_int(KERBEROS_TYPE_RENEW)
+        entry = result.get_tlv(TLV_TYPE_GROUP)
+        while entry:
+            client = entry.get_string(KERBEROS_TYPE_CLIENT) or ''
+            server = entry.get_string(KERBEROS_TYPE_SERVER) or ''
+            realm = entry.get_string(KERBEROS_TYPE_REALM) or ''
+            etype = entry.get_int(KERBEROS_TYPE_ENCTYPE) or 0
+            flags = entry.get_int(KERBEROS_TYPE_FLAGS) or 0
+            start = entry.get_int(KERBEROS_TYPE_START) or 0
+            end = entry.get_int(KERBEROS_TYPE_END) or 0
+            renew = entry.get_int(KERBEROS_TYPE_RENEW) or 0
 
             data.append((
                 client,
@@ -169,6 +161,12 @@ class HatSploitPlugin(Plugin):
                 format_time(end),
                 format_time(renew),
             ))
+
+            entry = result.get_tlv(TLV_TYPE_GROUP)
+
+        if not data:
+            self.print_information("No cached tickets found.")
+            return
 
         self.print_table("Kerberos Tickets", headers, *data)
 

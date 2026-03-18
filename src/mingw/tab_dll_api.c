@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,20 +38,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <pwny/api.h>
 #include <pwny/tlv.h>
 #include <pwny/tlv_types.h>
 #include <pwny/log.h>
+#include <pwny/pipe.h>
 
 #include <uthash/uthash.h>
-
-typedef tlv_pkt_t *(*api_t)(void *);
-
-typedef struct api_calls_table
-{
-    int tag;
-    api_t handler;
-    UT_hash_handle hh;
-} api_calls_t;
 
 tlv_pkt_t *api_craft_tlv_pkt(int status, tlv_pkt_t *request)
 {
@@ -111,4 +104,32 @@ void api_calls_free(api_calls_t *api_calls)
         HASH_DEL(api_calls, api_call);
         free(api_call);
     }
+}
+
+void api_pipe_register(pipes_t **pipes, int type,
+                       pipe_callbacks_t callbacks)
+{
+    pipes_t *pipe;
+    pipes_t *pipe_new;
+
+    HASH_FIND_INT(*pipes, &type, pipe);
+
+    if (pipe != NULL)
+    {
+        return;
+    }
+
+    pipe_new = calloc(1, sizeof(*pipe_new));
+
+    if (pipe_new == NULL)
+    {
+        return;
+    }
+
+    pipe_new->type = type;
+    pipe_new->pipes = NULL;
+    pipe_new->callbacks = callbacks;
+
+    HASH_ADD_INT(*pipes, type, pipe_new);
+    log_debug("* Registered DLL tab API pipe (type: %d)\n", type);
 }

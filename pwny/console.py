@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2020-2024 EntySec
+Copyright (c) 2020-2026 EntySec
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,14 @@ SOFTWARE.
 import os
 import io
 
+from itertools import zip_longest
+
 from pwny.api import *
 from pwny.types import *
 
 from pex.arch import *
 from pex.platform import *
+from pex.string import String
 
 from pwny.plugins import Plugins
 from pwny.tips import Tips
@@ -45,7 +48,7 @@ from hatsploit.lib.core.session import Session
 from pex.fs import FS
 
 
-class Console(Cmd, FS):
+class Console(Cmd, FS, String):
     """ Subclass of pwny module.
 
     This subclass of pwny module is intended for providing
@@ -74,11 +77,7 @@ class Console(Cmd, FS):
         self.prompt = prompt
         self.banner = False
         self.tip = False
-
-        self.motd = f"""%end
-Pwny interactive shell %greenv{self.version}%end
-Running as %blue$user%end on %line$dir%end
-"""
+        self.motd = ''
 
         self.plugins = Plugins()
 
@@ -262,13 +261,24 @@ Running as %blue$user%end on %line$dir%end
 
         return message
 
-    def do_plugins(self, _) -> None:
+    def do_plugins(self, args: list) -> None:
         """ Show available plugins.
 
+        Usage: plugins [all|loaded|avail]
+
+        :param list args: arguments list
         :return None: None
         """
 
-        self.plugins.show_plugins()
+        filt = 'all'
+        if len(args) >= 2:
+            filt = args[1].lower()
+
+        if filt not in ('all', 'loaded', 'avail'):
+            self.print_usage("plugins [all|loaded|avail]")
+            return
+
+        self.plugins.show_plugins(filt)
 
     def do_load(self, args: list) -> None:
         """ Load plugin by name.
@@ -319,7 +329,7 @@ Running as %blue$user%end on %line$dir%end
             return
 
         if len(args) >= 2:
-            self.session.spawn(args[1], line[2:])
+            self.session.spawn(args[1], args[2:])
             return
 
         self.session.spawn(args[1], [])
@@ -403,7 +413,9 @@ Running as %blue$user%end on %line$dir%end
         """
 
         self.check_session()
-        search = self.get_env('PATH').split(':')
+
+        sep = ';' if self.session.info['Platform'] == OS_WINDOWS else ':'
+        search = self.get_env('PATH').split(sep)
 
         if len(args) >= 2:
             status = self.session.spawn(
@@ -472,7 +484,9 @@ Running as %blue$user%end on %line$dir%end
 
         self.check_session()
 
-        self.set_env('PATH', ':'.join(
+        sep = ';' if self.session.info['Platform'] == OS_WINDOWS else ':'
+
+        self.set_env('PATH', sep.join(
             self.search.get(self.session.info['Platform'], [])
         ))
 
@@ -510,6 +524,70 @@ Running as %blue$user%end on %line$dir%end
 
             return buffer.getvalue()
 
+    def print_motd(self) -> None:
+        """ Print message of the day with sysinfo and stats.
+
+        :return None: None
+        """
+
+        from pwny.commands.generic.sysinfo import (
+            OS_LOGO, OS_COLOR, DISTRO_LOGO, DISTRO_COLOR
+        )
+
+        system = self.session.send_command(tag=BUILTIN_SYSINFO)
+
+        if system.get_int(TLV_TYPE_STATUS) != TLV_STATUS_SUCCESS:
+            return
+
+        local_time = self.session.send_command(tag=BUILTIN_TIME)
+
+        num_commands = len(self.internal) + len(self.external)
+        num_plugins = len(self.plugins.imported_plugins)
+
+        data = {
+            'Name': system.get_string(BUILTIN_TYPE_PLATFORM),
+            'Kernel': system.get_string(BUILTIN_TYPE_VERSION),
+            'Time': local_time.get_string(TLV_TYPE_STRING),
+            'Vendor': system.get_string(BUILTIN_TYPE_VENDOR),
+            'Arch': system.get_string(BUILTIN_TYPE_ARCH),
+            'Memory': (
+                f'{self.size_normalize(system.get_long(BUILTIN_TYPE_RAM_USED))}/'
+                f'{self.size_normalize(system.get_long(BUILTIN_TYPE_RAM_TOTAL))}'
+            ),
+            'UUID': self.session.uuid,
+            'Commands': str(num_commands),
+            'Plugins': str(num_plugins),
+        }
+
+        platform = self.session.info['Platform']
+        logo = OS_LOGO[platform].splitlines()
+        color = OS_COLOR[platform]
+
+        text_max_len = len(max(data)) + 2
+        logo_max_len = max(len(line) for line in logo) + 1
+        self.print_empty()
+
+        for logo_line, (key, val) in zip_longest(
+            logo[:len(data)], data.items(), fillvalue=''
+        ):
+            if isinstance(logo_line, str):
+                logo_part = f'{color} {logo_line.ljust(logo_max_len, " ")} %end'
+            else:
+                logo_part = ' ' * (logo_max_len + 3)
+
+            if key:
+                self.print_empty(
+                    f'{logo_part}{color} {key.rjust(text_max_len, " ")}: %end{val}',
+                    start=''
+                )
+            else:
+                self.print_empty(f'{logo_part}', start='')
+
+        for line in logo[len(data):]:
+            self.print_empty(f'{color} {line} %end', start='')
+
+        self.print_empty()
+
     def pwny_console(self) -> None:
         """ Start Pwny console.
 
@@ -517,10 +595,7 @@ Running as %blue$user%end on %line$dir%end
         """
 
         self.set_prompt(self.prompt)
-        self.set_motd(self.motd)
-
-        if self.motd:
-            self.print_empty(self.motd)
+        self.print_motd()
 
         if self.banner:
             Banners(self.session).print_random_banner()

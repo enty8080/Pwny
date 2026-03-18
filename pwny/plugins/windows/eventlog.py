@@ -10,13 +10,12 @@ from pwny.types import *
 
 from hatsploit.lib.core.plugin import Plugin
 
-EVENTLOG_BASE = 23
 
-EVENTLOG_CLEAR = tlv_custom_tag(API_CALL_STATIC, EVENTLOG_BASE, API_CALL)
-EVENTLOG_LIST = tlv_custom_tag(API_CALL_STATIC, EVENTLOG_BASE, API_CALL + 1)
+EVENTLOG_CLEAR = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL)
+EVENTLOG_LIST = tlv_custom_tag(API_CALL_STATIC, TAB_BASE, API_CALL + 1)
 
-TLV_TYPE_EVTLOG_NAME = tlv_custom_type(TLV_TYPE_STRING, EVENTLOG_BASE, API_TYPE)
-TLV_TYPE_EVTLOG_COUNT = tlv_custom_type(TLV_TYPE_INT, EVENTLOG_BASE, API_TYPE)
+TLV_TYPE_EVTLOG_NAME = tlv_custom_type(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
+TLV_TYPE_EVTLOG_COUNT = tlv_custom_type(TLV_TYPE_INT, TAB_BASE, API_TYPE)
 
 
 class HatSploitPlugin(Plugin):

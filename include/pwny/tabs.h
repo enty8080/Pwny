@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,7 @@
 
 typedef struct c2_table c2_t;
 typedef struct api_calls_table api_calls_t;
+typedef struct pipes_table pipes_t;
 
 typedef struct tabs_table
 {
@@ -50,8 +51,15 @@ typedef struct tabs_table
 #ifdef __windows__
     /* In-process DLL tab (Windows) — loaded via LoadLibrary */
     api_calls_t *api_calls;
+    pipes_t *pipes;      /* Per-tab pipe types (isolated per plugin) */
     HMODULE hModule;     /* Standard loaded module handle */
     char *temp_path;     /* Temp file path for cleanup (NULL if loaded from disk) */
+
+    /* Code-Only Tab (COT) — module-stomped, no PE on disk or in memory */
+    HMODULE hStomp;      /* Sacrificial DLL handle (module stomp host) */
+    void *cot_code;      /* Base of stomped code region (inside hStomp) */
+    size_t cot_size;     /* Size of COT code blob */
+    void *cot_vtable;    /* Heap-allocated vtable (must outlive the plugin) */
 #else
     /* Child-process tab (POSIX) */
     child_t *child;

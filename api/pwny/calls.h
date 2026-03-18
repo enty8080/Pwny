@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,14 +57,6 @@
 #endif
 
 #ifdef __windows__
-#include "windows/ui.h"
-#include "windows/registry.h"
-#include "windows/uac.h"
-#include "windows/cam.h"
-#include "windows/mic.h"
-#include "windows/clipboard.h"
-#include "windows/credstore.h"
-#include "windows/services.h"
 #include "windows/getuid.h"
 #endif
 
@@ -101,14 +93,6 @@ void register_api_calls(api_calls_t **api_calls)
 #endif
 
 #ifdef __windows__
-    register_ui_api_calls(api_calls);
-    register_registry_api_calls(api_calls);
-    register_uac_api_calls(api_calls);
-    register_cam_api_calls(api_calls);
-    register_mic_api_calls(api_calls);
-    register_clipboard_api_calls(api_calls);
-    register_credstore_api_calls(api_calls);
-    register_services_api_calls(api_calls);
     register_getuid_api_calls(api_calls);
 #endif
 }
@@ -132,11 +116,7 @@ void register_api_pipes(pipes_t **pipes)
     register_mic_api_pipes(pipes);
 #endif
 
-#ifdef __windows__
-    register_cam_api_pipes(pipes);
-    register_mic_api_pipes(pipes);
-    register_ui_api_pipes(pipes);
-#endif
+
 }
 
 #endif

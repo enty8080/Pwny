@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,12 @@ static size_t http_write_cb(void *buffer, size_t size, size_t nmemb, void *data)
     length = size * nmemb;
     client = data;
 
-    return queue_add_raw(client->response, buffer, length);
+    if (queue_add_raw(client->response, buffer, length) != 0)
+    {
+        return 0;
+    }
+
+    return length;
 }
 
 static size_t http_header_cb(void *buffer, size_t size, size_t nmemb, void *data)

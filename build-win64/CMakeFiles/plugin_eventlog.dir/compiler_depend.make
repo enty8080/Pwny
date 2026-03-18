@@ -20,7 +20,7 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h \
@@ -688,6 +688,16 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/immintrin.h:
 
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
+
+/opt/local/x86_64-w64-mingw32/include/string.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
+
 /opt/local/x86_64-w64-mingw32/include/processenv.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fma4intrin.h:
@@ -777,10 +787,6 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fmaintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vpopcntdqintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h:
 
@@ -896,13 +902,13 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h:
 
-/opt/local/x86_64-w64-mingw32/include/stdint.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
-
 /opt/local/x86_64-w64-mingw32/include/winsock2.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnel.h:
+
+/opt/local/x86_64-w64-mingw32/include/stdint.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxbf16intrin.h:
 
@@ -968,25 +974,17 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h:
 
-/opt/local/x86_64-w64-mingw32/include/tvout.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h:
-
 /opt/local/x86_64-w64-mingw32/include/corecrt_startup.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/config.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/string.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
+
+/opt/local/x86_64-w64-mingw32/include/tvout.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h:
 
 /opt/local/x86_64-w64-mingw32/include/excpt.h:
 
@@ -1029,5 +1027,7 @@ CMakeFiles/plugin_eventlog.dir/plugins/eventlog/eventlog.c.obj: /Users/felix/Des
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm3dnow.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/aes.h:

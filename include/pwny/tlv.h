@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ struct tlv_header
     int length;
 } __attribute__((packed));
 
-typedef struct
+typedef struct tlv_pkt
 {
     unsigned char *buffer;
     int bytes;

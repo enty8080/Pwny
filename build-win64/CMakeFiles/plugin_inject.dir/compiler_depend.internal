@@ -14,6 +14,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdio.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdlib.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/string.h
@@ -21,14 +22,17 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/win32netcompat.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h
@@ -206,6 +210,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /opt/local/x86_64-w64-mingw32/include/handleapi.h
  /opt/local/x86_64-w64-mingw32/include/heapapi.h
  /opt/local/x86_64-w64-mingw32/include/imm.h
+ /opt/local/x86_64-w64-mingw32/include/in6addr.h
  /opt/local/x86_64-w64-mingw32/include/inaddr.h
  /opt/local/x86_64-w64-mingw32/include/interlockedapi.h
  /opt/local/x86_64-w64-mingw32/include/io.h
@@ -227,6 +232,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /opt/local/x86_64-w64-mingw32/include/mmiscapi2.h
  /opt/local/x86_64-w64-mingw32/include/mmsyscom.h
  /opt/local/x86_64-w64-mingw32/include/mmsystem.h
+ /opt/local/x86_64-w64-mingw32/include/mstcpip.h
  /opt/local/x86_64-w64-mingw32/include/msxml.h
  /opt/local/x86_64-w64-mingw32/include/namedpipeapi.h
  /opt/local/x86_64-w64-mingw32/include/namespaceapi.h
@@ -249,6 +255,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /opt/local/x86_64-w64-mingw32/include/propidl.h
  /opt/local/x86_64-w64-mingw32/include/prsht.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h
  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h
@@ -345,6 +352,8 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj
  /opt/local/x86_64-w64-mingw32/include/wnnc.h
  /opt/local/x86_64-w64-mingw32/include/wow64apiset.h
  /opt/local/x86_64-w64-mingw32/include/ws2def.h
+ /opt/local/x86_64-w64-mingw32/include/ws2ipdef.h
+ /opt/local/x86_64-w64-mingw32/include/ws2tcpip.h
  /opt/local/x86_64-w64-mingw32/include/wtypes.h
  /opt/local/x86_64-w64-mingw32/include/wtypesbase.h
 

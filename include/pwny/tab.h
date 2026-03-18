@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,10 @@
 #include <pwny/child.h>
 #include <pwny/queue.h>
 
-#define TAB_BASE 1
+#define TAB_BASE 2
 #define TAB_TERM \
         TLV_TAG_CUSTOM(API_CALL_INTERNAL, \
-                       2, \
+                       TAB_BASE + 1, \
                        API_CALL)
 
 #define TAB_EV_FLAGS EVFLAG_NOENV | EVBACKEND_SELECT

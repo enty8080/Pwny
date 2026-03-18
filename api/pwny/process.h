@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,10 @@
 
 #include <sigar.h>
 #include <stdio.h>
+
+#ifdef __windows__
+#include <tlhelp32.h>
+#endif
 
 #include <pwny/api.h>
 #include <pwny/c2.h>
@@ -77,6 +81,73 @@ __declspec(dllimport) extern char **environ;
 
 static tlv_pkt_t *process_list(c2_t *c2)
 {
+#ifdef __windows__
+    HANDLE hSnap;
+    PROCESSENTRY32 pe32;
+    HANDLE hProc;
+    char path[MAX_PATH];
+    BOOL isWow64;
+
+    tlv_pkt_t *result;
+    tlv_pkt_t *proc_info;
+
+    hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap == INVALID_HANDLE_VALUE)
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
+    result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+    if (!Process32First(hSnap, &pe32))
+    {
+        CloseHandle(hSnap);
+        return result;
+    }
+
+    do
+    {
+        if (pe32.th32ProcessID == 0)
+        {
+            continue;
+        }
+
+        proc_info = tlv_pkt_create();
+
+        tlv_pkt_add_u32(proc_info, TLV_TYPE_PID, (int)pe32.th32ProcessID);
+        tlv_pkt_add_string(proc_info, TLV_TYPE_PID_NAME, pe32.szExeFile);
+
+        path[0] = '\0';
+        hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
+                            FALSE, pe32.th32ProcessID);
+
+        if (hProc != NULL)
+        {
+            DWORD pathLen = MAX_PATH;
+            QueryFullProcessImageNameA(hProc, 0, path, &pathLen);
+
+            isWow64 = FALSE;
+            IsWow64Process(hProc, &isWow64);
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_CPU,
+                               isWow64 ? "x86" : "x86_64");
+            CloseHandle(hProc);
+        }
+        else
+        {
+            tlv_pkt_add_string(proc_info, TLV_TYPE_PID_CPU, "");
+        }
+
+        tlv_pkt_add_string(proc_info, TLV_TYPE_PID_PATH, path);
+
+        tlv_pkt_add_tlv(result, TLV_TYPE_GROUP, proc_info);
+        tlv_pkt_destroy(proc_info);
+    } while (Process32Next(hSnap, &pe32));
+
+    CloseHandle(hSnap);
+    return result;
+
+#else
     int iter;
     int status;
 
@@ -143,6 +214,7 @@ static tlv_pkt_t *process_list(c2_t *c2)
     sigar_proc_list_destroy(core->sigar, &proc_list);
 
     return result;
+#endif
 }
 
 static tlv_pkt_t *process_kill(c2_t *c2)
@@ -190,12 +262,16 @@ static tlv_pkt_t *process_killall(c2_t *c2)
 static tlv_pkt_t *process_get_pid(c2_t *c2)
 {
     tlv_pkt_t *result;
-    core_t *core;
-
-    core = c2->data;
 
     result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
+
+#ifdef __windows__
+    tlv_pkt_add_u32(result, TLV_TYPE_PID, (int)GetCurrentProcessId());
+#else
+    core_t *core;
+    core = c2->data;
     tlv_pkt_add_u32(result, TLV_TYPE_PID, sigar_pid_get(core->sigar));
+#endif
 
     return result;
 }

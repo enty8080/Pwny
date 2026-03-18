@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,9 @@
 
 #ifndef __windows__
 #define HAVE_GLOB 1
+#define FS_SEP "/"
+#else
+#define FS_SEP "\\"
 #endif
 
 #include <errno.h>
@@ -290,7 +293,7 @@ static int tree_readdir(eio_req *request)
 
     for (iter = 0; iter < request->result; iter++)
     {
-        snprintf(fq_path, sizeof(fq_path), "%s/%s", path, name);
+        snprintf(fq_path, sizeof(fq_path), "%s" FS_SEP "%s", path, name);
         error = tree_group_add(tree->group_dents, eio_lstat(fq_path, 0, tree_stat, tree));
 
         if (error)
@@ -507,7 +510,7 @@ static int fs_eio_list(eio_req *request)
             entry = entries + iter;
             name = names + entry->nameofs;
 
-            snprintf(fq_path, sizeof(fq_path), "%s/%s", path, name);
+            snprintf(fq_path, sizeof(fq_path), "%s" FS_SEP "%s", path, name);
 
             tlv_pkt_add_string(stat_result, TLV_TYPE_FILENAME, name);
             tlv_pkt_add_string(stat_result, TLV_TYPE_PATH, fq_path);
@@ -779,7 +782,7 @@ static void fs_eio_find(struct eio_req *request)
         }
         else
         {
-            snprintf(abs_path, sizeof(abs_path), "%s/%s", curr_entry->dir, entry->d_name);
+            snprintf(abs_path, sizeof(abs_path), "%s" FS_SEP "%s", curr_entry->dir, entry->d_name);
         }
 
 #ifdef __windows__

@@ -1,5 +1,7 @@
 CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/src/main/dll.c \
+ /opt/local/x86_64-w64-mingw32/include/winsock2.h \
+ /opt/local/x86_64-w64-mingw32/include/_mingw_unicode.h \
  /opt/local/x86_64-w64-mingw32/include/windows.h \
  /opt/local/x86_64-w64-mingw32/include/_mingw.h \
  /opt/local/x86_64-w64-mingw32/include/_mingw_mac.h \
@@ -21,7 +23,6 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/concurrencysal.h \
  /opt/local/x86_64-w64-mingw32/include/driverspecs.h \
  /opt/local/x86_64-w64-mingw32/include/winnt.h \
- /opt/local/x86_64-w64-mingw32/include/_mingw_unicode.h \
  /opt/local/x86_64-w64-mingw32/include/ctype.h \
  /opt/local/x86_64-w64-mingw32/include/corecrt_wctype.h \
  /opt/local/x86_64-w64-mingw32/include/apiset.h \
@@ -252,15 +253,6 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/shellapi.h \
  /opt/local/x86_64-w64-mingw32/include/winperf.h \
  /opt/local/x86_64-w64-mingw32/include/winsock.h \
- /opt/local/x86_64-w64-mingw32/include/_timeval.h \
- /opt/local/x86_64-w64-mingw32/include/inaddr.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsadata.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_xmitfile.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h \
  /opt/local/x86_64-w64-mingw32/include/wincrypt.h \
  /opt/local/x86_64-w64-mingw32/include/bcrypt.h \
  /opt/local/x86_64-w64-mingw32/include/ncrypt.h \
@@ -297,6 +289,16 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/winsvc.h \
  /opt/local/x86_64-w64-mingw32/include/mcx.h \
  /opt/local/x86_64-w64-mingw32/include/imm.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h \
+ /opt/local/x86_64-w64-mingw32/include/_timeval.h \
+ /opt/local/x86_64-w64-mingw32/include/inaddr.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsadata.h \
+ /opt/local/x86_64-w64-mingw32/include/ws2def.h \
+ /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h \
+ /opt/local/x86_64-w64-mingw32/include/qos.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/core.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdio.h \
@@ -331,10 +333,6 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/aes.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/entropy.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/sha512.h \
- /opt/local/x86_64-w64-mingw32/include/winsock2.h \
- /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h \
- /opt/local/x86_64-w64-mingw32/include/ws2def.h \
- /opt/local/x86_64-w64-mingw32/include/qos.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h \
  /opt/local/x86_64-w64-mingw32/include/unistd.h \

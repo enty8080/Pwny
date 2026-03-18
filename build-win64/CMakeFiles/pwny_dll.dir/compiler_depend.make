@@ -255,13 +255,11 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: /Users/felix/Desktop/EntySec/Project
   /opt/local/x86_64-w64-mingw32/include/propidl.h \
   /opt/local/x86_64-w64-mingw32/include/prsht.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h \
-  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsadata.h \
-  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_xmitfile.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/intrin-impl.h \
   /opt/local/x86_64-w64-mingw32/include/pshpack1.h \
   /opt/local/x86_64-w64-mingw32/include/pshpack2.h \
@@ -367,6 +365,8 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: /Users/felix/Desktop/EntySec/Project
 
 /opt/local/x86_64-w64-mingw32/include/wincrypt.h:
 
+/opt/local/x86_64-w64-mingw32/include/wincon.h:
+
 /opt/local/x86_64-w64-mingw32/include/windows.h:
 
 /opt/local/x86_64-w64-mingw32/include/virtdisk.h:
@@ -438,10 +438,6 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: /Users/felix/Desktop/EntySec/Project
 /opt/local/x86_64-w64-mingw32/include/pshpack4.h:
 
 /opt/local/x86_64-w64-mingw32/include/psdk_inc/intrin-impl.h:
-
-/opt/local/x86_64-w64-mingw32/include/wincon.h:
-
-/opt/local/x86_64-w64-mingw32/include/psdk_inc/_xmitfile.h:
 
 /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsadata.h:
 
@@ -870,8 +866,6 @@ CMakeFiles/pwny_dll.dir/src/main/dll.c.obj: /Users/felix/Desktop/EntySec/Project
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2copyintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/realtimeapiset.h:
-
-/opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2convertintrin.h:
 

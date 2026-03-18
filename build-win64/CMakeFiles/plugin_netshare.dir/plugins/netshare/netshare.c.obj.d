@@ -1,6 +1,5 @@
 CMakeFiles/plugin_netshare.dir/plugins/netshare/netshare.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/plugins/netshare/netshare.c \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
@@ -366,4 +365,4 @@ CMakeFiles/plugin_netshare.dir/plugins/netshare/netshare.c.obj: \
  /opt/local/x86_64-w64-mingw32/include/lmstats.h \
  /opt/local/x86_64-w64-mingw32/include/lmaudit.h \
  /opt/local/x86_64-w64-mingw32/include/lmjoin.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h
+ /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h

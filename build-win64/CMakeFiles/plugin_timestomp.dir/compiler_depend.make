@@ -20,13 +20,12 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h \
@@ -534,6 +533,10 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/x86_64-w64-mingw32/include/getopt.h:
 
+/opt/local/x86_64-w64-mingw32/include/_mingw_unicode.h:
+
+/opt/local/x86_64-w64-mingw32/include/fltwinerror.h:
+
 /opt/local/x86_64-w64-mingw32/include/errno.h:
 
 /opt/local/x86_64-w64-mingw32/include/errhandlingapi.h:
@@ -688,9 +691,29 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/immintrin.h:
 
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
+
+/opt/local/x86_64-w64-mingw32/include/string.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
+
 /opt/local/x86_64-w64-mingw32/include/processenv.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fma4intrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsaveintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avxvnniint8intrin.h:
+
+/opt/local/x86_64-w64-mingw32/include/rpcasync.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vlbwintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/f16cintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/ia32intrin.h:
 
@@ -709,16 +732,6 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdlib.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avxvnniintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/rpcasync.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vlbwintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/f16cintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsaveintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avxvnniint8intrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/hresetintrin.h:
 
@@ -780,10 +793,6 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vpopcntdqintrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vnniintrin.h:
@@ -828,10 +837,6 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bwintrin.h:
 
-/opt/local/x86_64-w64-mingw32/include/fltwinerror.h:
-
-/opt/local/x86_64-w64-mingw32/include/_mingw_unicode.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2satcvtintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/winnls.h:
@@ -870,8 +875,6 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512satcvtintrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512minmaxintrin.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h:
 
 /opt/local/x86_64-w64-mingw32/include/dpapi.h:
@@ -890,13 +893,13 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h:
 
-/opt/local/x86_64-w64-mingw32/include/stdint.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
-
 /opt/local/x86_64-w64-mingw32/include/winsock2.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnel.h:
+
+/opt/local/x86_64-w64-mingw32/include/stdint.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxbf16intrin.h:
 
@@ -919,6 +922,8 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bitalgintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxfp16intrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512minmaxintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/_mingw.h:
 
@@ -952,33 +957,23 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 
 /opt/local/x86_64-w64-mingw32/include/_bsd_types.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxavx512intrin.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h:
-
-/opt/local/x86_64-w64-mingw32/include/tvout.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h:
 
 /opt/local/x86_64-w64-mingw32/include/corecrt_startup.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/config.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/string.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
+
+/opt/local/x86_64-w64-mingw32/include/tvout.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h:
 
@@ -1017,6 +1012,8 @@ CMakeFiles/plugin_timestomp.dir/plugins/timestomp/timestomp.c.obj: /Users/felix/
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm3dnow.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm_malloc.h:
 

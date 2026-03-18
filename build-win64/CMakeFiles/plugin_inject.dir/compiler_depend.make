@@ -13,6 +13,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdio.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/stdlib.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/string.h \
@@ -20,14 +21,17 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/win32netcompat.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h \
@@ -205,6 +209,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /opt/local/x86_64-w64-mingw32/include/handleapi.h \
   /opt/local/x86_64-w64-mingw32/include/heapapi.h \
   /opt/local/x86_64-w64-mingw32/include/imm.h \
+  /opt/local/x86_64-w64-mingw32/include/in6addr.h \
   /opt/local/x86_64-w64-mingw32/include/inaddr.h \
   /opt/local/x86_64-w64-mingw32/include/interlockedapi.h \
   /opt/local/x86_64-w64-mingw32/include/io.h \
@@ -226,6 +231,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /opt/local/x86_64-w64-mingw32/include/mmiscapi2.h \
   /opt/local/x86_64-w64-mingw32/include/mmsyscom.h \
   /opt/local/x86_64-w64-mingw32/include/mmsystem.h \
+  /opt/local/x86_64-w64-mingw32/include/mstcpip.h \
   /opt/local/x86_64-w64-mingw32/include/msxml.h \
   /opt/local/x86_64-w64-mingw32/include/namedpipeapi.h \
   /opt/local/x86_64-w64-mingw32/include/namespaceapi.h \
@@ -248,6 +254,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /opt/local/x86_64-w64-mingw32/include/propidl.h \
   /opt/local/x86_64-w64-mingw32/include/prsht.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h \
+  /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_socket_types.h \
   /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ws1_undef.h \
@@ -344,9 +351,13 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
   /opt/local/x86_64-w64-mingw32/include/wnnc.h \
   /opt/local/x86_64-w64-mingw32/include/wow64apiset.h \
   /opt/local/x86_64-w64-mingw32/include/ws2def.h \
+  /opt/local/x86_64-w64-mingw32/include/ws2ipdef.h \
+  /opt/local/x86_64-w64-mingw32/include/ws2tcpip.h \
   /opt/local/x86_64-w64-mingw32/include/wtypes.h \
   /opt/local/x86_64-w64-mingw32/include/wtypesbase.h
 
+
+/opt/local/x86_64-w64-mingw32/include/ws2ipdef.h:
 
 /opt/local/x86_64-w64-mingw32/include/wnnc.h:
 
@@ -482,6 +493,8 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/x86_64-w64-mingw32/include/namespaceapi.h:
 
+/opt/local/x86_64-w64-mingw32/include/mstcpip.h:
+
 /opt/local/x86_64-w64-mingw32/include/mmsystem.h:
 
 /opt/local/x86_64-w64-mingw32/include/namedpipeapi.h:
@@ -526,6 +539,8 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/x86_64-w64-mingw32/include/inaddr.h:
 
+/opt/local/x86_64-w64-mingw32/include/in6addr.h:
+
 /opt/local/x86_64-w64-mingw32/include/windef.h:
 
 /opt/local/x86_64-w64-mingw32/include/guiddef.h:
@@ -535,6 +550,12 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 /opt/local/x86_64-w64-mingw32/include/getopt.h:
 
 /opt/local/x86_64-w64-mingw32/include/fileapi.h:
+
+/opt/local/x86_64-w64-mingw32/include/winperf.h:
+
+/opt/local/x86_64-w64-mingw32/include/fcntl.h:
+
+/opt/local/x86_64-w64-mingw32/include/excpt.h:
 
 /opt/local/x86_64-w64-mingw32/include/errno.h:
 
@@ -622,11 +643,7 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/waitpkgintrin.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/entropy.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/x86gprintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/tsxldtrkintrin.h:
+/opt/local/x86_64-w64-mingw32/include/ws2tcpip.h:
 
 /opt/local/x86_64-w64-mingw32/include/winerror.h:
 
@@ -638,9 +655,9 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/sm4intrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mwaitintrin.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vldqintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mwaitintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/shaintrin.h:
 
@@ -682,17 +699,37 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/immintrin.h:
 
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
+
+/opt/local/x86_64-w64-mingw32/include/string.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
+
 /opt/local/x86_64-w64-mingw32/include/processenv.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fma4intrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/adxintrin.h:
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/cmpccxaddintrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/enqcmdintrin.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/ia32intrin.h:
+/opt/local/x86_64-w64-mingw32/include/dpapi.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/syslimits.h:
+
+/opt/local/x86_64-w64-mingw32/include/handleapi.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/string.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/clzerointrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxtransposeintrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/ia32intrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/lwpintrin.h:
 
@@ -738,8 +775,6 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avxintrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/cmpccxaddintrin.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xopintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/winreg.h:
@@ -775,10 +810,6 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fmaintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vpopcntdqintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/fxsrintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h:
 
@@ -816,6 +847,8 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/x86_64-w64-mingw32/include/debugapi.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h:
+
 /opt/local/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512fp16intrin.h:
@@ -823,10 +856,6 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/movrsintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512cdintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/winperf.h:
-
-/opt/local/x86_64-w64-mingw32/include/fcntl.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bwintrin.h:
 
@@ -849,6 +878,8 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2copyintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/realtimeapiset.h:
+
+/opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_mreq1.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2convertintrin.h:
 
@@ -876,31 +907,9 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512minmaxintrin.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h:
-
-/opt/local/x86_64-w64-mingw32/include/dpapi.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/syslimits.h:
-
-/opt/local/x86_64-w64-mingw32/include/handleapi.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/string.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/clzerointrin.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/vaesintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512convertintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h:
-
-/opt/local/x86_64-w64-mingw32/include/stdint.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
-
-/opt/local/x86_64-w64-mingw32/include/winsock2.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnel.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxbf16intrin.h:
 
@@ -932,13 +941,9 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h:
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/enqcmdintrin.h:
 
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxfp8intrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/sm3intrin.h:
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/adxintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/winnetwk.h:
 
@@ -960,6 +965,10 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/x86_64-w64-mingw32/include/_bsd_types.h:
 
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxfp8intrin.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h:
+
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxavx512intrin.h:
@@ -968,35 +977,33 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h:
+
+/opt/local/x86_64-w64-mingw32/include/corecrt_startup.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/config.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/win32netcompat.h:
+
 /Users/felix/Desktop/EntySec/Projects/Pwny/plugins/inject/inject.c:
 
 /opt/local/x86_64-w64-mingw32/include/tvout.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h:
 
-/opt/local/x86_64-w64-mingw32/include/corecrt_startup.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/config.h:
-
-/opt/local/x86_64-w64-mingw32/include/shellapi.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/inject_tech.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsavecintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/string.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mmintrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_dll.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
-
-/opt/local/x86_64-w64-mingw32/include/excpt.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/limits.h:
+
+/opt/local/x86_64-w64-mingw32/include/winsock2.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnel.h:
+
+/opt/local/x86_64-w64-mingw32/include/stdint.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/rtmintrin.h:
 
@@ -1008,13 +1015,25 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512fp16vlintrin.h:
 
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bf16intrin.h:
+
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/sm3intrin.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/x86gprintrin.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/entropy.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h:
 
 /opt/local/x86_64-w64-mingw32/include/apisetcconv.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/clwbintrin.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bf16intrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx2intrin.h:
 
@@ -1037,3 +1056,11 @@ CMakeFiles/plugin_inject.dir/plugins/inject/inject.c.obj: /Users/felix/Desktop/E
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm3dnow.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/fcntl.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/ev.h:
+
+/opt/local/x86_64-w64-mingw32/include/shellapi.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/inject_tech.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/tsxldtrkintrin.h:

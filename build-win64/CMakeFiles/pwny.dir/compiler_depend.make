@@ -1191,15 +1191,7 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/net.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/netstat.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/process.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/cam.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/clipboard.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/credstore.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/getuid.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/mic.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/registry.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/services.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/uac.h \
-  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/ui.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/curl/curl.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/curl/curlver.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/curl/easy.h \
@@ -1387,7 +1379,6 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xtestintrin.h \
   /opt/local/x86_64-w64-mingw32/include/_bsd_types.h \
   /opt/local/x86_64-w64-mingw32/include/_mingw.h \
-  /opt/local/x86_64-w64-mingw32/include/_mingw_dxhelper.h \
   /opt/local/x86_64-w64-mingw32/include/_mingw_mac.h \
   /opt/local/x86_64-w64-mingw32/include/_mingw_off_t.h \
   /opt/local/x86_64-w64-mingw32/include/_mingw_secapi.h \
@@ -1395,10 +1386,8 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/_mingw_stdarg.h \
   /opt/local/x86_64-w64-mingw32/include/_mingw_unicode.h \
   /opt/local/x86_64-w64-mingw32/include/_timeval.h \
-  /opt/local/x86_64-w64-mingw32/include/amvideo.h \
   /opt/local/x86_64-w64-mingw32/include/apiset.h \
   /opt/local/x86_64-w64-mingw32/include/apisetcconv.h \
-  /opt/local/x86_64-w64-mingw32/include/audevcod.h \
   /opt/local/x86_64-w64-mingw32/include/basetsd.h \
   /opt/local/x86_64-w64-mingw32/include/bcrypt.h \
   /opt/local/x86_64-w64-mingw32/include/bemapiset.h \
@@ -1410,7 +1399,6 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/consoleapi.h \
   /opt/local/x86_64-w64-mingw32/include/consoleapi2.h \
   /opt/local/x86_64-w64-mingw32/include/consoleapi3.h \
-  /opt/local/x86_64-w64-mingw32/include/control.h \
   /opt/local/x86_64-w64-mingw32/include/corecrt.h \
   /opt/local/x86_64-w64-mingw32/include/corecrt_startup.h \
   /opt/local/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
@@ -1421,17 +1409,13 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/datetimeapi.h \
   /opt/local/x86_64-w64-mingw32/include/dde.h \
   /opt/local/x86_64-w64-mingw32/include/ddeml.h \
-  /opt/local/x86_64-w64-mingw32/include/ddraw.h \
   /opt/local/x86_64-w64-mingw32/include/debugapi.h \
   /opt/local/x86_64-w64-mingw32/include/dirent.h \
   /opt/local/x86_64-w64-mingw32/include/dlgs.h \
   /opt/local/x86_64-w64-mingw32/include/dpapi.h \
   /opt/local/x86_64-w64-mingw32/include/driverspecs.h \
-  /opt/local/x86_64-w64-mingw32/include/dshow.h \
   /opt/local/x86_64-w64-mingw32/include/errhandlingapi.h \
   /opt/local/x86_64-w64-mingw32/include/errno.h \
-  /opt/local/x86_64-w64-mingw32/include/errors.h \
-  /opt/local/x86_64-w64-mingw32/include/evcode.h \
   /opt/local/x86_64-w64-mingw32/include/excpt.h \
   /opt/local/x86_64-w64-mingw32/include/fcntl.h \
   /opt/local/x86_64-w64-mingw32/include/fibersapi.h \
@@ -1449,7 +1433,6 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/ioapiset.h \
   /opt/local/x86_64-w64-mingw32/include/jobapi.h \
   /opt/local/x86_64-w64-mingw32/include/joystickapi.h \
-  /opt/local/x86_64-w64-mingw32/include/ksuuids.h \
   /opt/local/x86_64-w64-mingw32/include/ktmtypes.h \
   /opt/local/x86_64-w64-mingw32/include/libgen.h \
   /opt/local/x86_64-w64-mingw32/include/libloaderapi.h \
@@ -1464,10 +1447,8 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/mmeapi.h \
   /opt/local/x86_64-w64-mingw32/include/mmiscapi.h \
   /opt/local/x86_64-w64-mingw32/include/mmiscapi2.h \
-  /opt/local/x86_64-w64-mingw32/include/mmreg.h \
   /opt/local/x86_64-w64-mingw32/include/mmsyscom.h \
   /opt/local/x86_64-w64-mingw32/include/mmsystem.h \
-  /opt/local/x86_64-w64-mingw32/include/msacm.h \
   /opt/local/x86_64-w64-mingw32/include/mstcpip.h \
   /opt/local/x86_64-w64-mingw32/include/msxml.h \
   /opt/local/x86_64-w64-mingw32/include/namedpipeapi.h \
@@ -1478,10 +1459,8 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/objbase.h \
   /opt/local/x86_64-w64-mingw32/include/objidl.h \
   /opt/local/x86_64-w64-mingw32/include/objidlbase.h \
-  /opt/local/x86_64-w64-mingw32/include/ocidl.h \
   /opt/local/x86_64-w64-mingw32/include/ole2.h \
   /opt/local/x86_64-w64-mingw32/include/oleauto.h \
-  /opt/local/x86_64-w64-mingw32/include/olectl.h \
   /opt/local/x86_64-w64-mingw32/include/oleidl.h \
   /opt/local/x86_64-w64-mingw32/include/playsoundapi.h \
   /opt/local/x86_64-w64-mingw32/include/poppack.h \
@@ -1542,8 +1521,6 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/stralign.h \
   /opt/local/x86_64-w64-mingw32/include/string.h \
   /opt/local/x86_64-w64-mingw32/include/stringapiset.h \
-  /opt/local/x86_64-w64-mingw32/include/strmif.h \
-  /opt/local/x86_64-w64-mingw32/include/strsafe.h \
   /opt/local/x86_64-w64-mingw32/include/swprintf.inl \
   /opt/local/x86_64-w64-mingw32/include/synchapi.h \
   /opt/local/x86_64-w64-mingw32/include/sys/param.h \
@@ -1557,26 +1534,22 @@ CMakeFiles/pwny.dir/src/core.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/time.h \
   /opt/local/x86_64-w64-mingw32/include/timeapi.h \
   /opt/local/x86_64-w64-mingw32/include/timezoneapi.h \
+  /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
   /opt/local/x86_64-w64-mingw32/include/tvout.h \
   /opt/local/x86_64-w64-mingw32/include/unistd.h \
   /opt/local/x86_64-w64-mingw32/include/unknwn.h \
   /opt/local/x86_64-w64-mingw32/include/unknwnbase.h \
   /opt/local/x86_64-w64-mingw32/include/urlmon.h \
   /opt/local/x86_64-w64-mingw32/include/utilapiset.h \
-  /opt/local/x86_64-w64-mingw32/include/uuids.h \
   /opt/local/x86_64-w64-mingw32/include/vadefs.h \
-  /opt/local/x86_64-w64-mingw32/include/vfw.h \
-  /opt/local/x86_64-w64-mingw32/include/vfwmsgs.h \
   /opt/local/x86_64-w64-mingw32/include/virtdisk.h \
   /opt/local/x86_64-w64-mingw32/include/winapifamily.h \
   /opt/local/x86_64-w64-mingw32/include/winbase.h \
   /opt/local/x86_64-w64-mingw32/include/wincon.h \
   /opt/local/x86_64-w64-mingw32/include/wincontypes.h \
-  /opt/local/x86_64-w64-mingw32/include/wincred.h \
   /opt/local/x86_64-w64-mingw32/include/wincrypt.h \
   /opt/local/x86_64-w64-mingw32/include/windef.h \
   /opt/local/x86_64-w64-mingw32/include/windows.h \
-  /opt/local/x86_64-w64-mingw32/include/windowsx.h \
   /opt/local/x86_64-w64-mingw32/include/winefs.h \
   /opt/local/x86_64-w64-mingw32/include/winerror.h \
   /opt/local/x86_64-w64-mingw32/include/wingdi.h \
@@ -4638,6 +4611,7 @@ CMakeFiles/pwny.dir/src/proc.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /opt/local/x86_64-w64-mingw32/include/time.h \
   /opt/local/x86_64-w64-mingw32/include/timeapi.h \
   /opt/local/x86_64-w64-mingw32/include/timezoneapi.h \
+  /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
   /opt/local/x86_64-w64-mingw32/include/tvout.h \
   /opt/local/x86_64-w64-mingw32/include/unknwn.h \
   /opt/local/x86_64-w64-mingw32/include/unknwnbase.h \
@@ -5111,12 +5085,14 @@ CMakeFiles/pwny.dir/src/tabs.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny/s
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/time.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/unistd.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/c2.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/crypt.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/group.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/link.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/log.h \
+  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/pipe.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/queue.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tabs.h \
   /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tlv.h \
@@ -6194,37 +6170,11 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/src/crypt.c:
 
-/opt/local/x86_64-w64-mingw32/include/wincred.h:
-
-/opt/local/x86_64-w64-mingw32/include/vfw.h:
-
-/opt/local/x86_64-w64-mingw32/include/strsafe.h:
-
-/opt/local/x86_64-w64-mingw32/include/strmif.h:
-
-/opt/local/x86_64-w64-mingw32/include/ocidl.h:
-
-/opt/local/x86_64-w64-mingw32/include/mmreg.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/src/io.c:
 
 /opt/local/x86_64-w64-mingw32/include/libgen.h:
 
-/opt/local/x86_64-w64-mingw32/include/ksuuids.h:
-
-/opt/local/x86_64-w64-mingw32/include/evcode.h:
-
-/opt/local/x86_64-w64-mingw32/include/dshow.h:
-
 /opt/local/x86_64-w64-mingw32/include/dirent.h:
-
-/opt/local/x86_64-w64-mingw32/include/control.h:
-
-/opt/local/x86_64-w64-mingw32/include/amvideo.h:
-
-/opt/local/x86_64-w64-mingw32/include/_mingw_dxhelper.h:
-
-/opt/local/x86_64-w64-mingw32/include/vfwmsgs.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/worker.h:
 
@@ -6234,45 +6184,27 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnels/ipc.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/http_client.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/ifconfig.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/proc.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/endian.h:
+/opt/local/x86_64-w64-mingw32/include/winbase.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h:
+
+/opt/local/x86_64-w64-mingw32/include/_mingw.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/eio.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/curl/easy.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/src/pipe.c:
-
-/opt/local/x86_64-w64-mingw32/include/stdint.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/ui.h:
-
-/opt/local/x86_64-w64-mingw32/include/rpcasync.h:
-
-/opt/local/x86_64-w64-mingw32/include/ioapiset.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/clipboard.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/uac.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/dirent.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pconfigintrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/cam.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/fs.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vnnivlintrin.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/getuid.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/credstore.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/env.h:
 
@@ -6307,6 +6239,10 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/x86_64-w64-mingw32/include/winver.h:
 
 /opt/local/x86_64-w64-mingw32/include/winuser.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/uintrintrin.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/misc.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxavx512intrin.h:
 
@@ -6396,8 +6332,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/x86_64-w64-mingw32/include/securitybaseapi.h:
 
-/opt/local/x86_64-w64-mingw32/include/errors.h:
-
 /opt/local/x86_64-w64-mingw32/include/pthread_signal.h:
 
 /opt/local/x86_64-w64-mingw32/include/sal.h:
@@ -6448,8 +6382,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/x86_64-w64-mingw32/include/psdk_inc/_ip_types.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/registry.h:
-
 /opt/local/x86_64-w64-mingw32/include/psdk_inc/_wsa_errnos.h:
 
 /opt/local/x86_64-w64-mingw32/include/psdk_inc/_fd_types.h:
@@ -6481,8 +6413,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/x86_64-w64-mingw32/include/oleidl.h:
 
 /opt/local/x86_64-w64-mingw32/include/oleauto.h:
-
-/opt/local/x86_64-w64-mingw32/include/windowsx.h:
 
 /opt/local/x86_64-w64-mingw32/include/dlgs.h:
 
@@ -6549,6 +6479,10 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/x86_64-w64-mingw32/include/winscard.h:
 
 /opt/local/x86_64-w64-mingw32/include/jobapi.h:
+
+/opt/local/x86_64-w64-mingw32/include/rpcasync.h:
+
+/opt/local/x86_64-w64-mingw32/include/ioapiset.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/adxintrin.h:
 
@@ -6624,10 +6558,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/x86_64-w64-mingw32/include/cderr.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/net_client.h:
-
-/opt/local/x86_64-w64-mingw32/include/winbase.h:
-
 /opt/local/x86_64-w64-mingw32/include/ctype.h:
 
 /opt/local/x86_64-w64-mingw32/include/basetsd.h:
@@ -6678,6 +6608,8 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/entropy.h:
 
+/opt/local/x86_64-w64-mingw32/include/tlhelp32.h:
+
 /opt/local/x86_64-w64-mingw32/include/concurrencysal.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/x86gprintrin.h:
@@ -6707,8 +6639,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512bf16intrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mwaitintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/olectl.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm3dnow.h:
 
@@ -6752,6 +6682,8 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mwaitxintrin.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/endian.h:
+
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vbmivlintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxint8intrin.h:
@@ -6782,8 +6714,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/x86_64-w64-mingw32/include/string.h:
 
-/opt/local/x86_64-w64-mingw32/include/msacm.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pkuintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/tvout.h:
@@ -6798,8 +6728,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/zlib.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/services.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/curl/curl.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/gfniintrin.h:
@@ -6808,15 +6736,13 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/tbmintrin.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/proc.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/ifconfig.h:
-
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avxvnniintrin.h:
 
 /opt/local/x86_64-w64-mingw32/include/winsmcrd.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512vlbwintrin.h:
+
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/http_client.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/xsaveintrin.h:
 
@@ -6839,8 +6765,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/x86_64-w64-mingw32/include/apiset.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/cmpccxaddintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/ddraw.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512fp16intrin.h:
 
@@ -6875,8 +6799,6 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxtileintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/keylockerintrin.h:
-
-/opt/local/x86_64-w64-mingw32/include/uuids.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/bignum.h:
 
@@ -6978,6 +6900,8 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512satcvtintrin.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/tab_cot.h:
+
 /Users/felix/Desktop/EntySec/Projects/Pwny/src/tab.c:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx10_2-512mediaintrin.h:
@@ -6988,13 +6912,15 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnel.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/src/pipe.c:
+
+/opt/local/x86_64-w64-mingw32/include/stdint.h:
+
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/stat.h:
 
 /opt/local/x86_64-w64-mingw32/include/mmsyscom.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxcomplexintrin.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/mic.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/api.h:
 
@@ -7004,9 +6930,11 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/amxfp16intrin.h:
 
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/io.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/mingw/pwny/child.h:
 
-/opt/local/x86_64-w64-mingw32/include/_mingw.h:
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/dirent.h:
+
+/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/pconfigintrin.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/sys/types.h:
 
@@ -7046,6 +6974,8 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /opt/local/x86_64-w64-mingw32/include/imm.h:
 
+/Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/netdb.h:
+
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx512bf16intrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/avx2intrin.h:
@@ -7062,17 +6992,11 @@ CMakeFiles/pwny.dir/src/worker.c.obj: /Users/felix/Desktop/EntySec/Projects/Pwny
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/check_config.h:
 
-/opt/local/x86_64-w64-mingw32/include/audevcod.h:
-
 /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/aes.h:
 
 /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/core.h:
 
 /opt/local/x86_64-w64-mingw32/include/combaseapi.h:
-
-/Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/misc.h:
-
-/opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/uintrintrin.h:
 
 /opt/local/lib/gcc/x86_64-w64-mingw32/15.2.0/include/bmi2intrin.h:
 

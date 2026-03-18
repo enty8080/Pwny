@@ -371,6 +371,7 @@ CMakeFiles/pwny.dir/src/core.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/mbedtls/ecdsa.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/misc.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/process.h \
+ /opt/local/x86_64-w64-mingw32/include/tlhelp32.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/proc.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/fs.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/compat/dirent.h \
@@ -384,36 +385,6 @@ CMakeFiles/pwny.dir/src/core.c.obj: \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/ifconfig.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/deps/build/x86_64-w64-mingw32/include/sigar_format.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/netstat.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/ui.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/registry.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/uac.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/cam.h \
- /opt/local/x86_64-w64-mingw32/include/dshow.h \
- /opt/local/x86_64-w64-mingw32/include/windowsx.h \
- /opt/local/x86_64-w64-mingw32/include/olectl.h \
- /opt/local/x86_64-w64-mingw32/include/ocidl.h \
- /opt/local/x86_64-w64-mingw32/include/ddraw.h \
- /opt/local/x86_64-w64-mingw32/include/_mingw_dxhelper.h \
- /opt/local/x86_64-w64-mingw32/include/strsafe.h \
- /opt/local/x86_64-w64-mingw32/include/strmif.h \
- /opt/local/x86_64-w64-mingw32/include/ocidl.h \
- /opt/local/x86_64-w64-mingw32/include/amvideo.h \
- /opt/local/x86_64-w64-mingw32/include/control.h \
- /opt/local/x86_64-w64-mingw32/include/evcode.h \
- /opt/local/x86_64-w64-mingw32/include/uuids.h \
- /opt/local/x86_64-w64-mingw32/include/ksuuids.h \
- /opt/local/x86_64-w64-mingw32/include/errors.h \
- /opt/local/x86_64-w64-mingw32/include/vfwmsgs.h \
- /opt/local/x86_64-w64-mingw32/include/audevcod.h \
- /opt/local/x86_64-w64-mingw32/include/vfw.h \
- /opt/local/x86_64-w64-mingw32/include/mmreg.h \
- /opt/local/x86_64-w64-mingw32/include/pshpack1.h \
- /opt/local/x86_64-w64-mingw32/include/msacm.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/mic.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/clipboard.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/credstore.h \
- /opt/local/x86_64-w64-mingw32/include/wincred.h \
- /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/services.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/api/pwny/windows/getuid.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/worker.h \
  /Users/felix/Desktop/EntySec/Projects/Pwny/include/pwny/tunnels/tunnels.h \

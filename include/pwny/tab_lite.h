@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2024 EntySec
+ * Copyright (c) 2020-2026 EntySec
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,16 +35,16 @@
 
 /*
  * TAB_LITE_TERM must equal TAB_TERM from tab.h:
- *   TLV_TAG_CUSTOM(API_CALL_INTERNAL, 2, API_CALL)
- *   = (1 | 2 << 2) | (1 << 8)
- *   = 9 | 256 = 265
+ *   TLV_TAG_CUSTOM(API_CALL_INTERNAL, TAB_BASE + 1, API_CALL)
+ *   = (1 | 3 << 2) | (1 << 8)
+ *   = 13 | 256 = 269
  */
 
-#define TAB_LITE_TERM 265
+#define TAB_LITE_TERM 269
 
 #define TAB_LITE_EV_FLAGS (EVFLAG_NOENV | EVBACKEND_SELECT)
 
-#define TAB_BASE 1
+#define TAB_BASE 2
 
 /* Tag pool constants (match api.h without pulling it in) */
 #define API_CALL          1

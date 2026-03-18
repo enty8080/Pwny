@@ -1,0 +1,3 @@
+/opt/local/bin/cmake -E rm -f CMakeFiles/plugin_uac.dir/objects.a
+x86_64-w64-mingw32-ar qc CMakeFiles/plugin_uac.dir/objects.a @CMakeFiles/plugin_uac.dir/objects1.rsp
+/opt/local/bin/x86_64-w64-mingw32-gcc -static-libgcc -Wl,--gc-sections -Wl,--strip-all -Wl,--exclude-all-symbols -shared -o plugins/uac.dll -Wl,--out-implib,libuac.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/plugin_uac.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/plugin_uac.dir/linkLibs.rsp

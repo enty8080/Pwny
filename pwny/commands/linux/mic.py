@@ -12,10 +12,10 @@ from pwny.types import *
 
 from badges.cmd import Command
 
-import numpy as np
-import matplotlib.pyplot as plt
+import subprocess
+import sys
 
-from matplotlib.animation import FuncAnimation
+import numpy as np
 
 CHUNK = 1024
 WIDTH = 2
@@ -26,6 +26,69 @@ MIC_PLAY = tlv_custom_tag(API_CALL_STATIC, MIC_BASE, API_CALL)
 MIC_LIST = tlv_custom_tag(API_CALL_STATIC, MIC_BASE, API_CALL + 1)
 
 MIC_PIPE = tlv_custom_pipe(PIPE_STATIC, MIC_BASE, PIPE_TYPE)
+
+
+_MIC_VIZ_CODE = '''
+import sys
+import threading
+import queue
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+SAMPLES = 2048
+FRAME_SIZE = SAMPLES * 2
+
+q = queue.Queue(maxsize=30)
+done = threading.Event()
+
+def reader():
+    try:
+        while True:
+            raw = sys.stdin.buffer.read(FRAME_SIZE)
+            if not raw or len(raw) < FRAME_SIZE:
+                break
+            data = np.frombuffer(raw, dtype=np.int16)
+            try:
+                q.put_nowait(data)
+            except queue.Full:
+                try:
+                    q.get_nowait()
+                except queue.Empty:
+                    pass
+                q.put_nowait(data)
+    finally:
+        done.set()
+
+fig, ax = plt.subplots()
+x = np.arange(0, SAMPLES, 1)
+line, = ax.plot(x, np.zeros(SAMPLES), "-")
+ax.set_ylim(-32768, 32767)
+ax.set_xlim(0, SAMPLES)
+ax.set_title("Audio Stream Visualization")
+ax.set_xlabel("Samples")
+ax.set_ylabel("Amplitude")
+
+t = threading.Thread(target=reader, daemon=True)
+t.start()
+
+def update(frame):
+    if done.is_set():
+        plt.close(fig)
+        return line,
+    try:
+        while not q.empty():
+            data = q.get_nowait()
+            line.set_ydata(data)
+    except Exception:
+        pass
+    return line,
+
+ani = FuncAnimation(fig, update, blit=True, interval=50,
+                    cache_frame_data=False)
+plt.show()
+'''
 
 
 class ExternalCommand(Command):
@@ -113,30 +176,43 @@ class ExternalCommand(Command):
 
         self.running = {}
 
-    def pipe_stream(self, frame, device):
-        stream = self.running.get(device, None)
+    def _stream_thread(self, device):
+        """Background thread: reads pipe, plays audio, feeds visualization."""
 
-        if not stream:
-            self.print_success("Suspended audio stream!")
-            plt.close(stream['Figure'])
-            return
+        while device in self.running:
+            stream = self.running.get(device)
+            if not stream:
+                break
 
-        audio = self.session.pipes.read_pipe(
-            pipe_type=MIC_PIPE,
-            pipe_id=stream['ID'],
-            size=CHUNK * WIDTH * 2
-        )
+            audio = self.session.pipes.read_pipe(
+                pipe_type=MIC_PIPE,
+                pipe_id=stream['ID'],
+                size=CHUNK * WIDTH * 2
+            )
 
-        data = np.frombuffer(audio, dtype=np.int16)
-        stream['Line'].set_ydata(data)
+            data = np.frombuffer(audio, dtype=np.int16)
 
-        try:
-            stream['Stream'].write(audio)
+            if len(data) == 0:
+                continue
 
-        except Exception:
-            self.print_error(f"Failed to stream audio!")
+            if len(data) < 2048:
+                viz_data = np.pad(data, (0, 2048 - len(data)))
+            elif len(data) > 2048:
+                viz_data = data[:2048]
+            else:
+                viz_data = data
 
-        return stream['Line'],
+            try:
+                stream['Process'].stdin.write(
+                    viz_data.astype(np.int16).tobytes())
+                stream['Process'].stdin.flush()
+            except (BrokenPipeError, OSError):
+                pass
+
+            try:
+                stream['Stream'].write(audio)
+            except Exception:
+                pass
 
     def run(self, args):
         if args.list:
@@ -169,6 +245,13 @@ class ExternalCommand(Command):
             stream['Stream'].close()
 
             stream['Audio'].terminate()
+
+            try:
+                stream['Process'].stdin.close()
+            except Exception:
+                pass
+
+            stream['Process'].terminate()
 
         elif args.streams:
             data = []
@@ -212,33 +295,28 @@ class ExternalCommand(Command):
                 output=True
             )
 
-            fig, ax = plt.subplots()
-
-            x = np.arange(0, 2048, 1)
-            y = np.zeros(2048)
-
-            line, = ax.plot(x, y, '-')
-
-            ax.set_ylim(-32768, 32767)
-            ax.set_xlim(0, 2048)
-            ax.set_title("Audio Stream Visualization")
-            ax.set_xlabel("Samples")
-            ax.set_ylabel("Amplitude")
+            proc = subprocess.Popen(
+                [sys.executable, '-c', _MIC_VIZ_CODE],
+                stdin=subprocess.PIPE
+            )
 
             self.running.update({
                 args.stream: {
-                    'Line': line,
-                    'Figure': fig,
                     'Stream': stream,
                     'Audio': audio,
                     'ID': pipe_id,
+                    'Process': proc,
                 }
             })
 
+            thread = threading.Thread(
+                target=self._stream_thread,
+                args=(args.stream,))
+            thread.daemon = True
+            thread.start()
+
+            self.running[args.stream]['Thread'] = thread
             self.print_process("Visualizing live audio wave...")
-            ani = FuncAnimation(fig, self.pipe_stream, blit=True, interval=1,
-                                fargs=(args.stream,), cache_frame_data=False)
-            plt.show()
 
         elif args.play:
             with open(args.play, 'rb') as f:
