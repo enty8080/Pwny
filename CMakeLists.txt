@@ -266,6 +266,7 @@ if(PLUGINS)
         credentials
         execute
         lsadump
+        sniffer
     )
 
     file(GLOB PLUGIN_DIRS plugins/*)

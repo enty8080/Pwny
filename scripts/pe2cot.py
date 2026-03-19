@@ -6,10 +6,18 @@ Usage:
     python3 pe2cot.py <input.dll> <output.cot>
 
 Extracts the virtual image of all code/data sections (skipping .reloc),
-locates the TabInitCOT export, and writes a .cot file:
+locates the TabInitCOT export, parses base relocations, and writes a
+v2 .cot file:
 
-    [cot_header_t  16 bytes]   magic | version | entry_offset | code_size
+    [cot_header_t  40 bytes]   magic | version | entry_offset | code_size
+                                rw_offset | rw_size | original_base
+                                reloc_count | _pad
     [flat code blob]           virtual-layout of .text + .rdata + .data + ...
+    [reloc table]              reloc_count * uint32 (blob-relative offsets)
+
+The loader applies delta = (runtime_base - original_base) to each
+DIR64 fixup entry at load time, so plugin code can freely use static
+pointer arrays, function pointer tables, etc.
 
 Zero external dependencies — uses Python stdlib only.
 """
@@ -19,9 +27,11 @@ import sys
 import os
 
 COT_MAGIC = 0x00544F43  # "COT\0" little-endian
-COT_VERSION = 1
+COT_VERSION = 2
+COT_HEADER_FMT = '<IIIIIIQI I'  # 6*u32 + u64 + u32 + u32 = 40 bytes
+COT_HEADER_SIZE = struct.calcsize(COT_HEADER_FMT)
 
-# Sections to omit — .reloc is always last and useless for stomped code
+# Sections to omit from the code blob — .reloc is parsed separately
 SKIP_SECTIONS = {b'.reloc'}
 
 
@@ -31,6 +41,10 @@ def _u16(data, off):
 
 def _u32(data, off):
     return struct.unpack_from('<I', data, off)[0]
+
+
+def _u64(data, off):
+    return struct.unpack_from('<Q', data, off)[0]
 
 
 def _rva_to_offset(sections, rva):
@@ -56,14 +70,21 @@ def _parse_pe(data):
     opt = coff + 20
     magic = _u16(data, opt)
     if magic == 0x20B:        # PE32+
+        image_base = _u64(data, opt + 24)
         export_dd = opt + 112
+        reloc_dd = opt + 152   # IMAGE_DIRECTORY_ENTRY_BASERELOC = 5
     elif magic == 0x10B:      # PE32
+        image_base = _u32(data, opt + 28)
         export_dd = opt + 96
+        reloc_dd = opt + 128
     else:
         raise ValueError(f'Unknown optional header magic 0x{magic:04X}')
 
     export_rva = _u32(data, export_dd)
     export_size = _u32(data, export_dd + 4)
+
+    reloc_rva = _u32(data, reloc_dd)
+    reloc_size = _u32(data, reloc_dd + 4)
 
     sec_off = opt + opt_hdr_size
     sections = []
@@ -78,7 +99,7 @@ def _parse_pe(data):
             'chars':      _u32(data, o + 36),
         })
 
-    return sections, export_rva, export_size
+    return sections, export_rva, export_size, reloc_rva, reloc_size, image_base
 
 
 def _find_export_rva(data, sections, export_rva, target):
@@ -113,6 +134,59 @@ def _find_export_rva(data, sections, export_rva, target):
     return None
 
 
+def _parse_relocs(data, sections, reloc_rva, reloc_size,
+                  base_va, total_size):
+    """Parse the PE .reloc section and return blob-relative fixup offsets.
+
+    Only DIR64 (type 10 / 0xA) entries within the kept section range
+    [base_va, base_va + total_size) are included.
+
+    Returns a sorted list of uint32 blob-relative offsets.
+    """
+    if reloc_rva == 0 or reloc_size == 0:
+        return []
+
+    file_off = _rva_to_offset(sections, reloc_rva)
+    if file_off is None:
+        return []
+
+    offsets = []
+    pos = 0
+
+    while pos < reloc_size:
+        if pos + 8 > reloc_size:
+            break
+
+        block_rva = _u32(data, file_off + pos)
+        block_size = _u32(data, file_off + pos + 4)
+
+        if block_size < 8:
+            break
+
+        num_entries = (block_size - 8) // 2
+
+        for i in range(num_entries):
+            entry = _u16(data, file_off + pos + 8 + i * 2)
+            rtype = (entry >> 12) & 0xF
+            roff = entry & 0xFFF
+
+            if rtype == 0:  # IMAGE_REL_BASED_ABSOLUTE (padding)
+                continue
+            if rtype != 10:  # IMAGE_REL_BASED_DIR64
+                continue
+
+            rva = block_rva + roff
+
+            # Filter: only keep entries within the blob range
+            if base_va <= rva < base_va + total_size:
+                offsets.append(rva - base_va)
+
+        pos += block_size
+
+    offsets.sort()
+    return offsets
+
+
 def main():
     if len(sys.argv) != 3:
         print(f'Usage: {sys.argv[0]} <input.dll> <output.cot>', file=sys.stderr)
@@ -123,7 +197,8 @@ def main():
     with open(dll_path, 'rb') as f:
         data = f.read()
 
-    sections, exp_rva, exp_size = _parse_pe(data)
+    sections, exp_rva, exp_size, reloc_rva, reloc_size, image_base = \
+        _parse_pe(data)
 
     # ---- Find TabInitCOT export -----------------------------------------
     entry_rva = _find_export_rva(data, sections, exp_rva, b'TabInitCOT')
@@ -170,12 +245,25 @@ def main():
               f'sections (base VA 0x{base_va:X})', file=sys.stderr)
         sys.exit(1)
 
-    # ---- Write .cot file (24-byte header) -------------------------------
-    header = struct.pack('<IIIIII', COT_MAGIC, COT_VERSION,
-                         entry_offset, total_size, rw_offset, rw_size)
+    # ---- Parse base relocations -----------------------------------------
+    original_base = image_base + base_va
+    relocs = _parse_relocs(data, sections, reloc_rva, reloc_size,
+                           base_va, total_size)
+
+    # ---- Write .cot file (v2: 40-byte header + blob + reloc table) ------
+    header = struct.pack(COT_HEADER_FMT,
+                         COT_MAGIC, COT_VERSION,
+                         entry_offset, total_size,
+                         rw_offset, rw_size,
+                         original_base,
+                         len(relocs), 0)
+
+    reloc_table = struct.pack(f'<{len(relocs)}I', *relocs) if relocs else b''
+
     with open(cot_path, 'wb') as f:
         f.write(header)
         f.write(blob)
+        f.write(reloc_table)
 
     # ---- Summary --------------------------------------------------------
     sec_names = ', '.join(s['name'].decode(errors='replace') for s in keep)
@@ -189,6 +277,8 @@ def main():
         print(f'[*] RW region:    offset 0x{rw_offset:X}, size {rw_size} bytes')
     else:
         print(f'[*] RW region:    none')
+    print(f'[*] Relocations:  {len(relocs)} DIR64 fixups '
+          f'(original base 0x{original_base:X})')
     print(f'[*] Output:       {cot_path} ({out_size} bytes)')
 
 

@@ -7,7 +7,8 @@ Usage:
     python3 cotinfo.py -d <directory>       # scan all COT files in a directory
     python3 cotinfo.py --hex <file.cot>     # also show hex dump of entry point region
 
-Parses the 24-byte cot_header_t and prints layout details.
+Parses the cot_header_t (24 bytes for v1, 40 bytes for v2) and prints
+layout details including base relocation info for v2 blobs.
 Zero external dependencies — uses Python stdlib only.
 """
 
@@ -17,7 +18,8 @@ import struct
 import sys
 
 COT_MAGIC = 0x00544F43  # "COT\0" little-endian
-COT_HEADER_SIZE = 24
+COT_HEADER_V1_SIZE = 24
+COT_HEADER_V2_SIZE = 40
 
 # Memory page size used by the stomp loader (PE header preserved here)
 STOMP_PAGE = 0x1000
@@ -26,9 +28,10 @@ STOMP_PAGE = 0x1000
 def read_header(data):
     """Parse a cot_header_t from raw bytes.
 
+    Supports v1 (24-byte) and v2 (40-byte) headers.
     Returns a dict with header fields, or None on invalid magic.
     """
-    if len(data) < COT_HEADER_SIZE:
+    if len(data) < COT_HEADER_V1_SIZE:
         return None
 
     magic, version, entry_offset, code_size, rw_offset, rw_size = \
@@ -37,14 +40,26 @@ def read_header(data):
     if magic != COT_MAGIC:
         return None
 
-    return {
+    hdr = {
         'magic': magic,
         'version': version,
         'entry_offset': entry_offset,
         'code_size': code_size,
         'rw_offset': rw_offset,
         'rw_size': rw_size,
+        'original_base': 0,
+        'reloc_count': 0,
+        'header_size': COT_HEADER_V1_SIZE,
     }
+
+    if version >= 2 and len(data) >= COT_HEADER_V2_SIZE:
+        original_base, reloc_count, _pad = \
+            struct.unpack_from('<QII', data, 24)
+        hdr['original_base'] = original_base
+        hdr['reloc_count'] = reloc_count
+        hdr['header_size'] = COT_HEADER_V2_SIZE
+
+    return hdr
 
 
 def hexdump(data, base_offset=0, width=16):
@@ -89,7 +104,8 @@ def analyze_cot(path, show_hex=False):
         print(f'[-] {path}: not a valid COT file (bad magic or too small)')
         return False
 
-    blob = data[COT_HEADER_SIZE:]
+    hdr_size = hdr['header_size']
+    blob = data[hdr_size:]
     name = os.path.basename(path)
 
     # Derived values
@@ -104,11 +120,15 @@ def analyze_cot(path, show_hex=False):
 
     # Validate
     warnings = []
-    if hdr['version'] != 1:
-        warnings.append(f'unexpected version {hdr["version"]} (expected 1)')
-    if hdr['code_size'] != len(blob):
+    if hdr['version'] not in (1, 2):
+        warnings.append(f'unexpected version {hdr["version"]} (expected 1 or 2)')
+    actual_blob = hdr['code_size']
+    if hdr['version'] >= 2:
+        actual_blob += hdr['reloc_count'] * 4
+    if actual_blob > len(blob):
         warnings.append(
-            f'header code_size ({hdr["code_size"]}) != actual blob size ({len(blob)})'
+            f'header says {actual_blob} bytes after header, '
+            f'but only {len(blob)} available'
         )
     if hdr['entry_offset'] >= hdr['code_size']:
         warnings.append('entry_offset is outside code blob')
@@ -136,7 +156,21 @@ def analyze_cot(path, show_hex=False):
               f'({hdr["code_size"]} bytes)')
 
     print(f'[*] Entropy:       {blob_entropy:.2f} / 8.00')
-    print(f'[*] Header:        {COT_HEADER_SIZE} bytes')
+    print(f'[*] Header:        {hdr_size} bytes (v{hdr["version"]})')
+
+    # Relocation info (v2+)
+    if hdr['version'] >= 2:
+        print(f'[*] Original base: 0x{hdr["original_base"]:016X}')
+        print(f'[*] Relocations:   {hdr["reloc_count"]} DIR64 fixups')
+        if show_hex and hdr['reloc_count'] > 0:
+            reloc_off = hdr['code_size']
+            for i in range(hdr['reloc_count']):
+                off = reloc_off + i * 4
+                if off + 4 <= len(blob):
+                    roff = struct.unpack_from('<I', blob, off)[0]
+                    print(f'             [{i:3d}] blob+0x{roff:06X}')
+                else:
+                    print(f'             [{i:3d}] (truncated)')
 
     # Memory layout diagram
     print(f'[*] Memory layout after stomp:')

@@ -93,6 +93,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/plugin_schtasks.dir/DependInfo.cmake"
   "CMakeFiles/plugin_services.dir/DependInfo.cmake"
   "CMakeFiles/plugin_smb_pipe.dir/DependInfo.cmake"
+  "CMakeFiles/plugin_sniffer.dir/DependInfo.cmake"
   "CMakeFiles/plugin_sysinfo.dir/DependInfo.cmake"
   "CMakeFiles/plugin_test.dir/DependInfo.cmake"
   "CMakeFiles/plugin_timestomp.dir/DependInfo.cmake"

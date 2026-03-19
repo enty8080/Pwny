@@ -449,22 +449,52 @@ static NTSTATUS sc_NtReadVirtualMemory(sc_entry_t *e,
 
 static int sc_extract_trampoline(PVOID stub, sc_entry_t *entry)
 {
+    PBYTE b;
+    PBYTE target;
+
     if (stub == NULL || entry == NULL)
         return 0;
+
+    b = (PBYTE)stub;
 
     /*
      * Normal x64 ntdll stub:
      *   4C 8B D1          mov r10, rcx
      *   B8 XX XX 00 00    mov eax, <syscall_nr>
-     *   <-- offset +8 --> syscall; ret
+     *   <-- offset +8 --> test / syscall ...
      *
-     * Hooked stub starts with E9 (jmp).
+     * Hooked stub starts with E9 (jmp) — the trampoline target
+     * is still at +8, past the overwritten preamble.
      */
-    if ((*(PUINT32)stub == 0xb8d18b4c &&
-         *(PUSHORT)((PBYTE)stub + 4) == (USHORT)entry->number) ||
-        *(PBYTE)stub == 0xe9)
+    if ((*(PUINT32)b == 0xb8d18b4c &&
+         *(PUSHORT)(b + 4) == (USHORT)entry->number) ||
+        b[0] == 0xe9)
     {
-        entry->trampoline = (PVOID)((PBYTE)stub + 8);
+        target = b + 8;
+    }
+    else
+    {
+        return 0;
+    }
+
+    /*
+     * Validate the trampoline target — must look like real
+     * Windows ntdll (not Wine, not weird hooks, etc.).
+     *
+     * Pre-Meltdown:   0F 05         syscall
+     * Meltdown-era:   F6 04 25 ...  test byte ptr [SharedUserData+0x308], 1
+     */
+    if (target[0] == 0x0F && target[1] == 0x05)
+    {
+        /* Direct syscall; ret — classic pattern */
+        entry->trampoline = (PVOID)target;
+        return 1;
+    }
+
+    if (target[0] == 0xF6 && target[1] == 0x04 && target[2] == 0x25)
+    {
+        /* KiSystemCall64 test — branches to syscall or int 2Eh */
+        entry->trampoline = (PVOID)target;
         return 1;
     }
 
@@ -481,6 +511,7 @@ static int sc_resolve_all(PVOID ntdll_base, sc_entry_t *entries[], DWORD count)
     PDWORD names, funcs;
     PWORD  ords;
     DWORD  i, j;
+    int    is_wine = 0;
 
     /*
      * sc_sort_list_t is ~9.6 KB — too large for stack in a COT plugin.
@@ -505,6 +536,16 @@ static int sc_resolve_all(PVOID ntdll_base, sc_entry_t *entries[], DWORD count)
     {
         char *name = (char *)((PBYTE)ntdll_base + names[i]);
 
+        /* Detect Wine — ntdll exports wine_get_version / wine_get_build_id.
+         * Wine's ntdll uses a completely different syscall dispatch path
+         * (Unix calls through the Wine server) so the indirect syscall
+         * trampoline can't work there.  Bail early. */
+        if (name[0] == 'w' && name[1] == 'i' && name[2] == 'n' &&
+            name[3] == 'e' && name[4] == '_')
+        {
+            is_wine = 1;
+        }
+
         if (name[0] == 'Z' && name[1] == 'w')
         {
             list->entries[list->count].hash = sc_djb2(name);
@@ -514,6 +555,13 @@ static int sc_resolve_all(PVOID ntdll_base, sc_entry_t *entries[], DWORD count)
             if (++list->count == SC_MAX_ENTRIES)
                 break;
         }
+    }
+
+    /* Wine detected — indirect syscalls won't work */
+    if (is_wine)
+    {
+        free(list);
+        return 0;
     }
 
     /* Sort by address — index = syscall number */
@@ -592,9 +640,9 @@ static PVOID find_ntdll_base(void)
     if (entry != head)
     {
         /* LDR_DATA_TABLE_ENTRY::InMemoryOrderLinks is at offset 0x10
-         * from the start of the struct.  DllBase is at offset 0x20
-         * from struct start = offset 0x10 from InMemoryOrderLinks. */
-        ntdll = *(PVOID *)((PBYTE)entry + 0x20 - 0x10);
+         * from the start of the struct.  DllBase is at offset 0x30
+         * from struct start = offset 0x20 from InMemoryOrderLinks. */
+        ntdll = *(PVOID *)((PBYTE)entry + 0x20);
     }
 
     return ntdll;
@@ -1245,7 +1293,6 @@ COT_ENTRY
             &sce_QueryVirtualMemory,
             &sce_ReadVirtualMemory,
         };
-
         g_sc_ready = sc_resolve_all(ntdll, table, 6);
     }
 

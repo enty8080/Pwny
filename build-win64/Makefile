@@ -455,6 +455,19 @@ plugin_smb_pipe/fast:
 .PHONY : plugin_smb_pipe/fast
 
 #=============================================================================
+# Target rules for targets named plugin_sniffer
+
+# Build rule for target.
+plugin_sniffer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 plugin_sniffer
+.PHONY : plugin_sniffer
+
+# fast build rule for target.
+plugin_sniffer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/build
+.PHONY : plugin_sniffer/fast
+
+#=============================================================================
 # Target rules for targets named plugin_sysinfo
 
 # Build rule for target.
@@ -1040,6 +1053,30 @@ plugins/smb_pipe/smb_pipe.s: plugins/smb_pipe/smb_pipe.c.s
 plugins/smb_pipe/smb_pipe.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/plugins/smb_pipe/smb_pipe.c.s
 .PHONY : plugins/smb_pipe/smb_pipe.c.s
+
+plugins/sniffer/sniffer.obj: plugins/sniffer/sniffer.c.obj
+.PHONY : plugins/sniffer/sniffer.obj
+
+# target to build an object file
+plugins/sniffer/sniffer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/plugins/sniffer/sniffer.c.obj
+.PHONY : plugins/sniffer/sniffer.c.obj
+
+plugins/sniffer/sniffer.i: plugins/sniffer/sniffer.c.i
+.PHONY : plugins/sniffer/sniffer.i
+
+# target to preprocess a source file
+plugins/sniffer/sniffer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/plugins/sniffer/sniffer.c.i
+.PHONY : plugins/sniffer/sniffer.c.i
+
+plugins/sniffer/sniffer.s: plugins/sniffer/sniffer.c.s
+.PHONY : plugins/sniffer/sniffer.s
+
+# target to generate assembly for a file
+plugins/sniffer/sniffer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/plugins/sniffer/sniffer.c.s
+.PHONY : plugins/sniffer/sniffer.c.s
 
 plugins/sysinfo/sysinfo.obj: plugins/sysinfo/sysinfo.c.obj
 .PHONY : plugins/sysinfo/sysinfo.obj
@@ -2091,6 +2128,7 @@ help:
 	@echo "... plugin_schtasks"
 	@echo "... plugin_services"
 	@echo "... plugin_smb_pipe"
+	@echo "... plugin_sniffer"
 	@echo "... plugin_sysinfo"
 	@echo "... plugin_test"
 	@echo "... plugin_timestomp"
@@ -2165,6 +2203,9 @@ help:
 	@echo "... plugins/smb_pipe/smb_pipe.obj"
 	@echo "... plugins/smb_pipe/smb_pipe.i"
 	@echo "... plugins/smb_pipe/smb_pipe.s"
+	@echo "... plugins/sniffer/sniffer.obj"
+	@echo "... plugins/sniffer/sniffer.i"
+	@echo "... plugins/sniffer/sniffer.s"
 	@echo "... plugins/sysinfo/sysinfo.obj"
 	@echo "... plugins/sysinfo/sysinfo.i"
 	@echo "... plugins/sysinfo/sysinfo.s"

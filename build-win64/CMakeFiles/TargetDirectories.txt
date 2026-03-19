@@ -24,6 +24,7 @@
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_schtasks.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_services.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_smb_pipe.dir
+/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_sniffer.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_sysinfo.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_test.dir
 /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles/plugin_timestomp.dir

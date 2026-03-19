@@ -217,7 +217,7 @@ static int cot_is_cot_image(unsigned char *image, size_t length)
         return 0;
 
     hdr = (cot_header_t *)image;
-    return (hdr->magic == COT_MAGIC && hdr->version == 1);
+    return (hdr->magic == COT_MAGIC && hdr->version == COT_VERSION);
 }
 
 /*
@@ -257,10 +257,15 @@ static int tabs_add_cot(tabs_t **tabs, int id,
     code = image + sizeof(cot_header_t);
     code_size = hdr->code_size;
 
-    if (sizeof(cot_header_t) + code_size > length)
     {
-        log_debug("* cot: truncated image\n");
-        return -1;
+        size_t needed = sizeof(cot_header_t) + code_size
+                      + (size_t)hdr->reloc_count * sizeof(uint32_t);
+        if (needed > length)
+        {
+            log_debug("* cot: truncated image (need %zu, got %zu)\n",
+                      needed, length);
+            return -1;
+        }
     }
 
     if (hdr->entry_offset >= code_size)
@@ -325,6 +330,32 @@ static int tabs_add_cot(tabs_t **tabs, int id,
 
     /* Overwrite with COT code */
     memcpy(stomp_text, code, code_size);
+
+    /* Apply base relocations — v2 COT blobs carry a fixup table
+     * after the code blob.  Each entry is a blob-relative offset
+     * of a DIR64 value to adjust by the difference between the
+     * runtime base and the original link-time base. */
+    if (hdr->reloc_count > 0)
+    {
+        uint32_t *relocs;
+        int64_t delta;
+        DWORD i;
+
+        relocs = (uint32_t *)(code + code_size);
+        delta  = (int64_t)((uintptr_t)stomp_text
+                         - (uintptr_t)hdr->original_base);
+
+        for (i = 0; i < hdr->reloc_count; i++)
+        {
+            if (relocs[i] + sizeof(uint64_t) <= code_size)
+            {
+                *(uint64_t *)((BYTE *)stomp_text + relocs[i]) += delta;
+            }
+        }
+
+        log_debug("* cot: applied %u relocations (delta 0x%llx)\n",
+                  hdr->reloc_count, (unsigned long long)delta);
+    }
 
     /* Set page protections: RX for code/rodata, RW for .data */
     if (hdr->rw_offset > 0 && hdr->rw_size > 0)

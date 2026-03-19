@@ -23,7 +23,7 @@ Pwny is an advanced implant written in pure C, designed for portability and exte
 
 | Platform | Document |
 |----------|----------|
-| Windows | [docs/windows/](windows/) — Windows commands, plugins (25+), evasion, persistence |
+| Windows | [docs/windows/](windows/) — Windows commands, plugins (28), evasion, persistence |
 | Linux | [docs/linux/](linux/) — Linux commands, migration, camera, microphone |
 | macOS | [docs/macos/](macos/) — macOS commands, keylogging, screen capture, clipboard |
 | iOS | [docs/ios/](ios/) — iOS commands, device info, location, SpringBoard |

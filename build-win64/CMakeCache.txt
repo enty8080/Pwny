@@ -413,6 +413,9 @@ plugin_services_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 plugin_smb_pipe_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 
 //Dependencies for the target
+plugin_sniffer_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
+
+//Dependencies for the target
 plugin_sysinfo_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 
 //Dependencies for the target
@@ -440,7 +443,7 @@ plugin_unhook_LIB_DEPENDS:STATIC=general;tab_dll;general;ws2_32;general;advapi32
 plugin_wifi_passwords_LIB_DEPENDS:STATIC=general;tab_dll;general;kernel32;
 
 //Dependencies for the target
-pwny_dll_LIB_DEPENDS:STATIC=general;pwny;general;pawn;general;sigar;general;eio;general;ev;general;curl;general;z;general;mbedx509;general;mbedtls;general;mbedcrypto;general;ws2_32;general;netapi32;general;version;general;crypt32;general;advapi32;general;secur32;general;ole32;general;oleaut32;
+pwny_dll_LIB_DEPENDS:STATIC=general;pwny;general;pawn;general;sigar;general;eio;general;ev;general;curl;general;z;general;mbedx509;general;mbedtls;general;mbedcrypto;general;ws2_32;general;netapi32;general;version;general;crypt32;general;advapi32;general;secur32;general;ole32;general;oleaut32;general;pthread;
 
 
 ########################

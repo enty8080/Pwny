@@ -62,24 +62,33 @@ typedef tlv_pkt_t *(*api_t)(c2_t *);
 /*
  * Layout of a .cot file:
  *
- *   [cot_header_t]          24 bytes
+ *   [cot_header_t]          40 bytes
  *   [flat code+rodata+data] variable
+ *   [reloc table]           reloc_count * 4 bytes
  *
  * The entry offset is relative to the start of the code (after header).
  * If the plugin has writable data (.data/.bss) the rw_offset/rw_size
  * fields tell the loader which sub-region needs PAGE_READWRITE.
+ *
+ * v2 adds base relocation support: original_base stores the link-time
+ * base address, and reloc_count DIR64 fixup offsets follow the blob.
+ * The loader applies delta = runtime_base - original_base to each.
  */
 
-#define COT_MAGIC  0x00544F43  /* "COT\0" little-endian */
+#define COT_MAGIC    0x00544F43  /* "COT\0" little-endian */
+#define COT_VERSION  2
 
 typedef struct __attribute__((packed))
 {
     uint32_t magic;           /* COT_MAGIC */
-    uint32_t version;         /* 1 */
+    uint32_t version;         /* 2 */
     uint32_t entry_offset;    /* offset of TabInitCOT from code start */
     uint32_t code_size;       /* total size of flat code blob */
     uint32_t rw_offset;       /* offset of writable region (0 = none) */
     uint32_t rw_size;         /* size of writable region (0 = none) */
+    uint64_t original_base;   /* ImageBase + base_va (link-time address) */
+    uint32_t reloc_count;     /* number of DIR64 fixup entries after blob */
+    uint32_t _pad;            /* alignment padding */
 } cot_header_t;
 
 /* ------------------------------------------------------------------ */

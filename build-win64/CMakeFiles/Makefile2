@@ -89,6 +89,7 @@ all: CMakeFiles/plugin_registry.dir/all
 all: CMakeFiles/plugin_schtasks.dir/all
 all: CMakeFiles/plugin_services.dir/all
 all: CMakeFiles/plugin_smb_pipe.dir/all
+all: CMakeFiles/plugin_sniffer.dir/all
 all: CMakeFiles/plugin_sysinfo.dir/all
 all: CMakeFiles/plugin_test.dir/all
 all: CMakeFiles/plugin_timestomp.dir/all
@@ -125,6 +126,7 @@ codegen: CMakeFiles/plugin_registry.dir/codegen
 codegen: CMakeFiles/plugin_schtasks.dir/codegen
 codegen: CMakeFiles/plugin_services.dir/codegen
 codegen: CMakeFiles/plugin_smb_pipe.dir/codegen
+codegen: CMakeFiles/plugin_sniffer.dir/codegen
 codegen: CMakeFiles/plugin_sysinfo.dir/codegen
 codegen: CMakeFiles/plugin_test.dir/codegen
 codegen: CMakeFiles/plugin_timestomp.dir/codegen
@@ -165,6 +167,7 @@ clean: CMakeFiles/plugin_registry.dir/clean
 clean: CMakeFiles/plugin_schtasks.dir/clean
 clean: CMakeFiles/plugin_services.dir/clean
 clean: CMakeFiles/plugin_smb_pipe.dir/clean
+clean: CMakeFiles/plugin_sniffer.dir/clean
 clean: CMakeFiles/plugin_sysinfo.dir/clean
 clean: CMakeFiles/plugin_test.dir/clean
 clean: CMakeFiles/plugin_timestomp.dir/clean
@@ -181,7 +184,7 @@ clean: CMakeFiles/plugin_wifi_passwords.dir/clean
 CMakeFiles/pwny.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny.dir/build.make CMakeFiles/pwny.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny.dir/build.make CMakeFiles/pwny.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72 "Built target pwny"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73 "Built target pwny"
 .PHONY : CMakeFiles/pwny.dir/all
 
 # Build rule for subdir invocation for target.
@@ -198,7 +201,7 @@ pwny: CMakeFiles/pwny.dir/rule
 # codegen rule for target.
 CMakeFiles/pwny.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny.dir/build.make CMakeFiles/pwny.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72 "Finished codegen for target pwny"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73 "Finished codegen for target pwny"
 .PHONY : CMakeFiles/pwny.dir/codegen
 
 # clean rule for target.
@@ -245,12 +248,12 @@ CMakeFiles/main.dir/clean:
 CMakeFiles/pwny_service.dir/all: CMakeFiles/pwny.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_service.dir/build.make CMakeFiles/pwny_service.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_service.dir/build.make CMakeFiles/pwny_service.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=78,79 "Built target pwny_service"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=78,79,80 "Built target pwny_service"
 .PHONY : CMakeFiles/pwny_service.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/pwny_service.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 25
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 26
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/pwny_service.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/pwny_service.dir/rule
@@ -262,7 +265,7 @@ pwny_service: CMakeFiles/pwny_service.dir/rule
 # codegen rule for target.
 CMakeFiles/pwny_service.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_service.dir/build.make CMakeFiles/pwny_service.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=78,79 "Finished codegen for target pwny_service"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=78,79,80 "Finished codegen for target pwny_service"
 .PHONY : CMakeFiles/pwny_service.dir/codegen
 
 # clean rule for target.
@@ -277,12 +280,12 @@ CMakeFiles/pwny_service.dir/clean:
 CMakeFiles/pwny_dll.dir/all: CMakeFiles/pwny.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_dll.dir/build.make CMakeFiles/pwny_dll.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_dll.dir/build.make CMakeFiles/pwny_dll.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=73,74,75,76,77 "Built target pwny_dll"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=74,75,76,77 "Built target pwny_dll"
 .PHONY : CMakeFiles/pwny_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/pwny_dll.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 28
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/pwny_dll.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/pwny_dll.dir/rule
@@ -294,7 +297,7 @@ pwny_dll: CMakeFiles/pwny_dll.dir/rule
 # codegen rule for target.
 CMakeFiles/pwny_dll.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pwny_dll.dir/build.make CMakeFiles/pwny_dll.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=73,74,75,76,77 "Finished codegen for target pwny_dll"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=74,75,76,77 "Finished codegen for target pwny_dll"
 .PHONY : CMakeFiles/pwny_dll.dir/codegen
 
 # clean rule for target.
@@ -309,7 +312,7 @@ CMakeFiles/pwny_dll.dir/clean:
 CMakeFiles/tab.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab.dir/build.make CMakeFiles/tab.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab.dir/build.make CMakeFiles/tab.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=80,81,82,83,84,85,86,87,88,89 "Built target tab"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=81,82,83,84,85,86,87,88,89,90 "Built target tab"
 .PHONY : CMakeFiles/tab.dir/all
 
 # Build rule for subdir invocation for target.
@@ -326,7 +329,7 @@ tab: CMakeFiles/tab.dir/rule
 # codegen rule for target.
 CMakeFiles/tab.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab.dir/build.make CMakeFiles/tab.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=80,81,82,83,84,85,86,87,88,89 "Finished codegen for target tab"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=81,82,83,84,85,86,87,88,89,90 "Finished codegen for target tab"
 .PHONY : CMakeFiles/tab.dir/codegen
 
 # clean rule for target.
@@ -341,12 +344,12 @@ CMakeFiles/tab.dir/clean:
 CMakeFiles/tab_dll.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab_dll.dir/build.make CMakeFiles/tab_dll.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab_dll.dir/build.make CMakeFiles/tab_dll.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=90,91,92,93,94,95,96,97,98,99,100 "Built target tab_dll"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=91,92,93,94,95,96,97,98,99,100 "Built target tab_dll"
 .PHONY : CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/tab_dll.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 10
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/tab_dll.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/tab_dll.dir/rule
@@ -358,7 +361,7 @@ tab_dll: CMakeFiles/tab_dll.dir/rule
 # codegen rule for target.
 CMakeFiles/tab_dll.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tab_dll.dir/build.make CMakeFiles/tab_dll.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=90,91,92,93,94,95,96,97,98,99,100 "Finished codegen for target tab_dll"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=91,92,93,94,95,96,97,98,99,100 "Finished codegen for target tab_dll"
 .PHONY : CMakeFiles/tab_dll.dir/codegen
 
 # clean rule for target.
@@ -378,7 +381,7 @@ CMakeFiles/plugin_arp.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_arp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_arp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_arp.dir/rule
@@ -410,7 +413,7 @@ CMakeFiles/plugin_clipboard.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_clipboard.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_clipboard.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_clipboard.dir/rule
@@ -442,7 +445,7 @@ CMakeFiles/plugin_credentials.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_credentials.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_credentials.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_credentials.dir/rule
@@ -474,7 +477,7 @@ CMakeFiles/plugin_credstore.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_credstore.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_credstore.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_credstore.dir/rule
@@ -506,7 +509,7 @@ CMakeFiles/plugin_evasion.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_evasion.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_evasion.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_evasion.dir/rule
@@ -538,7 +541,7 @@ CMakeFiles/plugin_eventlog.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_eventlog.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_eventlog.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_eventlog.dir/rule
@@ -570,7 +573,7 @@ CMakeFiles/plugin_execute.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_execute.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_execute.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_execute.dir/rule
@@ -602,7 +605,7 @@ CMakeFiles/plugin_forge.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_forge.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_forge.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_forge.dir/rule
@@ -634,7 +637,7 @@ CMakeFiles/plugin_getsystem.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_getsystem.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_getsystem.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_getsystem.dir/rule
@@ -666,7 +669,7 @@ CMakeFiles/plugin_inject.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_inject.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_inject.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_inject.dir/rule
@@ -693,12 +696,12 @@ CMakeFiles/plugin_inject.dir/clean:
 CMakeFiles/plugin_kerberos.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_kerberos.dir/build.make CMakeFiles/plugin_kerberos.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_kerberos.dir/build.make CMakeFiles/plugin_kerberos.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=20,21 "Built target plugin_kerberos"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=20 "Built target plugin_kerberos"
 .PHONY : CMakeFiles/plugin_kerberos.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_kerberos.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_kerberos.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_kerberos.dir/rule
@@ -710,7 +713,7 @@ plugin_kerberos: CMakeFiles/plugin_kerberos.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_kerberos.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_kerberos.dir/build.make CMakeFiles/plugin_kerberos.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=20,21 "Finished codegen for target plugin_kerberos"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=20 "Finished codegen for target plugin_kerberos"
 .PHONY : CMakeFiles/plugin_kerberos.dir/codegen
 
 # clean rule for target.
@@ -725,7 +728,7 @@ CMakeFiles/plugin_kerberos.dir/clean:
 CMakeFiles/plugin_lsadump.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=22,23 "Built target plugin_lsadump"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=21,22,23 "Built target plugin_lsadump"
 .PHONY : CMakeFiles/plugin_lsadump.dir/all
 
 # Build rule for subdir invocation for target.
@@ -742,7 +745,7 @@ plugin_lsadump: CMakeFiles/plugin_lsadump.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_lsadump.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_lsadump.dir/build.make CMakeFiles/plugin_lsadump.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=22,23 "Finished codegen for target plugin_lsadump"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=21,22,23 "Finished codegen for target plugin_lsadump"
 .PHONY : CMakeFiles/plugin_lsadump.dir/codegen
 
 # clean rule for target.
@@ -762,7 +765,7 @@ CMakeFiles/plugin_media.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_media.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_media.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_media.dir/rule
@@ -789,12 +792,12 @@ CMakeFiles/plugin_media.dir/clean:
 CMakeFiles/plugin_minidump.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=26,27 "Built target plugin_minidump"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=26 "Built target plugin_minidump"
 .PHONY : CMakeFiles/plugin_minidump.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_minidump.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_minidump.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_minidump.dir/rule
@@ -806,7 +809,7 @@ plugin_minidump: CMakeFiles/plugin_minidump.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_minidump.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_minidump.dir/build.make CMakeFiles/plugin_minidump.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=26,27 "Finished codegen for target plugin_minidump"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=26 "Finished codegen for target plugin_minidump"
 .PHONY : CMakeFiles/plugin_minidump.dir/codegen
 
 # clean rule for target.
@@ -821,7 +824,7 @@ CMakeFiles/plugin_minidump.dir/clean:
 CMakeFiles/plugin_netshare.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_netshare.dir/build.make CMakeFiles/plugin_netshare.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_netshare.dir/build.make CMakeFiles/plugin_netshare.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=28 "Built target plugin_netshare"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=27,28 "Built target plugin_netshare"
 .PHONY : CMakeFiles/plugin_netshare.dir/all
 
 # Build rule for subdir invocation for target.
@@ -838,7 +841,7 @@ plugin_netshare: CMakeFiles/plugin_netshare.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_netshare.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_netshare.dir/build.make CMakeFiles/plugin_netshare.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=28 "Finished codegen for target plugin_netshare"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=27,28 "Finished codegen for target plugin_netshare"
 .PHONY : CMakeFiles/plugin_netshare.dir/codegen
 
 # clean rule for target.
@@ -858,7 +861,7 @@ CMakeFiles/plugin_persist.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_persist.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_persist.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_persist.dir/rule
@@ -885,12 +888,12 @@ CMakeFiles/plugin_persist.dir/clean:
 CMakeFiles/plugin_registry.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=31,32 "Built target plugin_registry"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=31 "Built target plugin_registry"
 .PHONY : CMakeFiles/plugin_registry.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_registry.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_registry.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_registry.dir/rule
@@ -902,7 +905,7 @@ plugin_registry: CMakeFiles/plugin_registry.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_registry.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_registry.dir/build.make CMakeFiles/plugin_registry.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=31,32 "Finished codegen for target plugin_registry"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=31 "Finished codegen for target plugin_registry"
 .PHONY : CMakeFiles/plugin_registry.dir/codegen
 
 # clean rule for target.
@@ -917,7 +920,7 @@ CMakeFiles/plugin_registry.dir/clean:
 CMakeFiles/plugin_schtasks.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=33 "Built target plugin_schtasks"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=32,33 "Built target plugin_schtasks"
 .PHONY : CMakeFiles/plugin_schtasks.dir/all
 
 # Build rule for subdir invocation for target.
@@ -934,7 +937,7 @@ plugin_schtasks: CMakeFiles/plugin_schtasks.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_schtasks.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_schtasks.dir/build.make CMakeFiles/plugin_schtasks.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=33 "Finished codegen for target plugin_schtasks"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=32,33 "Finished codegen for target plugin_schtasks"
 .PHONY : CMakeFiles/plugin_schtasks.dir/codegen
 
 # clean rule for target.
@@ -954,7 +957,7 @@ CMakeFiles/plugin_services.dir/all: CMakeFiles/tab_dll.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_services.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_services.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_services.dir/rule
@@ -981,12 +984,12 @@ CMakeFiles/plugin_services.dir/clean:
 CMakeFiles/plugin_smb_pipe.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=36,37 "Built target plugin_smb_pipe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=36 "Built target plugin_smb_pipe"
 .PHONY : CMakeFiles/plugin_smb_pipe.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_smb_pipe.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_smb_pipe.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_smb_pipe.dir/rule
@@ -998,7 +1001,7 @@ plugin_smb_pipe: CMakeFiles/plugin_smb_pipe.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_smb_pipe.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_smb_pipe.dir/build.make CMakeFiles/plugin_smb_pipe.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=36,37 "Finished codegen for target plugin_smb_pipe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=36 "Finished codegen for target plugin_smb_pipe"
 .PHONY : CMakeFiles/plugin_smb_pipe.dir/codegen
 
 # clean rule for target.
@@ -1007,13 +1010,45 @@ CMakeFiles/plugin_smb_pipe.dir/clean:
 .PHONY : CMakeFiles/plugin_smb_pipe.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/plugin_sniffer.dir
+
+# All Build rule for target.
+CMakeFiles/plugin_sniffer.dir/all: CMakeFiles/tab_dll.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=37,38 "Built target plugin_sniffer"
+.PHONY : CMakeFiles/plugin_sniffer.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/plugin_sniffer.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_sniffer.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
+.PHONY : CMakeFiles/plugin_sniffer.dir/rule
+
+# Convenience name for target.
+plugin_sniffer: CMakeFiles/plugin_sniffer.dir/rule
+.PHONY : plugin_sniffer
+
+# codegen rule for target.
+CMakeFiles/plugin_sniffer.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=37,38 "Finished codegen for target plugin_sniffer"
+.PHONY : CMakeFiles/plugin_sniffer.dir/codegen
+
+# clean rule for target.
+CMakeFiles/plugin_sniffer.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sniffer.dir/build.make CMakeFiles/plugin_sniffer.dir/clean
+.PHONY : CMakeFiles/plugin_sniffer.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/plugin_sysinfo.dir
 
 # All Build rule for target.
 CMakeFiles/plugin_sysinfo.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=38 "Built target plugin_sysinfo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=39,40 "Built target plugin_sysinfo"
 .PHONY : CMakeFiles/plugin_sysinfo.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1030,7 +1065,7 @@ plugin_sysinfo: CMakeFiles/plugin_sysinfo.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_sysinfo.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_sysinfo.dir/build.make CMakeFiles/plugin_sysinfo.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=38 "Finished codegen for target plugin_sysinfo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=39,40 "Finished codegen for target plugin_sysinfo"
 .PHONY : CMakeFiles/plugin_sysinfo.dir/codegen
 
 # clean rule for target.
@@ -1045,12 +1080,12 @@ CMakeFiles/plugin_sysinfo.dir/clean:
 CMakeFiles/plugin_test.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_test.dir/build.make CMakeFiles/plugin_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_test.dir/build.make CMakeFiles/plugin_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=39,40 "Built target plugin_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=41 "Built target plugin_test"
 .PHONY : CMakeFiles/plugin_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_test.dir/rule
@@ -1062,7 +1097,7 @@ plugin_test: CMakeFiles/plugin_test.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_test.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_test.dir/build.make CMakeFiles/plugin_test.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=39,40 "Finished codegen for target plugin_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=41 "Finished codegen for target plugin_test"
 .PHONY : CMakeFiles/plugin_test.dir/codegen
 
 # clean rule for target.
@@ -1077,12 +1112,12 @@ CMakeFiles/plugin_test.dir/clean:
 CMakeFiles/plugin_timestomp.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_timestomp.dir/build.make CMakeFiles/plugin_timestomp.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_timestomp.dir/build.make CMakeFiles/plugin_timestomp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=41,42 "Built target plugin_timestomp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=42,43 "Built target plugin_timestomp"
 .PHONY : CMakeFiles/plugin_timestomp.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_timestomp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_timestomp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_timestomp.dir/rule
@@ -1094,7 +1129,7 @@ plugin_timestomp: CMakeFiles/plugin_timestomp.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_timestomp.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_timestomp.dir/build.make CMakeFiles/plugin_timestomp.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=41,42 "Finished codegen for target plugin_timestomp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=42,43 "Finished codegen for target plugin_timestomp"
 .PHONY : CMakeFiles/plugin_timestomp.dir/codegen
 
 # clean rule for target.
@@ -1109,12 +1144,12 @@ CMakeFiles/plugin_timestomp.dir/clean:
 CMakeFiles/plugin_token.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_token.dir/build.make CMakeFiles/plugin_token.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_token.dir/build.make CMakeFiles/plugin_token.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=43,44 "Built target plugin_token"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=44,45 "Built target plugin_token"
 .PHONY : CMakeFiles/plugin_token.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_token.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_token.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_token.dir/rule
@@ -1126,7 +1161,7 @@ plugin_token: CMakeFiles/plugin_token.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_token.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_token.dir/build.make CMakeFiles/plugin_token.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=43,44 "Finished codegen for target plugin_token"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=44,45 "Finished codegen for target plugin_token"
 .PHONY : CMakeFiles/plugin_token.dir/codegen
 
 # clean rule for target.
@@ -1141,12 +1176,12 @@ CMakeFiles/plugin_token.dir/clean:
 CMakeFiles/plugin_uac.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=45 "Built target plugin_uac"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=46 "Built target plugin_uac"
 .PHONY : CMakeFiles/plugin_uac.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_uac.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_uac.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_uac.dir/rule
@@ -1158,7 +1193,7 @@ plugin_uac: CMakeFiles/plugin_uac.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_uac.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_uac.dir/build.make CMakeFiles/plugin_uac.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=45 "Finished codegen for target plugin_uac"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=46 "Finished codegen for target plugin_uac"
 .PHONY : CMakeFiles/plugin_uac.dir/codegen
 
 # clean rule for target.
@@ -1173,12 +1208,12 @@ CMakeFiles/plugin_uac.dir/clean:
 CMakeFiles/plugin_ui.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=46,47 "Built target plugin_ui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=47,48 "Built target plugin_ui"
 .PHONY : CMakeFiles/plugin_ui.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_ui.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_ui.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_ui.dir/rule
@@ -1190,7 +1225,7 @@ plugin_ui: CMakeFiles/plugin_ui.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_ui.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_ui.dir/build.make CMakeFiles/plugin_ui.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=46,47 "Finished codegen for target plugin_ui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=47,48 "Finished codegen for target plugin_ui"
 .PHONY : CMakeFiles/plugin_ui.dir/codegen
 
 # clean rule for target.
@@ -1205,12 +1240,12 @@ CMakeFiles/plugin_ui.dir/clean:
 CMakeFiles/plugin_wifi_passwords.dir/all: CMakeFiles/tab_dll.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=48,49 "Built target plugin_wifi_passwords"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=49,50 "Built target plugin_wifi_passwords"
 .PHONY : CMakeFiles/plugin_wifi_passwords.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/plugin_wifi_passwords.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/plugin_wifi_passwords.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles 0
 .PHONY : CMakeFiles/plugin_wifi_passwords.dir/rule
@@ -1222,7 +1257,7 @@ plugin_wifi_passwords: CMakeFiles/plugin_wifi_passwords.dir/rule
 # codegen rule for target.
 CMakeFiles/plugin_wifi_passwords.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/plugin_wifi_passwords.dir/build.make CMakeFiles/plugin_wifi_passwords.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=48,49 "Finished codegen for target plugin_wifi_passwords"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/felix/Desktop/EntySec/Projects/Pwny/build-win64/CMakeFiles --progress-num=49,50 "Finished codegen for target plugin_wifi_passwords"
 .PHONY : CMakeFiles/plugin_wifi_passwords.dir/codegen
 
 # clean rule for target.

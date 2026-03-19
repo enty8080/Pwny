@@ -540,5 +540,5 @@ See the test plugin as a reference implementation:
 
 - [Code-Only Tabs (COT)](cot.md) — technical deep-dive into module stomping
 - [Building](building.md) — compiling from source
-- [Windows Plugins](windows/README.md) — all 25 Windows plugin docs
+- [Windows Plugins](windows/README.md) — all 28 Windows plugin docs
 - [Commands Reference](commands.md) — cross-platform commands
