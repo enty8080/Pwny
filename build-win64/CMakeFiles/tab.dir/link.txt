@@ -1,2 +1,0 @@
-x86_64-w64-mingw32-ar qc libtab.a CMakeFiles/tab.dir/src/tab_lite.c.obj CMakeFiles/tab.dir/src/tlv.c.obj CMakeFiles/tab.dir/src/queue.c.obj CMakeFiles/tab.dir/src/log.c.obj CMakeFiles/tab.dir/src/compat/posix_win.c.obj CMakeFiles/tab.dir/src/compat/progname.c.obj CMakeFiles/tab.dir/src/compat/reallocarray.c.obj CMakeFiles/tab.dir/src/compat/setproctitle.c.obj CMakeFiles/tab.dir/src/compat/strlcat.c.obj CMakeFiles/tab.dir/src/compat/strlcpy.c.obj CMakeFiles/tab.dir/src/compat/strtonum.c.obj
-/opt/local/bin/x86_64-w64-mingw32-ranlib libtab.a

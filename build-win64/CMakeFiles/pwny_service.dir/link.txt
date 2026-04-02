@@ -1,3 +1,0 @@
-/opt/local/bin/cmake -E rm -f CMakeFiles/pwny_service.dir/objects.a
-x86_64-w64-mingw32-ar qc CMakeFiles/pwny_service.dir/objects.a @CMakeFiles/pwny_service.dir/objects1.rsp
-/opt/local/bin/x86_64-w64-mingw32-gcc --static -Wl,--whole-archive CMakeFiles/pwny_service.dir/objects.a -Wl,--no-whole-archive -o pwny_service.exe -Wl,--out-implib,libpwny_service.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/pwny_service.dir/linkLibs.rsp
